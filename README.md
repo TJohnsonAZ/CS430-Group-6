@@ -4,7 +4,7 @@ Repository for group 6's CS430 projects.
 # Authors
 Trevor Johnson - tkj44@nau.edu  
 Noah Nannen - ncn23@nau.edu  
-Johnathan Ray -  
+Johnathan Ray - jdr479@nau.edu  
   
 # Usage
   
