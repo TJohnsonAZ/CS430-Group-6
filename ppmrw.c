@@ -10,7 +10,7 @@
 #include <stdint.h> // standard integer types
 #include <ctype.h> // isspace, ect
 
-int main (int convertNum, FILE inputFile, FILE outputFile) {
+int main (int argc, char **argv) {
 
     int r, g, b;
     int width, height;
@@ -20,9 +20,17 @@ int main (int convertNum, FILE inputFile, FILE outputFile) {
     char fileStore[1000];
     char commentLines[1000];
 
+    // check if command line has missing arguments
+    if (argc != 4) {
+        printf("Missing arguments on command line");
+	return 0;
+    }
+
     // open the input file
-    FILE *inputfh = fopen(inputFile);
-    FILE *outputfh = fopen(outputFile);
+    FILE *inputfh = fopen(argv[2]);
+    FILE *outputfh = fopen(argv[3]);
+
+    // TODO: check if files opened incorrectly
 
 // MAGIC NUMBER
 
@@ -39,7 +47,7 @@ int main (int convertNum, FILE inputFile, FILE outputFile) {
     }
     
     // check if the file is converting to its own format
-    if (magicNum == convertNum) {
+    if (magicNum == argv[1]) {
 
         // write the data straight to the output file
         fread(fileStore, inputfh);
@@ -49,6 +57,11 @@ int main (int convertNum, FILE inputFile, FILE outputFile) {
         fprintf("\nConversion Complete\n")
         return 0;
 
+    }
+    // assume magic number in file doesn't match given argument
+    else {
+        printf("Magic number in file does not match given argument");
+	return 0;
     }
 
 // COMMENTS 
