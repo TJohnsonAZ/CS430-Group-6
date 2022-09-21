@@ -47,7 +47,7 @@ int main (int argc, char **argv) {
     }
     
     // check if the file is converting to its own format
-    if (magicNum == argv[2]) {
+    if (magicNum == argv[1]) {
 
         // write the data straight to the output file
         fread(fileStore, inputfh);
