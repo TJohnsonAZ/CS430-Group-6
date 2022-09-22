@@ -12,20 +12,38 @@
 #include <string.h>
 #include <stdbool.h>
 
-void readFromP3(FILE* fh) {
+char readFromP3(FILE* fh, int size) {
+    int asciiNum;
+    char asciiList[size * 3];
+    int index = 0;
+    
+    while (index < size * 3)
+    {
+        int scanCount = fscanf(fh, "%u", &asciiNum);
 
+        asciiList[index] = asciiNum;
+        index++;
+    
+    }
+
+    return asciiList;
 }
 
-void readFromP6(FILE* fh) {
+uint8_t readFromP6(FILE* fh, int size) {
+    uint8_t binaryArray[size * 3];
 
+    fread(&binaryArray, sizeof(uint8_t), size * 3, fh);
+
+    return binaryArray;
 }
+
 
 void writeToP3(FILE* fh) {
-
+    // sprintf
 }
 
-void writeToP6(FILE* fh) {
-
+void writeToP6(FILE* fh, int size, uint8_t outputArray[]) {
+    fwrite(outputArray, sizeof(uint8_t), size * 3, fh )
 }
 
 int main (int argc, char **argv) {
@@ -96,6 +114,8 @@ int main (int argc, char **argv) {
     // scan in the dimensions of the image
     char widthAndHeight[] = "";
     scanCount = fscanf(inputfh, "\n%d %d\n", &width, &height);
+
+    int size = width * height;
 
     // check if width and height not found
     if (scanCount == 0) {
