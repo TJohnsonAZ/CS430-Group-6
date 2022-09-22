@@ -12,12 +12,20 @@
 #include <string.h>
 #include <stdbool.h>
 
-void writeP3MagicNum(FILE* fh) {
-    fwrite("P3", sizeof("P3"), 1, fh);
+void readFromP3(FILE* fh) {
+
 }
 
-void writeP6MagicNum(FILE* fh) {
-    fwrite("P6", sizeof("P6"), 1, fh);
+void readFromP6(FILE* fh) {
+
+}
+
+void writeToP3(FILE* fh) {
+
+}
+
+void writeToP6(FILE* fh) {
+
 }
 
 int main (int argc, char **argv) {
@@ -52,9 +60,7 @@ int main (int argc, char **argv) {
 // MAGIC NUMBER
 
     // scan to find the magic number
-    // uint16_t test = get_short(inputfh);
-    // char test2 = (char)test;
-    // printf("%c\n", test2);
+    char magicNumStr[] = "";
     int scanCount = fscanf(inputfh, "P%d", &magicNum);
 
     // check if no magic number was found
@@ -63,20 +69,14 @@ int main (int argc, char **argv) {
         // return error message
         printf("\nNo magic number found");
         return 0;
-}
+    }
     
     // check if the file is converting from its own format
     if (magicNum == atoi(argv[1])) {
 
-        // If read P3, write P6
-        if (magicNum == 3) {
-            writeP6MagicNum(outputfh);
-        }
-
-        // If read P6, write P3
-        else {
-            writeP3MagicNum(outputfh);
-        }
+        // Write the magic number to the output file
+        sprintf(magicNumStr, "P%d", magicNum);
+        fwrite(magicNumStr, sizeof(magicNumStr), strlen(magicNumStr), outputfh);
 
         // display final message
         printf("\nConversion Complete\n");
@@ -103,7 +103,6 @@ int main (int argc, char **argv) {
     
 // DIMENSIONS
 */
-    printf("GETTING WIDTH AND HEIGHT\n");
     // scan in the dimensions of the image
     char widthAndHeight[] = "";
     fscanf(inputfh, "\n%d %d\n", &width, &height);
@@ -117,8 +116,8 @@ int main (int argc, char **argv) {
 
     // scan in the max color value
     char maxColorValStr[] = "";
-    fscanf(inputfh, "\n%d\n", &maxColorVal);
-    sprintf(maxColorValStr, "\n%d\n", maxColorVal);
+    fscanf(inputfh, "%d\n", &maxColorVal);
+    sprintf(maxColorValStr, "%d\n", maxColorVal);
 
     // write out the max color value
     fwrite(maxColorValStr, sizeof(maxColorValStr), strlen(maxColorValStr), outputfh);
