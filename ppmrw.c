@@ -37,8 +37,8 @@ int main (int argc, char **argv) {
 
     // check if command line has missing arguments
     if (argc != 4) {
-        printf("\nMissing arguments on command line");
-	return 0;
+        fprintf(stderr, "Error: Missing/too many arguments on command line");
+	    return 7;
     }
 
     // open the input file
@@ -47,14 +47,14 @@ int main (int argc, char **argv) {
 
     // check if input file opened incorrectly
     if (inputfh == NULL) {
-        printf("\nInput file access error");
-	return 0;
+        fprintf(stderr, "Error: Input file not found");
+	    return 2;
     }
 
     // check if output file opened incorrectly
     if (outputfh == NULL) {
-        printf("\nOutput file access error");
-	return 0;
+        fprintf(stderr, "Error: output file not found");
+	    return 2;
     }
 
 // MAGIC NUMBER
@@ -67,26 +67,16 @@ int main (int argc, char **argv) {
     if( scanCount == 0) {
 
         // return error message
-        printf("\nNo magic number found");
-        return 0;
+        fprintf(stderr, "Error: Magic number not found in input file");
+        return 3;
     }
     
-    // check if the file is converting from its own format
-    if (magicNum == atoi(argv[1])) {
+    // Write the magic number to the output file
+    sprintf(magicNumStr, "P%d", magicNum);
+    fwrite(magicNumStr, sizeof(magicNumStr), strlen(magicNumStr), outputfh);
 
-        // Write the magic number to the output file
-        sprintf(magicNumStr, "P%d", magicNum);
-        fwrite(magicNumStr, sizeof(magicNumStr), strlen(magicNumStr), outputfh);
-
-        // display final message
-        printf("\nConversion Complete\n");
-
-    }
-    // assume magic number in file doesn't match given argument
-    else {
-        printf("Magic number in file does not match given argument");
-	    return 0;
-    }
+    // display final message
+    printf("\nConversion Complete\n");
 
 // COMMENTS 
 
@@ -105,7 +95,14 @@ int main (int argc, char **argv) {
 */
     // scan in the dimensions of the image
     char widthAndHeight[] = "";
-    fscanf(inputfh, "\n%d %d\n", &width, &height);
+    scanCount = fscanf(inputfh, "\n%d %d\n", &width, &height);
+
+    // check if width and height not found
+    if (scanCount == 0) {
+        fprintf(stderr, "Error: width and height not found");
+        return 3;
+    }
+    
     sprintf(widthAndHeight, "\n%d %d\n", width, height);
     
     // write out the dimensions
@@ -116,7 +113,13 @@ int main (int argc, char **argv) {
 
     // scan in the max color value
     char maxColorValStr[] = "";
-    fscanf(inputfh, "%d\n", &maxColorVal);
+    scanCount = fscanf(inputfh, "%d\n", &maxColorVal);
+
+    // check if max color value not found
+    if (scanCount == 0) {
+        fprintf(stderr, "Error: max color value not found");
+        return 3;
+    }
     sprintf(maxColorValStr, "%d\n", maxColorVal);
 
     // write out the max color value
