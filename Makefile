@@ -1,7 +1,7 @@
 all: ppmrw
 
 ppmrw:
-	gcc -Wall project_1.c -o ppmrw
+	gcc -Wall ppmrw.c -o ppmrw.o
 
 clean:
-	rm -rf *.o *~ ppmrw output.ppm
+	rm -rf *.o *~
