@@ -45,9 +45,9 @@ void writeToP3FromP3(FILE* fh, int width, int size, uint32_t *outputArray[]) {
     int index;
 
     for (index = 0; index < size; index++) {
-        unsigned int rVal = outputArray[index];
-        unsigned int gVal = outputArray[index+1];
-        unsigned int bVal = outputArray[index+2];
+        unsigned int rVal = &outputArray[index];
+        unsigned int gVal = &outputArray[index+1];
+        unsigned int bVal = &outputArray[index+2];
 
 
         fprintf(fh, "%u %u %u ", rVal, gVal, bVal);
@@ -67,9 +67,9 @@ void writeToP3FromP6(FILE* fh, int width, int size, uint8_t *outputArray[]) {
     int index;
     for (index = 0; index < size; index++) {
 
-        unsigned int rVal = outputArray[index];
-        unsigned int gVal = outputArray[index+1];
-        unsigned int bVal = outputArray[index+2];
+        unsigned int rVal = &outputArray[index];
+        unsigned int gVal = &outputArray[index+1];
+        unsigned int bVal = &outputArray[index+2];
 
 
         fprintf(fh, "%u %u %u ", rVal, gVal, bVal);
@@ -203,10 +203,10 @@ int main (int argc, char **argv) {
 
         // check what file to write to
         if (strcmp(argv[1], "6") == 0) {
-            writeToP6FromP3(outputfh, size, asciiArray);
+            writeToP6FromP3(outputfh, size, &asciiArray);
         }
         else if (strcmp(argv[1], "3") == 0) {
-            writeToP3FromP3(outputfh, width, size, asciiArray);
+            writeToP3FromP3(outputfh, width, size, &asciiArray);
         }
     }
     else if (strcmp(magicNumChar, "6") == 0) {
@@ -214,10 +214,10 @@ int main (int argc, char **argv) {
 
         // check what file to write to
         if (strcmp(argv[1], "6") == 0) {
-            writeToP6FromP6(outputfh, size, binaryArray);
+            writeToP6FromP6(outputfh, size, &binaryArray);
         }
         else if (strcmp(argv[1], "3") == 0) {
-            writeToP3FromP6(outputfh, width, size, binaryArray);
+            writeToP3FromP6(outputfh, width, size, &binaryArray);
         }
     }
 
