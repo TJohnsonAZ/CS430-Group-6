@@ -12,21 +12,16 @@
 #include <string.h>
 #include <stdbool.h>
 
-char readFromP3(FILE* fh, int size) {
-    int asciiNum;
-    char asciiList[size * 3];
+uint32_t readFromP3(FILE* fh, int size) {
+    uint32_t asciiArray[size];
     int index = 0;
-    
-    while (index < size)
-    {
-        int scanCount = fscanf(fh, "%u", &asciiNum);
-
-        asciiList[index] = asciiNum;
+    int scanCount = 1;
+    while (!feof(fh) && scanCount == 1) {
+        scanCount = fscanf(fh, "%u", &asciiArray[index]); 
         index++;
-    
     }
 
-    return asciiList;
+    return asciiArray;
 }
 
 uint8_t readFromP6(FILE* fh, int size) {
