@@ -36,7 +36,7 @@ uint8_t readFromP6(FILE* fh, int size) {
 void writeToP3(FILE* fh, int width, int size, uint8_t outputArray[]) {
 
     int index;
-    for (index = 0, index < size, index ++) {
+    for (index = 0; index < size; index ++) {
 
         fprintf(fh, "%u %u %u ", outputArray[index], outputArray[index+1], outputArray[index+2]);
 
