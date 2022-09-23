@@ -34,10 +34,36 @@ uint8_t readFromP6(FILE* fh, int size) {
 }
 
 
-void writeToP3(FILE* fh, int width, int size, uint8_t outputArray[]) {
+void skipComment(FILE* fh) {
+    char currentChar[1];
+    while (currentChar[0] != '\n') {
+        fread(currentChar, 1, 1, fh);
+    }
+}
+
+
+void writeToP3FromP3(FILE* fh, int width, int size, uint32_t outputArray[]) {
 
     int index;
-    for (index = 0, index < size, index ++) {
+    for (index = 0; index < size; index++) {
+
+        fprintf(fh, "%u %u %u ", outputArray[index], outputArray[index + 1], outputArray[index + 2]);
+
+        index += 3;
+
+        if ((index / 3) == width) {
+
+            fprintf(fh, "\n");
+
+        }
+    }
+}
+
+
+void writeToP3FromP6(FILE* fh, int width, int size, uint8_t outputArray[]) {
+
+    int index;
+    for (index = 0; index < size; index++) {
 
         fprintf(fh, "%u %u %u ", outputArray[index], outputArray[index+1], outputArray[index+2]);
 
@@ -51,17 +77,21 @@ void writeToP3(FILE* fh, int width, int size, uint8_t outputArray[]) {
     }
 }
 
-void writeToP6(FILE* fh, int size, uint8_t outputArray[]) {
+void writeToP6FromP3(FILE* fh, int size, uint32_t outputArray[]) {
+
+    fwrite(outputArray, sizeof(uint8_t), size, fh);
+}
+
+
+void writeToP6FromP6(FILE* fh, int size, uint8_t outputArray[]) {
     
-    fwrite(outputArray, sizeof(uint8_t), size, fh )
+    fwrite(outputArray, sizeof(uint8_t), size, fh);
 }
 
 int main (int argc, char **argv) {
 
-    int r = 0, g = 0, b = 0;
     int width = 0, height = 0;
     int maxColorVal = 0;
-    int magicNum = 0;
 
     // check if command line has missing arguments
     if (argc != 4) {
@@ -89,41 +119,41 @@ int main (int argc, char **argv) {
 
     // scan to find the magic number
     char magicNumStr[] = "";
-    int scanCount = fscanf(inputfh, "P%d", &magicNum);
 
-    // check if no magic number was found
-    if( scanCount == 0) {
+    char currentChar[1];
+    char magicNumChar[2];
+    bool skippedComment = false;
 
-        // return error message
-        fprintf(stderr, "Error: Magic number not found in input file");
-        return 3;
+    while (!skippedComment) {
+        fread(currentChar, 1, 1, inputfh);
+        if (strcmp(currentChar, "P") == 0) {
+            skippedComment = true;
+        }
+        else {
+            if (ispunct(currentChar[0])) {
+                skipComment(inputfh);
+            }
+            else {
+                fprintf(stderr, "Error: Magic number not found in input file\n");
+                return 3;
+            }
+        }
     }
     
+    fread(magicNumChar, 1, 1, inputfh);
+    
     // Write the magic number to the output file
-    sprintf(magicNumStr, "P%d", magicNum);
+    sprintf(magicNumStr, "P%s", magicNumChar);
     fwrite(magicNumStr, sizeof(magicNumStr), strlen(magicNumStr), outputfh);
 
     // display final message
     printf("\nConversion Complete\n");
-
-// COMMENTS 
-
-    // scan the document for all comments
-    /*while (false) { // TODO: change later
-
-        do {
-            
-            // write in the comment to the output file
-
-        } while (false); // TODO: change later 
-
-    }
     
 // DIMENSIONS
-*/
+
     // scan in the dimensions of the image
     char widthAndHeight[] = "";
-    scanCount = fscanf(inputfh, "\n%d %d\n", &width, &height);
+    int scanCount = fscanf(inputfh, "\n%d %d\n", &width, &height);
 
     int size = width * height * 3;
 
@@ -154,34 +184,37 @@ int main (int argc, char **argv) {
 
     // write out the max color value
     fwrite(maxColorValStr, sizeof(maxColorValStr), strlen(maxColorValStr), outputfh);
-    printf("\nMax color val written");
+    printf("\nMax color val written\n");
 
-/*
-// ADD COLOR VALUES
+// READ AND WRITE COLOR VALUES
     
-    int colorValue;
-    int colorTriplet[3];
-    int numColorVals = 0;
-    int index = 0;
+    // check what file is being read from
+    uint32_t asciiArray;
+    uint8_t binaryArray;
+    if (strcmp(magicNumChar, "3") == 0) {
+        asciiArray = readFromP3(inputfh, size);
 
-    // Loop through the read file
-    while (index < width * height * 3) {
-        colorValue = fgetc(inputfh); // TODO: this only gets a single char from the file. Maybe use get_short/get_long from Palmer's sgi code?
-	colorTriplet[numColorVals] = colorValue;
-	numColorVals++;
-
-	// Check if color triplet has three values and add it to pixmap data structure
-	if (numColorVals == 3) {
-            // TODO: add color triplet to pixmap D.S.
-            printf("%d", colorTriplet[numColorVals]);
-
-	    // Reset number of color values
-	    numColorVals = 0;
-	}
-
-        index++;
+        // check what file to write to
+        if (strcmp(argv[1], "6") == 0) {
+            writeToP6FromP3(outputfh, size, asciiArray);
+        }
+        else if (strcmp(argv[1], "3") == 0) {
+            writeToP3FromP3(outputfh, width, size, asciiArray);
+        }
     }
-    */
+    else if (strcmp(magicNumChar, "6") == 0) {
+        binaryArray = readFromP6(inputfh, size);
+
+        // check what file to write to
+        if (strcmp(argv[1], "6") == 0) {
+            writeToP6FromP6(outputfh, size, binaryArray);
+        }
+        else if (strcmp(argv[1], "3") == 0) {
+            writeToP3FromP6(outputfh, width, size, binaryArray);
+        }
+    }
+
+    // close input and output files
     fclose(inputfh);
     fclose(outputfh);
 
