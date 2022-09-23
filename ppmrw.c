@@ -40,7 +40,7 @@ void skipComment(FILE* fh) {
     }
 }
 
-void writeToP3FromP3(FILE* fh, int width, int size, uint32_t &outputArray[]) {
+void writeToP3FromP3(FILE* fh, int width, int size, uint32_t *outputArray[]) {
 
     int index;
 
@@ -58,7 +58,7 @@ void writeToP3FromP3(FILE* fh, int width, int size, uint32_t &outputArray[]) {
     }
 }
 
-void writeToP3FromP6(FILE* fh, int width, int size, uint8_t &outputArray[]) {
+void writeToP3FromP6(FILE* fh, int width, int size, uint8_t *outputArray[]) {
 
     int index;
     for (index = 0; index < size; index++) {
@@ -75,13 +75,13 @@ void writeToP3FromP6(FILE* fh, int width, int size, uint8_t &outputArray[]) {
     }
 }
 
-void writeToP6FromP3(FILE* fh, int size, uint32_t &outputArray[]) {
+void writeToP6FromP3(FILE* fh, int size, uint32_t *outputArray[]) {
 
     fwrite(outputArray, sizeof(uint8_t), size, fh);
 }
 
 
-void writeToP6FromP6(FILE* fh, int size, uint8_t &outputArray[]) {
+void writeToP6FromP6(FILE* fh, int size, uint8_t *outputArray[]) {
     
     fwrite(outputArray, sizeof(uint8_t), size, fh);
 }
