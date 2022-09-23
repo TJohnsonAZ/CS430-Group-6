@@ -20,7 +20,7 @@ uint32_t* readFromP3(FILE* fh, int size) {
         index++;
     }
 
-    return asciiArray;
+    return &asciiArray;
 }
 
 uint8_t* readFromP6(FILE* fh, int size) {
@@ -29,7 +29,7 @@ uint8_t* readFromP6(FILE* fh, int size) {
 
     fread(&binaryArray, sizeof(uint8_t), size, fh);
 
-    return binaryArray;
+    return &binaryArray;
 }
 
 
@@ -75,7 +75,7 @@ void writeToP3FromP6(FILE* fh, int width, int size, uint8_t *outputArray[]) {
     }
 }
 
-void writeToP6FromP3(FILE* fh, int size, uint32_t *outputArray[]) {
+void writeToP6FromP3(FILE* fh, int size, uint32_t outputArray[]) {
 
     fwrite(outputArray, sizeof(uint8_t), size, fh);
 }
