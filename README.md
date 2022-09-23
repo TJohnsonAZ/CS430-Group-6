@@ -11,9 +11,4 @@ To create the object file that runs the program, type "make all" into your comma
   
 # Known Issues
 - Comments can only be skipped over if they are in the first line of the header
-- In "readFromP3", 
-    - Return makes integer from pointer without a cast
-    - Function returns address of local variable
-- In "readFromP6"
-    - Return makes integer from pointer without a cast
-    - Function returns address of local variable
+- Color values cannot be written to P3 or P6 files
