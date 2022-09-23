@@ -37,12 +37,12 @@ void writeToP3FromP3(FILE* fh, int width, int size, uint32_t outputArray[]) {
     int index;
 
     for (index = 0; index < size; index++) {
-        unsigned int rVal = &(outputArray[index]);
-        unsigned int gVal = &(outputArray[index+1]);
-        unsigned int bVal = &(outputArray[index+2]);
+        unsigned int &rVal = &(outputArray[index]);
+        unsigned int &gVal = &(outputArray[index+1]);
+        unsigned int &bVal = &(outputArray[index+2]);
 
 
-        fprintf(fh, "%u %u %u ", rVal, gVal, bVal);
+        fprintf(fh, "%u %u %u ", &rVal, &gVal, &bVal);
 
         index += 3;
 
@@ -59,12 +59,12 @@ void writeToP3FromP6(FILE* fh, int width, int size, uint8_t outputArray[]) {
     int index;
     for (index = 0; index < size; index++) {
 
-        unsigned int rVal = &(outputArray[index]);
-        unsigned int gVal = &(outputArray[index+1]);
-        unsigned int bVal = &(outputArray[index+2]);
+        unsigned int &rVal = &(outputArray[index]);
+        unsigned int &gVal = &(outputArray[index+1]);
+        unsigned int &bVal = &(outputArray[index+2]);
 
 
-        fprintf(fh, "%u %u %u ", rVal, gVal, bVal);
+        fprintf(fh, "%u %u %u ", &rVal, &gVal, &bVal);
 
         index += 3;
 
