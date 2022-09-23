@@ -4,7 +4,6 @@
 // 3. Write P3 files from RGBA ordered memory
 // 4. Write P6 files from RGBA ordered memory
 
-// 
 #include <stdio.h> //fopen, fscanf, ect
 #include <stdlib.h> // malloc, ect
 #include <stdint.h> // standard integer types
@@ -12,8 +11,8 @@
 #include <string.h>
 #include <stdbool.h>
 
-uint32_t readFromP3(FILE* fh, int size) {
-    uint32_t asciiArray[size];
+uint8_t readFromP3(FILE* fh, int size) {
+    uint8_t asciiArray[size];
     int index = 0;
     int scanCount = 1;
     while (!feof(fh) && scanCount == 1) {
@@ -45,6 +44,7 @@ void skipComment(FILE* fh) {
 void writeToP3FromP3(FILE* fh, int width, int size, uint32_t outputArray[]) {
 
     int index;
+
     for (index = 0; index < size; index++) {
 
         fprintf(fh, "%u %u %u ", outputArray[index], outputArray[index + 1], outputArray[index + 2]);
