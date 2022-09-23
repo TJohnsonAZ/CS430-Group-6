@@ -133,7 +133,7 @@ int main (int argc, char **argv) {
     fread(magicNumChar, 1, 1, inputfh);
     
     // Write the magic number to the output file
-    sprintf(magicNumStr, "P%s", magicNumChar);
+    sprintf(magicNumStr, "P%s", argv[1]);
     fwrite(magicNumStr, sizeof(magicNumStr), strlen(magicNumStr), outputfh);
 
     // display final message
