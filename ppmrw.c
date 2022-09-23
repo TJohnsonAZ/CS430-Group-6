@@ -4,7 +4,6 @@
 // 3. Write P3 files from RGBA ordered memory
 // 4. Write P6 files from RGBA ordered memory
 
-// 
 #include <stdio.h> //fopen, fscanf, ect
 #include <stdlib.h> // malloc, ect
 #include <stdint.h> // standard integer types
@@ -53,7 +52,7 @@ void writeToP3(FILE* fh, int width, int size, uint8_t outputArray[]) {
 
 void writeToP6(FILE* fh, int size, uint8_t outputArray[]) {
     
-    fwrite(outputArray, sizeof(uint8_t), size, fh )
+    fwrite(outputArray, sizeof(uint8_t), size, fh);
 }
 
 int main (int argc, char **argv) {
@@ -156,32 +155,6 @@ int main (int argc, char **argv) {
     fwrite(maxColorValStr, sizeof(maxColorValStr), strlen(maxColorValStr), outputfh);
     printf("\nMax color val written");
 
-/*
-// ADD COLOR VALUES
-    
-    int colorValue;
-    int colorTriplet[3];
-    int numColorVals = 0;
-    int index = 0;
-
-    // Loop through the read file
-    while (index < width * height * 3) {
-        colorValue = fgetc(inputfh); // TODO: this only gets a single char from the file. Maybe use get_short/get_long from Palmer's sgi code?
-	colorTriplet[numColorVals] = colorValue;
-	numColorVals++;
-
-	// Check if color triplet has three values and add it to pixmap data structure
-	if (numColorVals == 3) {
-            // TODO: add color triplet to pixmap D.S.
-            printf("%d", colorTriplet[numColorVals]);
-
-	    // Reset number of color values
-	    numColorVals = 0;
-	}
-
-        index++;
-    }
-    */
     fclose(inputfh);
     fclose(outputfh);
 
