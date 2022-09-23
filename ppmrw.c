@@ -42,7 +42,7 @@ void writeToP3FromP3(FILE* fh, int width, int size, uint32_t outputArray[]) {
         unsigned int bVal = &(outputArray[index+2]);
 
 
-        fprintf(fh, "%u %u %u ", &rVal, &gVal, &bVal);
+        fprintf(fh, "%u %u %u ", rVal, gVal, bVal);
 
         index += 3;
 
@@ -64,7 +64,7 @@ void writeToP3FromP6(FILE* fh, int width, int size, uint8_t outputArray[]) {
         unsigned int bVal = &(outputArray[index+2]);
 
 
-        fprintf(fh, "%u %u %u ", &rVal, &gVal, &bVal);
+        fprintf(fh, "%u %u %u ", rVal, gVal, bVal);
 
         index += 3;
 
