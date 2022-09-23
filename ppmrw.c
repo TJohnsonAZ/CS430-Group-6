@@ -11,8 +11,8 @@
 #include <string.h>
 #include <stdbool.h>
 
-uint8_t readFromP3(FILE* fh, int size) {
-    uint8_t asciiArray[size];
+uint32_t readFromP3(FILE* fh, int size) {
+    uint32_t asciiArray[size];
     int index = 0;
     int scanCount = 1;
     while (!feof(fh) && scanCount == 1) {
@@ -20,7 +20,7 @@ uint8_t readFromP3(FILE* fh, int size) {
         index++;
     }
 
-    return &asciiArray;
+    return asciiArray;
 }
 
 uint8_t readFromP6(FILE* fh, int size) {
@@ -29,7 +29,7 @@ uint8_t readFromP6(FILE* fh, int size) {
 
     fread(&binaryArray, sizeof(uint8_t), size, fh);
 
-    return &binaryArray;
+    return binaryArray;
 }
 
 
@@ -40,8 +40,7 @@ void skipComment(FILE* fh) {
     }
 }
 
-
-void writeToP3FromP3(FILE* fh, int width, int size, uint32_t outputArray[]) {
+void writeToP3FromP3(FILE* fh, int width, int size, uint32_t &outputArray[]) {
 
     int index;
 
@@ -59,8 +58,7 @@ void writeToP3FromP3(FILE* fh, int width, int size, uint32_t outputArray[]) {
     }
 }
 
-
-void writeToP3FromP6(FILE* fh, int width, int size, uint8_t outputArray[]) {
+void writeToP3FromP6(FILE* fh, int width, int size, uint8_t &outputArray[]) {
 
     int index;
     for (index = 0; index < size; index++) {
@@ -77,13 +75,13 @@ void writeToP3FromP6(FILE* fh, int width, int size, uint8_t outputArray[]) {
     }
 }
 
-void writeToP6FromP3(FILE* fh, int size, uint32_t outputArray[]) {
+void writeToP6FromP3(FILE* fh, int size, uint32_t &outputArray[]) {
 
     fwrite(outputArray, sizeof(uint8_t), size, fh);
 }
 
 
-void writeToP6FromP6(FILE* fh, int size, uint8_t outputArray[]) {
+void writeToP6FromP6(FILE* fh, int size, uint8_t &outputArray[]) {
     
     fwrite(outputArray, sizeof(uint8_t), size, fh);
 }
@@ -189,8 +187,8 @@ int main (int argc, char **argv) {
 // READ AND WRITE COLOR VALUES
     
     // check what file is being read from
-    uint32_t asciiArray;
-    uint8_t binaryArray;
+    uint32_t *asciiArray;
+    uint8_t *binaryArray;
     if (strcmp(magicNumChar, "3") == 0) {
         asciiArray = readFromP3(inputfh, size);
 
