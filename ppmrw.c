@@ -11,7 +11,7 @@
 #include <string.h>
 #include <stdbool.h>
 
-uint32_t readFromP3(FILE* fh, int size) {
+uint32_t* readFromP3(FILE* fh, int size) {
     uint32_t asciiArray[size];
     int index = 0;
     int scanCount = 1;
@@ -23,7 +23,7 @@ uint32_t readFromP3(FILE* fh, int size) {
     return asciiArray;
 }
 
-uint8_t readFromP6(FILE* fh, int size) {
+uint8_t* readFromP6(FILE* fh, int size) {
 
     uint8_t binaryArray[size];
 
