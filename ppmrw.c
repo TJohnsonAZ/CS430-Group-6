@@ -20,7 +20,7 @@ uint32_t* readFromP3(FILE* fh, int size) {
         index++;
     }
 
-    return &asciiArray;
+    return *asciiArray;
 }
 
 uint8_t* readFromP6(FILE* fh, int size) {
@@ -29,7 +29,7 @@ uint8_t* readFromP6(FILE* fh, int size) {
 
     fread(&binaryArray, sizeof(uint8_t), size, fh);
 
-    return &binaryArray;
+    return *binaryArray;
 }
 
 
@@ -45,8 +45,12 @@ void writeToP3FromP3(FILE* fh, int width, int size, uint32_t *outputArray[]) {
     int index;
 
     for (index = 0; index < size; index++) {
+        unsigned int rVal = outputArray[index];
+        unsigned int gVal = outputArray[index+1];
+        unsigned int bVal = outputArray[index+2];
 
-        fprintf(fh, "%u %u %u ", outputArray[index], outputArray[index + 1], outputArray[index + 2]);
+
+        fprintf(fh, "%u %u %u ", rVal, gVal, bVal);
 
         index += 3;
 
@@ -63,7 +67,12 @@ void writeToP3FromP6(FILE* fh, int width, int size, uint8_t *outputArray[]) {
     int index;
     for (index = 0; index < size; index++) {
 
-        fprintf(fh, "%u %u %u ", outputArray[index], outputArray[index+1], outputArray[index+2]);
+        unsigned int rVal = outputArray[index];
+        unsigned int gVal = outputArray[index+1];
+        unsigned int bVal = outputArray[index+2];
+
+
+        fprintf(fh, "%u %u %u ", rVal, gVal, bVal);
 
         index += 3;
 
