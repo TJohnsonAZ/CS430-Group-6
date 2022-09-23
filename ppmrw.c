@@ -11,7 +11,7 @@
 #include <string.h>
 #include <stdbool.h>
 
-void readFromP3(FILE* fh, int size, uint32_t asciiArray) {
+void readFromP3(FILE* fh, int size, uint32_t *asciiArray) {
     int index = 0;
     int scanCount = 1;
     while (!feof(fh) && scanCount == 1) {
@@ -20,7 +20,7 @@ void readFromP3(FILE* fh, int size, uint32_t asciiArray) {
     }
 }
 
-void readFromP6(FILE* fh, int size, uint8_t binaryArray) {
+void readFromP6(FILE* fh, int size, uint8_t *binaryArray) {
     fread(&binaryArray, sizeof(uint8_t), size, fh);
 }
 
@@ -37,9 +37,9 @@ void writeToP3FromP3(FILE* fh, int width, int size, uint32_t outputArray[]) {
     int index;
 
     for (index = 0; index < size; index++) {
-        unsigned int* rVal = &(outputArray[index]);
-        unsigned int* gVal = &(outputArray[index+1]);
-        unsigned int* bVal = &(outputArray[index+2]);
+        unsigned int rVal = &(outputArray[index]);
+        unsigned int gVal = &(outputArray[index+1]);
+        unsigned int bVal = &(outputArray[index+2]);
 
 
         fprintf(fh, "%u %u %u ", &rVal, &gVal, &bVal);
@@ -59,9 +59,9 @@ void writeToP3FromP6(FILE* fh, int width, int size, uint8_t outputArray[]) {
     int index;
     for (index = 0; index < size; index++) {
 
-        unsigned int* rVal = &(outputArray[index]);
-        unsigned int* gVal = &(outputArray[index+1]);
-        unsigned int* bVal = &(outputArray[index+2]);
+        unsigned int rVal = &(outputArray[index]);
+        unsigned int gVal = &(outputArray[index+1]);
+        unsigned int bVal = &(outputArray[index+2]);
 
 
         fprintf(fh, "%u %u %u ", &rVal, &gVal, &bVal);
