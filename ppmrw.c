@@ -34,14 +34,20 @@ uint8_t readFromP6(FILE* fh, int size) {
 }
 
 
-void writeToP3(FILE* fh, int size, uint8_t outputArray[]) {
+void writeToP3(FILE* fh, int width, int size, uint8_t outputArray[]) {
 
     int index;
     for (index = 0, index < size, index ++) {
 
-        fprintf(fh, "%u %u %u\n ", outputArray[index], outputArray[index+1], outputArray[index+2]);
+        fprintf(fh, "%u %u %u ", outputArray[index], outputArray[index+1], outputArray[index+2]);
 
         index += 3;
+
+        if ((index / 3) == width) {
+
+            fprintf(fh, "\n");
+
+        }
     }
 }
 
