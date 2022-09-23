@@ -37,12 +37,8 @@ void writeToP3FromP3(FILE* fh, int width, int size, uint32_t outputArray[]) {
     int index;
 
     for (index = 0; index < size; index++) {
-        int rVal = (int)(outputArray[index]);
-        int gVal = (int)(outputArray[index+1]);
-        int bVal = (int)(outputArray[index+2]);
-
-
-        fprintf(fh, "%d %d %d ", rVal, gVal, bVal);
+        
+        fprintf(fh, "%d %d %d ", outputArray[index], outputArray[index+1], outputArray[index+2]);\
 
         index += 3;
 
@@ -59,12 +55,7 @@ void writeToP3FromP6(FILE* fh, int width, int size, uint8_t outputArray[]) {
     int index;
     for (index = 0; index < size; index++) {
 
-        int rVal = (int)(outputArray[index]);
-        int gVal = (int)(outputArray[index+1]);
-        int bVal = (int)(outputArray[index+2]);
-
-
-        fprintf(fh, "%d %d %d ", rVal, gVal, bVal);
+        fprintf(fh, "%d %d %d ", outputArray[index], outputArray[index+1], outputArray[index+2]);
 
         index += 3;
 
