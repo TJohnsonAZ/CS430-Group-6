@@ -25,7 +25,7 @@ uint32_t readFromP3(FILE* fh, int size) {
 }
 
 uint8_t readFromP6(FILE* fh, int size) {
-    
+
     uint8_t binaryArray[size];
 
     fread(&binaryArray, sizeof(uint8_t), size * 3, fh);
@@ -34,11 +34,19 @@ uint8_t readFromP6(FILE* fh, int size) {
 }
 
 
-void writeToP3(FILE* fh) {
-    // sprintf
+void writeToP3(FILE* fh, int size, uint8_t outputArray[]) {
+
+    int index;
+    for (index = 0, index < size, index ++) {
+
+        fprintf(fh, "%u %u %u\n ", outputArray[index], outputArray[index+1], outputArray[index+2]);
+
+        index += 3;
+    }
 }
 
 void writeToP6(FILE* fh, int size, uint8_t outputArray[]) {
+    
     fwrite(outputArray, sizeof(uint8_t), size, fh )
 }
 
