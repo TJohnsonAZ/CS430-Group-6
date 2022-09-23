@@ -181,6 +181,7 @@ int main (int argc, char **argv) {
     // check what file is being read from
     uint32_t asciiArray[size];
     uint8_t binaryArray[size];
+    
     if (strcmp(magicNumChar, "3") == 0) {
         readFromP3(inputfh, size, asciiArray);
 
