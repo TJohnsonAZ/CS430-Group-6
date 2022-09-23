@@ -27,7 +27,7 @@ uint8_t readFromP6(FILE* fh, int size) {
 
     uint8_t binaryArray[size];
 
-    fread(&binaryArray, sizeof(uint8_t), size * 3, fh);
+    fread(&binaryArray, sizeof(uint8_t), size, fh);
 
     return &binaryArray;
 }
