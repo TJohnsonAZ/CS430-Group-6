@@ -20,7 +20,7 @@ uint8_t readFromP3(FILE* fh, int size) {
         index++;
     }
 
-    return asciiArray;
+    return &asciiArray;
 }
 
 uint8_t readFromP6(FILE* fh, int size) {
@@ -29,7 +29,7 @@ uint8_t readFromP6(FILE* fh, int size) {
 
     fread(&binaryArray, sizeof(uint8_t), size * 3, fh);
 
-    return binaryArray;
+    return &binaryArray;
 }
 
 
