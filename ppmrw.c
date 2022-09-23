@@ -17,7 +17,7 @@ char readFromP3(FILE* fh, int size) {
     char asciiList[size * 3];
     int index = 0;
     
-    while (index < size * 3)
+    while (index < size)
     {
         int scanCount = fscanf(fh, "%u", &asciiNum);
 
@@ -30,7 +30,8 @@ char readFromP3(FILE* fh, int size) {
 }
 
 uint8_t readFromP6(FILE* fh, int size) {
-    uint8_t binaryArray[size * 3];
+    
+    uint8_t binaryArray[size];
 
     fread(&binaryArray, sizeof(uint8_t), size * 3, fh);
 
@@ -43,7 +44,7 @@ void writeToP3(FILE* fh) {
 }
 
 void writeToP6(FILE* fh, int size, uint8_t outputArray[]) {
-    fwrite(outputArray, sizeof(uint8_t), size * 3, fh )
+    fwrite(outputArray, sizeof(uint8_t), size, fh )
 }
 
 int main (int argc, char **argv) {
@@ -115,7 +116,7 @@ int main (int argc, char **argv) {
     char widthAndHeight[] = "";
     scanCount = fscanf(inputfh, "\n%d %d\n", &width, &height);
 
-    int size = width * height;
+    int size = width * height * 3;
 
     // check if width and height not found
     if (scanCount == 0) {
