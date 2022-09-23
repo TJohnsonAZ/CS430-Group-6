@@ -11,8 +11,8 @@
 #include <string.h>
 #include <stdbool.h>
 
-uint32_t readFromP3(FILE* fh, int size) {
-    uint32_t asciiArray[size];
+uint8_t readFromP3(FILE* fh, int size) {
+    uint8_t asciiArray[size];
     int index = 0;
     int scanCount = 1;
     while (!feof(fh) && scanCount == 1) {
