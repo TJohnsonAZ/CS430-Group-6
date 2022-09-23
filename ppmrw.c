@@ -11,25 +11,17 @@
 #include <string.h>
 #include <stdbool.h>
 
-uint32_t* readFromP3(FILE* fh, int size) {
-    uint32_t asciiArray[size];
+void readFromP3(FILE* fh, int size, uint32_t asciiArray) {
     int index = 0;
     int scanCount = 1;
     while (!feof(fh) && scanCount == 1) {
         scanCount = fscanf(fh, "%u", &asciiArray[index]); 
         index++;
     }
-
-    return *asciiArray;
 }
 
-uint8_t* readFromP6(FILE* fh, int size) {
-
-    uint8_t binaryArray[size];
-
+void readFromP6(FILE* fh, int size, uint8_t binaryArray) {
     fread(&binaryArray, sizeof(uint8_t), size, fh);
-
-    return *binaryArray;
 }
 
 
@@ -45,9 +37,9 @@ void writeToP3FromP3(FILE* fh, int width, int size, uint32_t *outputArray[]) {
     int index;
 
     for (index = 0; index < size; index++) {
-        unsigned int rVal = &outputArray[index];
-        unsigned int gVal = &outputArray[index+1];
-        unsigned int bVal = &outputArray[index+2];
+        unsigned int rVal = outputArray[index];
+        unsigned int gVal = outputArray[index+1];
+        unsigned int bVal = outputArray[index+2];
 
 
         fprintf(fh, "%u %u %u ", rVal, gVal, bVal);
@@ -67,9 +59,9 @@ void writeToP3FromP6(FILE* fh, int width, int size, uint8_t *outputArray[]) {
     int index;
     for (index = 0; index < size; index++) {
 
-        unsigned int rVal = &outputArray[index];
-        unsigned int gVal = &outputArray[index+1];
-        unsigned int bVal = &outputArray[index+2];
+        unsigned int rVal = outputArray[index];
+        unsigned int gVal = outputArray[index+1];
+        unsigned int bVal = outputArray[index+2];
 
 
         fprintf(fh, "%u %u %u ", rVal, gVal, bVal);
@@ -196,28 +188,28 @@ int main (int argc, char **argv) {
 // READ AND WRITE COLOR VALUES
     
     // check what file is being read from
-    uint32_t *asciiArray;
-    uint8_t *binaryArray;
+    uint32_t asciiArray[size];
+    uint8_t binaryArray[size];
     if (strcmp(magicNumChar, "3") == 0) {
-        asciiArray = readFromP3(inputfh, size);
+        readFromP3(inputfh, size, asciiArray);
 
         // check what file to write to
         if (strcmp(argv[1], "6") == 0) {
-            writeToP6FromP3(outputfh, size, &asciiArray);
+            writeToP6FromP3(outputfh, size, asciiArray);
         }
         else if (strcmp(argv[1], "3") == 0) {
-            writeToP3FromP3(outputfh, width, size, &asciiArray);
+            writeToP3FromP3(outputfh, width, size, asciiArray);
         }
     }
     else if (strcmp(magicNumChar, "6") == 0) {
-        binaryArray = readFromP6(inputfh, size);
+        readFromP6(inputfh, size, binaryArray);
 
         // check what file to write to
         if (strcmp(argv[1], "6") == 0) {
-            writeToP6FromP6(outputfh, size, &binaryArray);
+            writeToP6FromP6(outputfh, size, binaryArray);
         }
         else if (strcmp(argv[1], "3") == 0) {
-            writeToP3FromP6(outputfh, width, size, &binaryArray);
+            writeToP3FromP6(outputfh, width, size, binaryArray);
         }
     }
 
