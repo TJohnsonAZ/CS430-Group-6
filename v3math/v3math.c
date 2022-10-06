@@ -1,5 +1,5 @@
-#import v3math.h
-#import <math.h>
+#include "v3math.h"
+#include <math.h>
 
 
 void v3_from_points(float *dst, float *a, float *b) {
@@ -33,7 +33,7 @@ void v3_subtract(float *dst, float *a, float *b) {
 
 float v3_dot_product(float *a, float *b) {
 
-`   return 0;
+    return 0;
 
 }
 
@@ -55,8 +55,8 @@ void v3_scale(float *dst, float s) {
 
 float v3_angle(float *a, float *b) {
 
-    float lengthA = v3_length(*a);
-    float lengthB = v3_length(*b);
+    float lengthA = v3_length(a);
+    float lengthB = v3_length(b);
 
     float numerator = (a[0] * b[0]) + (a[1] * b[1]) + (a[2] * b[2]);
     float denominator = lengthA * lengthB;
@@ -65,14 +65,14 @@ float v3_angle(float *a, float *b) {
 
     float cosAngle = acos(angle);
 
-    return cosAngle
+    return cosAngle;
 
 }
 
 float v3_angle_quick(float *a, float *b) {
 
-    float lengthA = v3_length(*a);
-    float lengthB = v3_length(*b);
+    float lengthA = v3_length(a);
+    float lengthB = v3_length(b);
 
     float numerator = (a[0] * b[0]) + (a[1] * b[1]) + (a[2] * b[2]);
     float denominator = lengthA * lengthB;
@@ -86,15 +86,15 @@ float v3_angle_quick(float *a, float *b) {
 void v3_reflect(float *dst, float *v, float *n) {
 
     // v_r = v - 2(n * v)n
-    dst[0] = v[0] - 2(n[0] * v[0])n[0];
-    dst[1] = v[1] - 2(n[1] * v[1])n[1];
-    dst[2] = v[2] - 2(n[2] * v[2])n[2];
+    dst[0] = v[0] - 2 * (n[0] * v[0]) * n[0];
+    dst[1] = v[1] - 2 * (n[1] * v[1]) * n[1];
+    dst[2] = v[2] - 2 * (n[2] * v[2]) * n[2];
 
 }
 
 float v3_length(float *a) {
 
-    float length = sqrt(a[0]^2 + a[1]^2 + a[2]^2);
+    float length = sqrt((a[0] * a[0]) + (a[1] * a[1]) + (a[2] * a[2]));
 
     return length;
 }
@@ -102,10 +102,10 @@ float v3_length(float *a) {
 void v3_normalize(float *dst, float *a) {
 
     // v_a = a / ||a||
-    float length = sqrt((a[0] * a[0]) + (a[1] * a[1]) + (a[2] * a[2]));
+    float a_length = v3_length(a);
 
-    dst[0] = a[0] / length;
-    dst[1] = a[1] / length;
-    dst[2] = a[2] / length;
+    dst[0] = a[0] / a_length;
+    dst[1] = a[1] / a_length;
+    dst[2] = a[2] / a_length;
 
 }
