@@ -1,3 +1,7 @@
+#include <math.h>
+#include <stdio.h> // TODO: included for testing purposes; remove after testing
+#include <stdbool.h>
+
 void v3_from_points(float *dst, float *a, float *b); // form v3 from a to b
 void v3_add(float *dst, float *a, float *b);
 void v3_subtract(float *dst, float *a, float *b);
@@ -9,3 +13,4 @@ float v3_angle_quick(float *a, float *b); // angle between a and b; no cos-1
 void v3_reflect(float *dst, float *v, float *n);
 float v3_length(float *a);
 void v3_normalize(float *dst, float *a);
+bool v3_equals(float* a, float* b, float tolerance);
