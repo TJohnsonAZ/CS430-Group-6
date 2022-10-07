@@ -9,9 +9,9 @@ int main() {
 	float negativeVector[] = { -2.0, -10.0, -1.5 };
 	float posAndNegVector[] = { 4.0, -1.0, 7.0 };
 	float ultimateVector[] = { -2.75, -15.5, 1.0 };
-    float 2Dvector1[] = { 5, 10 };
-    float 2Dvector2[] = { 4.7, 7.2 };
-    float 2Dvector3[] = { 6, 3.4 };
+    float vector2D1[] = { 5, 10 };
+    float vector2D2[] = { 4.7, 7.2 };
+    float vector2D3[] = { 6, 3.4 };
     float nVector[] = { 2, 8 };
 	float scalar;
 
@@ -465,7 +465,7 @@ int main() {
 	
 	// Test 1
     float reflectTest1[] = { -355, -1430 };
-	v3_reflect(dstVector, 2Dvector1, nVector);
+	v3_reflect(dstVector, vector2D1, nVector);
 	if (v3_equals(dstVector, reflectTest1)) {
 		printf("Test 1 passed");
 	}
@@ -481,7 +481,7 @@ int main() {
 
 	// Test 2
     float reflectTest2[] = { -263.3, -1064.8 };
-	v3_reflect(dstVector, 2Dvector2, nVector);
+	v3_reflect(dstVector, vector2D2, nVector);
 	if (v3_equals(dstVector, reflectTest2, 0)) {
 		printf("Test 2 passed\n");
 	}
@@ -497,7 +497,7 @@ int main() {
 
 	// Test 3
     float reflectTest3[] = { -150.8, -623.8 };
-	v3_reflect(dstVector, 2Dvector3, nVector);
+	v3_reflect(dstVector, vector2D3, nVector);
 	if (v3_equals(dstVector, reflectTest3, 0)) {
 		printf("Test 3 passed\n");
 	}
