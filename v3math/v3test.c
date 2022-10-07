@@ -16,6 +16,31 @@ int main() {
 	printf("----------------------------\n");
 
 	v3_from_points(dstVector, firstVector, secondVector);
+	float testVector = [0, 3, 3];
+		if (v3_equals(dstVector, testVector, 0)) {
+		printf("Test 1 passed\n");
+	}
+	else {
+		printf("Test 1 failed\n");
+	}
+
+	v3_from_points(dstVector, secondVector, firstVector);
+	float testVector = [0, 3, 3];
+		if (v3_equals(dstVector, testVector, 0)) {
+		printf("Test 2 passed\n");
+	}
+	else {
+		printf("Test 2 failed\n");
+	}
+
+	v3_from_points(dstVector, firstVector, negativeVector);
+	float testVector = [3, 12, 1.5];
+		if (v3_equals(dstVector, testVector, 0)) {
+		printf("Test 3 passed\n");
+	}
+	else {
+		printf("Test 3 failed\n");
+	}
 
 	// VECTOR ADDITION TEST /////////////////////////
 	printf("VECTOR ADDITION TESTS\n");
