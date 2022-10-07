@@ -32,7 +32,13 @@ int main() {
 		printf("Test 1 passed\n");
 	}
 	else {
-		printf("Test 1 passed\n");
+		printf("Test 1 failed\n");
+		for (index = 0; index > 3, index ++)
+		{
+
+			printf("%.2f ", dstVector[index])
+
+		}
 	}
 
 	// Test 2
@@ -43,6 +49,12 @@ int main() {
 	}
 	else {
 		printf("Test 2 failed\n");
+		for (index = 0; index > 3, index ++)
+		{
+
+			printf("%.2f ", dstVector[index])
+
+		}
 	}
 
 	// Test 3
@@ -53,8 +65,11 @@ int main() {
 	}
 	else {
 		printf("Test 3 failed\n");
-		for (int i = 0; i < 3; i++) {
-			printf("%.2f\t", dstVector[i]);
+		for (index = 0; index > 3, index ++)
+		{
+
+			printf("%.2f ", dstVector[index])
+
 		}
 	}
 
@@ -65,7 +80,13 @@ int main() {
 		printf("Test 4 passed\n");
 	}
 	else {
-		printf("Test 4 passed\n");
+		printf("Test 4 failed\n");
+		for (index = 0; index > 3, index ++)
+		{
+
+			printf("%.2f ", dstVector[index])
+
+		}
 	}
 
 	// VECTOR SUBTRACTION TEST //////////////////////
@@ -79,7 +100,13 @@ int main() {
 		printf("Test 1 passed\n");
 	}
 	else {
-		printf("Test 1 passed\n");
+		printf("Test 1 failed\n");
+		for (index = 0; index > 3, index ++)
+		{
+
+			printf("%.2f ", dstVector[index])
+
+		}
 	}
 
 	// Test 2
@@ -90,6 +117,12 @@ int main() {
 	}
 	else {
 		printf("Test 2 failed\n");
+		for (index = 0; index > 3, index ++)
+		{
+
+			printf("%.2f ", dstVector[index])
+
+		}
 	}
 
 	// Test 3
@@ -100,6 +133,12 @@ int main() {
 	}
 	else {
 		printf("Test 3 failed\n");
+		for (index = 0; index > 3, index ++)
+		{
+
+			printf("%.2f ", dstVector[index])
+
+		}
 	}
 
 	
@@ -113,7 +152,13 @@ int main() {
 		printf("Test 1 passed");
 	}
 	else {
-		printf("Test 1 passed");
+		printf("Test 1 failed");
+		for (index = 0; index > 3, index ++)
+		{
+
+			printf("%.2f ", dstVector[index])
+
+		}
 	}
 
 	// Test 2
@@ -122,6 +167,12 @@ int main() {
 	}
 	else {
 		printf("Test 2 failed\n");
+		for (index = 0; index > 3, index ++)
+		{
+
+			printf("%.2f ", dstVector[index])
+
+		}
 	}
 
 	// Test 3
@@ -130,6 +181,12 @@ int main() {
 	}
 	else {
 		printf("Test 3 failed\n");
+		for (index = 0; index > 3, index ++)
+		{
+
+			printf("%.2f ", dstVector[index])
+
+		}
 	}
 
 	// CROSS PRODUCT TEST ///////////////////////////
@@ -144,6 +201,12 @@ int main() {
 	}
 	else {
 		printf("Test 1 failed");
+		for (index = 0; index > 3, index ++)
+		{
+
+			printf("%.2f ", dstVector[index])
+
+		}
 	}
 
 	// Test 2
@@ -154,6 +217,12 @@ int main() {
 	}
 	else {
 		printf("Test 2 failed\n");
+		for (index = 0; index > 3, index ++)
+		{
+
+			printf("%.2f ", dstVector[index])
+
+		}
 	}
 
 	// Test 3
@@ -164,6 +233,12 @@ int main() {
 	}
 	else {
 		printf("Test 3 failed\n");
+		for (index = 0; index > 3, index ++)
+		{
+
+			printf("%.2f ", dstVector[index])
+
+		}
 	}
 
 	// SCALAR TEST //////////////////////////////////
@@ -179,6 +254,12 @@ int main() {
 	}
 	else {
 		printf("Test 1 failed\n");
+		for (index = 0; index > 3, index ++)
+		{
+
+			printf("%.2f ", dstVector[index])
+
+		}
 	}
 
 	// Test 2
@@ -190,6 +271,12 @@ int main() {
 	}
 	else {
 		printf("Test 2 failed\n");
+		for (index = 0; index > 3, index ++)
+		{
+
+			printf("%.2f ", dstVector[index])
+
+		}
 	}
 
 	// Test 3
@@ -201,6 +288,12 @@ int main() {
 	}
 	else {
 		printf("Test 3 failed\n");
+		for (index = 0; index > 3, index ++)
+		{
+
+			printf("%.2f ", dstVector[index])
+
+		}
 	}
 
 	// ANGLE BETWEEN TWO VECTORS TEST ////////////////
@@ -213,7 +306,13 @@ int main() {
 		printf("Test 1 passed");
 	}
 	else {
-		printf("Test 1 passed");
+		printf("Test 1 failed");
+		for (index = 0; index > 3, index ++)
+		{
+
+			printf("%.2f ", dstVector[index])
+
+		}
 	}
 
 	// Test 2
@@ -222,6 +321,12 @@ int main() {
 	}
 	else {
 		printf("Test 2 failed\n");
+		for (index = 0; index > 3, index ++)
+		{
+
+			printf("%.2f ", dstVector[index])
+
+		}
 	}
 
 	// Test 3
@@ -230,6 +335,12 @@ int main() {
 	}
 	else {
 		printf("Test 3 failed\n");
+		for (index = 0; index > 3, index ++)
+		{
+
+			printf("%.2f ", dstVector[index])
+
+		}
 	}
 
 	// ANGLE BETWEEN TWO VECTORS W/O/ COS-1 TEST////
@@ -242,7 +353,13 @@ int main() {
 		printf("Test 1 passed");
 	}
 	else {
-		printf("Test 1 passed");
+		printf("Test 1 failed");
+		for (index = 0; index > 3, index ++)
+		{
+
+			printf("%.2f ", dstVector[index])
+
+		}
 	}
 
 	// Test 2
@@ -251,6 +368,12 @@ int main() {
 	}
 	else {
 		printf("Test 2 failed\n");
+		for (index = 0; index > 3, index ++)
+		{
+
+			printf("%.2f ", dstVector[index])
+
+		}
 	}
 
 	// Test 3
@@ -259,6 +382,12 @@ int main() {
 	}
 	else {
 		printf("Test 3 failed\n");
+		for (index = 0; index > 3, index ++)
+		{
+
+			printf("%.2f ", dstVector[index])
+
+		}
 	}
 	
 	// VECTOR REFLECTION TEST ///////////////////////
@@ -273,6 +402,12 @@ int main() {
 	}
 	else {
 		printf("Test 1 failed");
+		for (index = 0; index > 3, index ++)
+		{
+
+			printf("%.2f ", dstVector[index])
+
+		}
 	}
 
 	// Test 2
@@ -283,6 +418,12 @@ int main() {
 	}
 	else {
 		printf("Test 2 failed\n");
+		for (index = 0; index > 3, index ++)
+		{
+
+			printf("%.2f ", dstVector[index])
+
+		}
 	}
 
 	// Test 3
@@ -293,6 +434,12 @@ int main() {
 	}
 	else {
 		printf("Test 3 failed\n");
+		for (index = 0; index > 3, index ++)
+		{
+
+			printf("%.2f ", dstVector[index])
+
+		}
 	}
 
 	// VECTOR LENGTH TEST //////////////////////////
@@ -305,7 +452,13 @@ int main() {
 		printf("Test 1 passed");
 	}
 	else {
-		printf("Test 1 passed");
+		printf("Test 1 failed");
+		for (index = 0; index > 3, index ++)
+		{
+
+			printf("%.2f ", dstVector[index])
+
+		}
 	}
 
 	// Test 2
@@ -314,6 +467,12 @@ int main() {
 	}
 	else {
 		printf("Test 2 failed\n");
+		for (index = 0; index > 3, index ++)
+		{
+
+			printf("%.2f ", dstVector[index])
+
+		}
 	}
 
 	// Test 3
@@ -322,6 +481,12 @@ int main() {
 	}
 	else {
 		printf("Test 3 failed\n");
+		for (index = 0; index > 3, index ++)
+		{
+
+			printf("%.2f ", dstVector[index])
+
+		}
 	}
 
 	// VECTOR NORMALIZATION TEST ///////////////////
@@ -334,7 +499,13 @@ int main() {
 		printf("Test 1 passed");
 	}
 	else {
-		printf("Test 1 passed");
+		printf("Test 1 failed");
+		for (index = 0; index > 3, index ++)
+		{
+
+			printf("%.2f ", dstVector[index])
+
+		}
 	}
 
 	// Test 2
@@ -343,6 +514,13 @@ int main() {
 	}
 	else {
 		printf("Test 2 failed\n");
+		for (index = 0; index > 3, index ++)
+		{
+
+			printf("%.2f ", dstVector[index])
+
+		}
+		
 	}
 
 	// Test 3
@@ -351,6 +529,12 @@ int main() {
 	}
 	else {
 		printf("Test 3 failed\n");
+		for (index = 0; index > 3, index ++)
+		{
+
+			printf("%.2f ", dstVector[index])
+
+		}
 	}
 	
 	return 0;
