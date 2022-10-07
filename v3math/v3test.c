@@ -21,7 +21,7 @@ int main() {
 
 	// Test 1
 	v3_from_points(dstVector, firstVector, secondVector);
-	float testVector = [0, -3, -3]
+	float testVector = [0, -3, -3];
 	if (v3_equals(dstVector, testVector, 0)) {
 		printf("Test 1 passed\n");
 	}
@@ -37,7 +37,7 @@ int main() {
 
 	// Test 2
 	v3_from_points(dstVector, firstVector, secondVector);
-	float testVector = [0, 3, 3]
+	float testVector = [0, 3, 3];
 	if (v3_equals(dstVector, testVector, 0)) {
 		printf("Test 2 passed\n");
 	}
@@ -53,7 +53,7 @@ int main() {
 
 	// Test 3
 	v3_from_points(dstVector, firstVector, negativeVector);
-	float testVector = [3, 12, 1.5]
+	float testVector = [3, 12, 1.5];
 	if (v3_equals(dstVector, testVector, 0)) {
 		printf("Test 3 passed\n");
 	}
