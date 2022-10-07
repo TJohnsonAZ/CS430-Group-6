@@ -9,6 +9,10 @@ int main() {
 	float negativeVector[] = { -2.0, -10.0, -1.5 };
 	float posAndNegVector[] = { 4.0, -1.0, 7.0 };
 	float ultimateVector[] = { -2.75, -15.5, 1.0 };
+    float 2Dvector1[] = { 5, 10 };
+    float 2Dvector2[] = { 4.7, 7.2 };
+    float 2Dvector3[] = { 6, 3.4 };
+    float nVector[] = { 2, 8 };
 	float scalar;
 
 	// VECTOR FROM TWO POINTS TEST //////////////////
@@ -133,16 +137,19 @@ int main() {
 	printf("-------------------\n");
 	
 	// Test 1
+    float crossTest1[] = { -3, -3, 3 };
 	v3_cross_product(dstVector, firstVector, secondVector);
-	if (v3_equals(dstVector, testVector)) {
+	if (v3_equals(dstVector, crossTest1, 0)) {
 		printf("Test 1 passed");
 	}
 	else {
-		printf("Test 1 passed");
+		printf("Test 1 failed");
 	}
 
 	// Test 2
-	if (v3_equals(dstVector, testVector, 0)) {
+    float crossTest2[] = { 23.35, 0.25, -4.1 };
+    v3_cross_product(dstVector, secondVector, DecimalVector);
+	if (v3_equals(dstVector, crossTest2, 0)) {
 		printf("Test 2 passed\n");
 	}
 	else {
@@ -150,7 +157,9 @@ int main() {
 	}
 
 	// Test 3
-	if (v3_equals(dstVector, testVector, 0)) {
+    float crossTest3[] = { 107.5, -23.25, -64.75 };
+    v3_cross_product(dstVector, posAndNegVector, UltimateVector);
+	if (v3_equals(dstVector, crossTest3, 0)) {
 		printf("Test 3 passed\n");
 	}
 	else {
@@ -257,16 +266,19 @@ int main() {
 	printf("-----------------------\n");
 	
 	// Test 1
-	v3_reflect(dstVector, firstVector, secondVector);
-	if (v3_equals(dstVector, testVector)) {
+    float reflectTest1[] = { -355, -1430 };
+	v3_reflect(dstVector, 2Dvector1, nVector);
+	if (v3_equals(dstVector, reflectTest1)) {
 		printf("Test 1 passed");
 	}
 	else {
-		printf("Test 1 passed");
+		printf("Test 1 failed");
 	}
 
 	// Test 2
-	if (v3_equals(dstVector, testVector, 0)) {
+    float reflectTest2[] = { -263.3, -1064.8 };
+	v3_reflect(dstVector, 2Dvector2, nVector);
+	if (v3_equals(dstVector, reflectTest2, 0)) {
 		printf("Test 2 passed\n");
 	}
 	else {
@@ -274,7 +286,9 @@ int main() {
 	}
 
 	// Test 3
-	if (v3_equals(dstVector, testVector, 0)) {
+    float reflectTest3[] = { -150.8, -623.8 };
+	v3_reflect(dstVector, 2Dvector3, nVector);
+	if (v3_equals(dstVector, reflectTest3, 0)) {
 		printf("Test 3 passed\n");
 	}
 	else {
