@@ -1,5 +1,4 @@
 #include "v3math.h"
-#include <math.h>
 
 
 void v3_from_points(float *dst, float *a, float *b) {
@@ -7,33 +6,37 @@ void v3_from_points(float *dst, float *a, float *b) {
     // check for a being head
     if (a[0] - b[0] >= 0) {
         dst[0] = a[0] - b[0];
-	dst[1] = a[1] - b[1];
-	dst[2] = a[2] - b[2];
+	    dst[1] = a[1] - b[1];
+	    dst[2] = a[2] - b[2];
     }
     // otherwise assume b is head
     else {
         dst[0] = b[0] - a[0];
-	dst[1] = b[1] - a[1];
-	dst[2] = b[2] - a[2];
+	    dst[1] = b[1] - a[1];
+	    dst[2] = b[2] - a[2];
     }
 
 }
 
 void v3_add(float *dst, float *a, float *b) {
 
-
+    dst[0] = a[0] + b[0];
+    dst[1] = a[1] + b[1];
+    dst[2] = a[2] + b[2];
 
 }
 
 void v3_subtract(float *dst, float *a, float *b) {
 
-
+    dst[0] = a[0] - b[0];
+    dst[1] = a[1] - b[1];
+    dst[2] = a[2] - b[2];
 
 }
 
 float v3_dot_product(float *a, float *b) {
 
-    return 0;
+    return (a[0] * b[0]) + (a[1] * b[1]) + (a[2] * b[2]);
 
 }
 
@@ -108,4 +111,10 @@ void v3_normalize(float *dst, float *a) {
     dst[1] = a[1] / a_length;
     dst[2] = a[2] / a_length;
 
+}
+
+bool v3_equals(float* a, float* b, float tolerance) {
+
+    // TODO: implement tolerance somehow
+    return a[0] == b[0] && a[1] == b[1] && a[2] == b[2];
 }
