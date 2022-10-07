@@ -70,7 +70,7 @@ int main() {
 	
 	// Test 1
 	float subTest1[] = {0.0, -3.0, -3.0};
-	v3_subtract(dstVector, subTest1, secondVector);
+	v3_subtract(dstVector, firstVector, secondVector);
 	if (v3_equals(dstVector, subTest1, 0)) {
 		printf("Test 1 passed\n");
 	}
@@ -104,8 +104,9 @@ int main() {
 	printf("-----------------\n");
 	
 	// Test 1
-	float dot_product = v3_dot_product(firstVector, secondVector);
-	if (v3_equals(dstVector, testVector)) {
+	float dotProductTest = 29.0;
+	float dotProduct = v3_dot_product(firstVector, secondVector);
+	if (float_equals(dotProduct, dotProductTest, 0)) {
 		printf("Test 1 passed");
 	}
 	else {
@@ -113,7 +114,9 @@ int main() {
 	}
 
 	// Test 2
-	if (v3_equals(dstVector, testVector, 0)) {
+	dotProductTest = -8.5;
+	dotProduct = v3_dot_product(negativeVector, posAndNegVector);
+	if (float_equals(dotProduct, dotProductTest, 0)) {
 		printf("Test 2 passed\n");
 	}
 	else {
@@ -121,11 +124,33 @@ int main() {
 	}
 
 	// Test 3
-	if (v3_equals(dstVector, testVector, 0)) {
+	dotProductTest = -48.075;
+	dotProduct = v3_dot_product(decimalVector, ultimateVector);
+	if (float_equals(dotProduct, dotProductTest, 0)) {
 		printf("Test 3 passed\n");
 	}
 	else {
 		printf("Test 3 failed\n");
+	}
+
+	// Test 4
+	dotProductTest = 29.0;
+	dotProduct = v3_dot_product(secondVector, firstVector);
+	if (float_equals(dotProduct, dotProductTest, 0)) {
+		printf("Test 4 passed");
+	}
+	else {
+		printf("Test 4 failed");
+	}
+
+	// Test 5
+	dotProductTest = 248.8125;
+	dotProduct = v3_dot_product(ultimateVector, ultimateVector);
+	if (float_equals(dotProduct, dotProductTest, 0)) {
+		printf("Test 5 passed");
+	}
+	else {
+		printf("Test 5 failed");
 	}
 
 	// CROSS PRODUCT TEST ///////////////////////////
