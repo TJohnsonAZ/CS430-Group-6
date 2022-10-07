@@ -200,7 +200,8 @@ int main() {
 	
 	// Test 1
 	float angle = v3_angle(firstVector, secondVector);
-	if (v3_equals(dstVector, testVector)) {
+	float testAngle = 0.18;
+	if (angle == testAngle)) {
 		printf("Test 1 passed");
 	}
 	else {
@@ -208,7 +209,9 @@ int main() {
 	}
 
 	// Test 2
-	if (v3_equals(dstVector, testVector, 0)) {
+	angle = v3_angle(decimalVector, secondVector);
+	float testAngle = 0.32;
+	if (angle == testAngle)) {
 		printf("Test 2 passed\n");
 	}
 	else {
@@ -216,7 +219,9 @@ int main() {
 	}
 
 	// Test 3
-	if (v3_equals(dstVector, testVector, 0)) {
+	angle = v3_angle(firstVector, decimalVector);
+	float testAngle = 0.24;
+	if (angle == testAngle)) {
 		printf("Test 3 passed\n");
 	}
 	else {
@@ -229,15 +234,18 @@ int main() {
 	
 	// Test 1
 	angle = v3_angle_quick(firstVector, secondVector);
-	if (v3_equals(dstVector, testVector)) {
-		printf("Test 1 passed");
+	float testAngle = 0.99;
+	if (angle == testAngle)) {
+		printf("Test 1 passed\n");
 	}
 	else {
-		printf("Test 1 passed");
+		printf("Test 1 failed\n");
 	}
 
 	// Test 2
-	if (v3_equals(dstVector, testVector, 0)) {
+	angle = v3_angle_quick(firstVector, secondVector);
+	float testAngle = 0.95;
+	if (angle == testAngle)) {
 		printf("Test 2 passed\n");
 	}
 	else {
@@ -245,7 +253,9 @@ int main() {
 	}
 
 	// Test 3
-	if (v3_equals(dstVector, testVector, 0)) {
+	angle = v3_angle_quick(firstVector, secondVector);
+	float testAngle = 0.97;
+	if (angle == testAngle)) {
 		printf("Test 3 passed\n");
 	}
 	else {
@@ -287,15 +297,18 @@ int main() {
 	
 	// Test 1
 	float vectorLength = v3_length(firstVector);
-	if (v3_equals(dstVector, testVector)) {
-		printf("Test 1 passed");
+	float testLength = 3.74;
+	if (vectorLength == testLength)) {
+		printf("Test 1 passed\n");
 	}
 	else {
-		printf("Test 1 passed");
+		printf("Test 1 failed\n");
 	}
 
 	// Test 2
-	if (v3_equals(dstVector, testVector, 0)) {
+	float vectorLength = v3_length(secondVector);
+	float testLength = 7.87;
+	if (vectorLength == testLength)) {
 		printf("Test 2 passed\n");
 	}
 	else {
@@ -303,7 +316,9 @@ int main() {
 	}
 
 	// Test 3
-	if (v3_equals(dstVector, testVector, 0)) {
+	float vectorLength = v3_length(decimalVector);
+	float testLength = 9.51;
+	if (vectorLength == testLength)) {
 		printf("Test 3 passed\n");
 	}
 	else {
@@ -316,14 +331,17 @@ int main() {
 	
 	// Test 1
 	v3_normalize(dstVector, firstVector);
+	float testVector[] = [0.28, 0.53, 0.8];
 	if (v3_equals(dstVector, testVector)) {
-		printf("Test 1 passed");
+		printf("Test 1 passed\n");
 	}
 	else {
-		printf("Test 1 passed");
+		printf("Test 1 passed\n");
 	}
 
 	// Test 2
+	v3_normalize(dstVector, secondVector);
+	float testVector[] = [0.13, 0.64, 0.76];
 	if (v3_equals(dstVector, testVector, 0)) {
 		printf("Test 2 passed\n");
 	}
@@ -332,6 +350,8 @@ int main() {
 	}
 
 	// Test 3
+	v3_normalize(dstVector, secondVector);
+	float testVector[] = [0.16, 0.36, 0.92];
 	if (v3_equals(dstVector, testVector, 0)) {
 		printf("Test 3 passed\n");
 	}
