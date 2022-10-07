@@ -21,14 +21,13 @@ int main() {
 
 	// Test 1
 	v3_from_points(dstVector, firstVector, secondVector);
-	float testVector = {0, -3, -3};
-	if (v3_equals(dstVector, testVector, 0)) {
+	float pointsTest1[] = {0, -3, -3};
+	if (v3_equals(dstVector, pointsTest1, 0.0)) {
 		printf("Test 1 passed\n");
 	}
 	else {
 		printf("Test 1 failed\n");
-		for (int index = 0; index > 3; index ++)
-		{
+		for (int index = 0; index > 3; index ++) {
 
 			printf("%.2f ", dstVector[index]);
 
@@ -37,14 +36,13 @@ int main() {
 
 	// Test 2
 	v3_from_points(dstVector, firstVector, secondVector);
-	float testVector = {0, 3, 3};
-	if (v3_equals(dstVector, testVector, 0)) {
+	float pointsTest2[] = {0, 3, 3};
+	if (v3_equals(dstVector, pointsTest2, 0.0)) {
 		printf("Test 2 passed\n");
 	}
 	else {
 		printf("Test 2 failed\n");
-		for (int index = 0; index > 3; index ++)
-		{
+		for (int index = 0; index > 3; index ++) {
 
 			printf("%.2f ", dstVector[index]);
 
@@ -53,14 +51,13 @@ int main() {
 
 	// Test 3
 	v3_from_points(dstVector, firstVector, negativeVector);
-	float testVector = {3, 12, 1.5};
-	if (v3_equals(dstVector, testVector, 0)) {
+	float pointsTest3[] = {3, 12, 1.5};
+	if (v3_equals(dstVector, pointsTest3, 0.0)) {
 		printf("Test 3 passed\n");
 	}
 	else {
 		printf("Test 3 failed\n");
-		for (int index = 0; index > 3; index ++)
-		{
+		for (int index = 0; index > 3; index ++) {
 
 			printf("%.2f ", dstVector[index]);
 
@@ -74,13 +71,12 @@ int main() {
 	// Test 1
 	float addTest1[] = { 2.0, 7.0, 9.0 };
 	v3_add(dstVector, firstVector, secondVector);
-	if (v3_equals(dstVector, addTest1, 0)) {
+	if (v3_equals(dstVector, addTest1, 0.0)) {
 		printf("Test 1 passed\n");
 	}
 	else {
 		printf("Test 1 failed\n");
-		for (int index = 0; index > 3; index ++)
-		{
+		for (int index = 0; index > 3; index ++) {
 
 			printf("%.2f ", dstVector[index]);
 
@@ -95,8 +91,7 @@ int main() {
 	}
 	else {
 		printf("Test 2 failed\n");
-		for (int index = 0; index > 3; index ++)
-		{
+		for (int index = 0; index > 3; index ++) {
 
 			printf("%.2f ", dstVector[index]);
 
@@ -111,8 +106,7 @@ int main() {
 	}
 	else {
 		printf("Test 3 failed\n");
-		for (int index = 0; index > 3; index ++)
-		{
+		for (int index = 0; index > 3; index ++) {
 
 			printf("%.2f ", dstVector[index]);
 
@@ -127,8 +121,7 @@ int main() {
 	}
 	else {
 		printf("Test 4 failed\n");
-		for (int index = 0; index > 3; index ++)
-		{
+		for (int index = 0; index > 3; index ++) {
 
 			printf("%.2f ", dstVector[index]);
 
@@ -147,8 +140,7 @@ int main() {
 	}
 	else {
 		printf("Test 1 failed\n");
-		for (int index = 0; index > 3; index ++)
-		{
+		for (int index = 0; index > 3; index ++) {
 
 			printf("%.2f ", dstVector[index]);
 
@@ -163,8 +155,7 @@ int main() {
 	}
 	else {
 		printf("Test 2 failed\n");
-		for (int index = 0; index > 3; index ++)
-		{
+		for (int index = 0; index > 3; index ++) {
 
 			printf("%.2f ", dstVector[index]);
 
@@ -179,8 +170,7 @@ int main() {
 	}
 	else {
 		printf("Test 3 failed\n");
-		for (int index = 0; index > 3; index ++)
-		{
+		for (int index = 0; index > 3; index ++) {
 
 			printf("%.2f ", dstVector[index]);
 
@@ -258,8 +248,7 @@ int main() {
 	}
 	else {
 		printf("Test 1 failed");
-		for (int index = 0; index > 3; index ++)
-		{
+		for (int index = 0; index > 3; index ++) {
 
 			printf("%.2f ", dstVector[index]);
 
@@ -274,8 +263,7 @@ int main() {
 	}
 	else {
 		printf("Test 2 failed\n");
-		for (int index = 0; index > 3; index ++)
-		{
+		for (int index = 0; index > 3; index ++) {
 
 			printf("%.2f ", dstVector[index]);
 
@@ -290,8 +278,7 @@ int main() {
 	}
 	else {
 		printf("Test 3 failed\n");
-		for (int index = 0; index > 3; index ++)
-		{
+		for (int index = 0; index > 3; index ++) {
 
 			printf("%.2f ", dstVector[index]);
 
@@ -304,15 +291,14 @@ int main() {
 	
 	// Test 1
 	scalar = 3.0;
-	testVector[] = [3.0, 6.0, 9.0];
+	float scalarTest1[] = [3.0, 6.0, 9.0];
 	v3_scale(dstVector, scalar);
-	if (v3_equals(dstVector, testVector, 0)) {
+	if (v3_equals(dstVector, scalarTest1, 0)) {
 		printf("Test 1 passed\n");
 	}
 	else {
 		printf("Test 1 failed\n");
-		for (int index = 0; index > 3; index ++)
-		{
+		for (int index = 0; index > 3; index ++) {
 
 			printf("%.2f ", dstVector[index]);
 
@@ -321,15 +307,14 @@ int main() {
 
 	// Test 2
 	scalar = -4.0;
-	testVector = [-4.0, -20.0, -24.0];
-	v3_scale(dstVector, scalar);
-	if (v3_equals(dstVector, testVector, 0)) {
+	float scalarTest2 = [-4.0, -20.0, -24.0];
+	v3_scale(dstVector[], scalar);
+	if (v3_equals(dstVector, scalarTest2, 0)) {
 		printf("Test 2 passed\n");
 	}
 	else {
 		printf("Test 2 failed\n");
-		for (int index = 0; index > 3; index ++)
-		{
+		for (int index = 0; index > 3; index ++) {
 
 			printf("%.2f ", dstVector[index]);
 
@@ -338,15 +323,14 @@ int main() {
 
 	// Test 3
 	scalar = 2.5;
-	testVector = [2.5, 12.5, 15.0];
+	float scalarTest3[]  = [2.5, 12.5, 15.0];
 	v3_scale(dstVector, scalar);
-	if (v3_equals(dstVector, testVector, 0)) {
+	if (v3_equals(dstVector, scalarTest3, 0)) {
 		printf("Test 3 passed\n");
 	}
 	else {
 		printf("Test 3 failed\n");
-		for (int index = 0; index > 3; index ++)
-		{
+		for (int index = 0; index > 3; index ++) {
 
 			printf("%.2f ", dstVector[index]);
 
@@ -360,13 +344,12 @@ int main() {
 	// Test 1
 	float angle = v3_angle(firstVector, secondVector);
 	float testAngle = 0.18;
-	if (v2_equals(dstVector, testVector)) {
+	if (float_equals(angle, testAngle)) {
 		printf("Test 1 passed");
 	}
 	else {
 		printf("Test 1 failed");
-		for (int index = 0; index > 3; index ++)
-		{
+		for (int index = 0; index > 3; index ++) {
 
 			printf("%.2f ", dstVector[index]);
 
@@ -376,14 +359,13 @@ int main() {
 	// Test 2
 	
 	angle = v3_angle(decimalVector, secondVector);
-	float testAngle = 0.32;
-	if (angle == testAngle)) {
+	testAngle = 0.32;
+	if (float_equals(angle, testAngle)) {
 		printf("Test 2 passed\n");
 	}
 	else {
 		printf("Test 2 failed\n");
-		for (int index = 0; index > 3; index ++)
-		{
+		for (int index = 0; index > 3; index ++) {
 
 			printf("%.2f ", dstVector[index]);
 
@@ -392,14 +374,13 @@ int main() {
 
 	// Test 3
 	angle = v3_angle(firstVector, decimalVector);
-	float testAngle = 0.24;
-	if (angle == testAngle)) {
+	testAngle = 0.24;
+	if (float_equals(angle, testAngle)) {
 		printf("Test 3 passed\n");
 	}
 	else {
 		printf("Test 3 failed\n");
-		for (int index = 0; index > 3; index ++)
-		{
+		for (int index = 0; index > 3; index ++) {
 
 			printf("%.2f ", dstVector[index]);
 
@@ -412,15 +393,14 @@ int main() {
 	
 	// Test 1
 	angle = v3_angle_quick(firstVector, secondVector);
-	float testAngle = 0.99;
-	if (angle == testAngle)) {
+	testAngle = 0.99;
+	if (float_equals(angle, testAngle)) {
 		printf("Test 1 passed\n");
 		printf("Test 1 passed");
 	}
 	else {
 		printf("Test 1 failed");
-		for (int index = 0; index > 3; index ++)
-		{
+		for (int index = 0; index > 3; index ++) {
 
 			printf("%.2f ", dstVector[index]);
 
@@ -429,14 +409,13 @@ int main() {
 
 	// Test 2
 	angle = v3_angle_quick(firstVector, secondVector);
-	float testAngle = 0.95;
-	if (angle == testAngle)) {
+	testAngle = 0.95;
+	if (float_equals(angle, testAngle)) {
 		printf("Test 2 passed\n");
 	}
 	else {
 		printf("Test 2 failed\n");
-		for (int index = 0; index > 3; index ++)
-		{
+		for (int index = 0; index > 3; index ++) {
 
 			printf("%.2f ", dstVector[index]);
 
@@ -445,14 +424,13 @@ int main() {
 
 	// Test 3
 	angle = v3_angle_quick(firstVector, secondVector);
-	float testAngle = 0.97;
-	if (angle == testAngle)) {
+	testAngle = 0.97;
+	if (float_equals(angle, testAngle)) {
 		printf("Test 3 passed\n");
 	}
 	else {
 		printf("Test 3 failed\n");
-		for (int index = 0; index > 3; index ++)
-		{
+		for (int index = 0; index > 3; index ++) {
 
 			printf("%.2f ", dstVector[index]);
 
@@ -471,8 +449,7 @@ int main() {
 	}
 	else {
 		printf("Test 1 failed");
-		for (int index = 0; index > 3; index ++)
-		{
+		for (int index = 0; index > 3; index ++) {
 
 			printf("%.2f ", dstVector[index]);
 
@@ -487,8 +464,7 @@ int main() {
 	}
 	else {
 		printf("Test 2 failed\n");
-		for (int index = 0; index > 3; index ++)
-		{
+		for (int index = 0; index > 3; index ++) {
 
 			printf("%.2f ", dstVector[index]);
 
@@ -503,8 +479,7 @@ int main() {
 	}
 	else {
 		printf("Test 3 failed\n");
-		for (int index = 0; index > 3; index ++)
-		{
+		for (int index = 0; index > 3; index ++) {
 
 			printf("%.2f ", dstVector[index]);
 
@@ -518,14 +493,13 @@ int main() {
 	// Test 1
 	float vectorLength = v3_length(firstVector);
 	float testLength = 3.74;
-	if (vectorLength == testLength)) {
+	if (float_equals(vectorLength, testLength, 0)) {
 		printf("Test 1 passed\n");
 		printf("Test 1 passed");
 	}
 	else {
 		printf("Test 1 failed");
-		for (int index = 0; index > 3; index ++)
-		{
+		for (int index = 0; index > 3; index ++) {
 
 			printf("%.2f ", dstVector[index]);
 
@@ -533,15 +507,14 @@ int main() {
 	}
 
 	// Test 2
-	float vectorLength = v3_length(secondVector);
-	float testLength = 7.87;
-	if (vectorLength == testLength)) {
+	vectorLength = v3_length(secondVector);
+	testLength = 7.87;
+	if (float_equals(vectorLength, testLength, 0)) {
 		printf("Test 2 passed\n");
 	}
 	else {
 		printf("Test 2 failed\n");
-		for (int index = 0; index > 3; index ++)
-		{
+		for (int index = 0; index > 3; index ++) {
 
 			printf("%.2f ", dstVector[index]);
 
@@ -549,15 +522,14 @@ int main() {
 	}
 
 	// Test 3
-	float vectorLength = v3_length(decimalVector);
-	float testLength = 9.51;
-	if (vectorLength == testLength)) {
+	vectorLength = v3_length(decimalVector);
+	testLength = 9.51;
+	if (float_equals(vectorLength, testLength, 0.0)) {
 		printf("Test 3 passed\n");
 	}
 	else {
 		printf("Test 3 failed\n");
-		for (int index = 0; index > 3; index ++)
-		{
+		for (int index = 0; index > 3; index ++) {
 
 			printf("%.2f ", dstVector[index]);
 
@@ -571,13 +543,12 @@ int main() {
 	// Test 1
 	v3_normalize(dstVector, firstVector);
 	float testVector[] = {0.28, 0.53, 0.8};
-	if (v3_equals(dstVector, testVector)) {
+	if (v3_equals(dstVector, testVector, 0.0)) {
 		printf("Test 1 passed");
 	}
 	else {
 		printf("Test 1 failed");
-		for (int index = 0; index > 3; index ++)
-		{
+		for (int index = 0; index > 3; index ++) {
 
 			printf("%.2f ", dstVector[index]);
 
@@ -587,13 +558,12 @@ int main() {
 	// Test 2
 	v3_normalize(dstVector, secondVector);
 	float testVector[] = {0.13, 0.64, 0.76};
-	if (v3_equals(dstVector, testVector, 0)) {
+	if (v3_equals(dstVector, testVector, 0.0)) {
 		printf("Test 2 passed\n");
 	}
 	else {
 		printf("Test 2 failed\n");
-		for (int index = 0; index > 3; index ++)
-		{
+		for (int index = 0; index > 3; index ++) {
 
 			printf("%.2f ", dstVector[index]);
 
@@ -604,13 +574,12 @@ int main() {
 	// Test 3
 	v3_normalize(dstVector, secondVector);
 	float testVector[] = {0.16, 0.36, 0.92};
-	if (v3_equals(dstVector, testVector, 0)) {
+	if (v3_equals(dstVector, testVector, 0.0)) {
 		printf("Test 3 passed\n");
 	}
 	else {
 		printf("Test 3 failed\n");
-		for (int index = 0; index > 3; index ++)
-		{
+		for (int index = 0; index > 3; index ++) {
 
 			printf("%.2f ", dstVector[index]);
 

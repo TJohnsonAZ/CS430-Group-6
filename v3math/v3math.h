@@ -15,3 +15,4 @@ float v3_length(float *a);
 void v3_normalize(float *dst, float *a);
 bool v3_equals(float* a, float* b, float tolerance);
 bool v2_equals(float* a, float* b, float tolerance);
+bool float_equals(float a, float b, float tolerance);
