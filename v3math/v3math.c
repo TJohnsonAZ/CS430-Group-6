@@ -121,3 +121,7 @@ bool v3_equals(float* a, float* b, float tolerance) {
 bool v2_equals(float* a, float* b, float tolerance) {
     return a[0] == b[0] && a[1] == b[1];
 }
+
+bool float_equals(float a, float b, float tolerance) {
+    return a == b;
+}
