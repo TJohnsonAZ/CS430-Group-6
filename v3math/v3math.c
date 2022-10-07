@@ -91,7 +91,6 @@ void v3_reflect(float *dst, float *v, float *n) {
     // v_r = v - 2(n * v)n
     dst[0] = v[0] - 2 * (n[0] * v[0]) * n[0];
     dst[1] = v[1] - 2 * (n[1] * v[1]) * n[1];
-    dst[2] = v[2] - 2 * (n[2] * v[2]) * n[2];
 
 }
 
@@ -117,4 +116,8 @@ bool v3_equals(float* a, float* b, float tolerance) {
 
     // TODO: implement tolerance somehow
     return a[0] == b[0] && a[1] == b[1] && a[2] == b[2];
+}
+
+bool v2_equals(float* a, float* b, float tolerance) {
+    return a[0] == b[0] && a[1] == b[1];
 }
