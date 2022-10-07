@@ -1,7 +1,7 @@
 all: v3test
 
 v3test:
-	gcc -Wall v3math.c v3test.c -o v3test -lm
+	gcc -Wall -std=c99 -pedantic v3math.c v3test.c -o v3test -lm
 
 clean:
-	rm -rf *.o *~
+	rm -rf v3test *~

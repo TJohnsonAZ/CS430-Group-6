@@ -2,43 +2,342 @@
 
 
 int main() {
-	float v3_a[] = { 1.0, 2.0, 3.0 };
-	float v3_b[] = { 1.0, 5.0, 6.0 };
-	float v3_dst[] = { 0.0, 0.0, 0.0 };
-	float scalar = 3.0;
+	float dstVector[] = { 0.0, 0.0, 0.0 };
+	float firstVector[] = { 1.0, 2.0, 3.0 };
+	float secondVector[] = { 1.0, 5.0, 6.0 };
+	float decimalVector[] = { 1.5, 3.4, 8.75 };
+	float negativeVector[] = { -2.0, -10.0, -1.5 };
+	float posAndNegVector[] = { 4.0, -1.0, 7.0 };
+	float ultimateVector[] = { -2.75, -15.5, 1.0 };
+	float scalar;
 
-	// Vector from two points test
-	v3_from_points(v3_dst, v3_a, v3_b);
+	// VECTOR FROM TWO POINTS TEST //////////////////
+	printf("\nVECTOR FROM TWO POINTS TESTS\n");
+	printf("----------------------------\n");
 
-	// Vector addition test
-	v3_add(v3_dst, v3_a, v3_b);
+	v3_from_points(dstVector, firstVector, secondVector);
 
-	// Vector subtraction test
-	v3_subtract(v3_dst, v3_a, v3_b);
-
-	// Dot product test
-	float dot_product = v3_dot_product(v3_a, v3_b);
-
-	// Cross product test
-	v3_cross_product(v3_dst, v3_a, v3_b);
-
-	// Scalar test
-	v3_scale(v3_dst, scalar);
-
-	// Angle between two vectors test
-	float angle = v3_angle(v3_a, v3_b);
-
-	// Angle between two vectors w/o/ cos-1 test
-	angle = v3_angle_quick(v3_a, v3_b);
+	// VECTOR ADDITION TEST /////////////////////////
+	printf("VECTOR ADDITION TESTS\n");
+	printf("---------------------\n");
 	
-	// Vector reflection test
-	v3_reflect(v3_dst, v3_a, v3_b);
+	// Test 1
+	float addTest1[] = { 2.0, 7.0, 9.0 };
+	v3_add(dstVector, firstVector, secondVector);
+	if (v3_equals(dstVector, addTest1, 0)) {
+		printf("Test 1 passed\n");
+	}
+	else {
+		printf("Test 1 passed\n");
+	}
 
-	// Vector length test
-	float vectorLength = v3_length(v3_a);
+	// Test 2
+	float addTest2[] = {-1.0, -5.0, 4.5};
+	v3_add(dstVector, secondVector, negativeVector);
+	if (v3_equals(dstVector, addTest2, 0)) {
+		printf("Test 2 passed\n");
+	}
+	else {
+		printf("Test 2 failed\n");
+	}
 
-	// Vector normalization test
-	v3_normalize(v3_dst, v3_a);
+	// Test 3
+	float addTest3[] = {2.0, -11, 5.5};
+	v3_add(dstVector, negativeVector, posAndNegVector);
+	if (v3_equals(dstVector, addTest3, 0)) {
+		printf("Test 3 passed\n");
+	}
+	else {
+		printf("Test 3 failed\n");
+		for (int i = 0; i < 3; i++) {
+			printf("%.2f\t", dstVector[i]);
+		}
+	}
+
+	// Test 4
+	float addTest4[] = { 2.0, 7.0, 9.0 };
+	v3_add(dstVector, secondVector, firstVector);
+	if (v3_equals(dstVector, addTest4, 0)) {
+		printf("Test 4 passed\n");
+	}
+	else {
+		printf("Test 4 passed\n");
+	}
+
+	// VECTOR SUBTRACTION TEST //////////////////////
+	printf("\nVECTOR SUBTRACTION TESTS\n");
+	printf("------------------------\n");
+	
+	// Test 1
+	float subTest1[] = {0.0, -3.0, -3.0};
+	v3_subtract(dstVector, subTest1, secondVector);
+	if (v3_equals(dstVector, subTest1, 0)) {
+		printf("Test 1 passed\n");
+	}
+	else {
+		printf("Test 1 passed\n");
+	}
+
+	// Test 2
+	float subTest2[] = {3.0, 15.0, 7.5};
+	v3_subtract(dstVector, secondVector, negativeVector);
+	if (v3_equals(dstVector, subTest2, 0)) {
+		printf("Test 2 passed\n");
+	}
+	else {
+		printf("Test 2 failed\n");
+	}
+
+	// Test 3
+	float subTest3[] = { 4.25, 18.90, 7.75 };
+	v3_subtract(dstVector, decimalVector, ultimateVector);
+	if (v3_equals(dstVector, subTest3, 0)) {
+		printf("Test 3 passed\n");
+	}
+	else {
+		printf("Test 3 failed\n");
+	}
+
+	
+	// DOT PRODUCT TEST /////////////////////////////
+	printf("DOT PRODUCT TESTS\n");
+	printf("-----------------\n");
+	
+	// Test 1
+	float dot_product = v3_dot_product(firstVector, secondVector);
+	if (v3_equals(dstVector, testVector)) {
+		printf("Test 1 passed");
+	}
+	else {
+		printf("Test 1 passed");
+	}
+
+	// Test 2
+	if (v3_equals(dstVector, testVector, 0)) {
+		printf("Test 2 passed\n");
+	}
+	else {
+		printf("Test 2 failed\n");
+	}
+
+	// Test 3
+	if (v3_equals(dstVector, testVector, 0)) {
+		printf("Test 3 passed\n");
+	}
+	else {
+		printf("Test 3 failed\n");
+	}
+
+	// CROSS PRODUCT TEST ///////////////////////////
+	printf("CROSS PRODUCT TESTS\n");
+	printf("-------------------\n");
+	
+	// Test 1
+	v3_cross_product(dstVector, firstVector, secondVector);
+	if (v3_equals(dstVector, testVector)) {
+		printf("Test 1 passed");
+	}
+	else {
+		printf("Test 1 passed");
+	}
+
+	// Test 2
+	if (v3_equals(dstVector, testVector, 0)) {
+		printf("Test 2 passed\n");
+	}
+	else {
+		printf("Test 2 failed\n");
+	}
+
+	// Test 3
+	if (v3_equals(dstVector, testVector, 0)) {
+		printf("Test 3 passed\n");
+	}
+	else {
+		printf("Test 3 failed\n");
+	}
+
+	// SCALAR TEST //////////////////////////////////
+	printf("SCALAR TESTS\n");
+	printf("------------\n");
+	
+	// Test 1
+	scalar = 3.0;
+	testVector[] = [3.0, 6.0, 9.0];
+	v3_scale(dstVector, scalar);
+	if (v3_equals(dstVector, testVector, 0)) {
+		printf("Test 1 passed\n");
+	}
+	else {
+		printf("Test 1 failed\n");
+	}
+
+	// Test 2
+	scalar = -4.0;
+	testVector = [-4.0, -20.0, -24.0];
+	v3_scale(dstVector, scalar);
+	if (v3_equals(dstVector, testVector, 0)) {
+		printf("Test 2 passed\n");
+	}
+	else {
+		printf("Test 2 failed\n");
+	}
+
+	// Test 3
+	scalar = 2.5;
+	testVector = [2.5, 12.5, 15.0];
+	v3_scale(dstVector, scalar);
+	if (v3_equals(dstVector, testVector, 0)) {
+		printf("Test 3 passed\n");
+	}
+	else {
+		printf("Test 3 failed\n");
+	}
+
+	// ANGLE BETWEEN TWO VECTORS TEST ////////////////
+	printf("ANGLE BETWEEN TWO VECTORS TESTS\n");
+	printf("-------------------------------\n");
+	
+	// Test 1
+	float angle = v3_angle(firstVector, secondVector);
+	if (v3_equals(dstVector, testVector)) {
+		printf("Test 1 passed");
+	}
+	else {
+		printf("Test 1 passed");
+	}
+
+	// Test 2
+	if (v3_equals(dstVector, testVector, 0)) {
+		printf("Test 2 passed\n");
+	}
+	else {
+		printf("Test 2 failed\n");
+	}
+
+	// Test 3
+	if (v3_equals(dstVector, testVector, 0)) {
+		printf("Test 3 passed\n");
+	}
+	else {
+		printf("Test 3 failed\n");
+	}
+
+	// ANGLE BETWEEN TWO VECTORS W/O/ COS-1 TEST////
+	printf("ANGLE BETWEEN TWO VECTORS W/O/ COS-1 TESTS\n");
+	printf("------------------------------------------\n");
+	
+	// Test 1
+	angle = v3_angle_quick(firstVector, secondVector);
+	if (v3_equals(dstVector, testVector)) {
+		printf("Test 1 passed");
+	}
+	else {
+		printf("Test 1 passed");
+	}
+
+	// Test 2
+	if (v3_equals(dstVector, testVector, 0)) {
+		printf("Test 2 passed\n");
+	}
+	else {
+		printf("Test 2 failed\n");
+	}
+
+	// Test 3
+	if (v3_equals(dstVector, testVector, 0)) {
+		printf("Test 3 passed\n");
+	}
+	else {
+		printf("Test 3 failed\n");
+	}
+	
+	// VECTOR REFLECTION TEST ///////////////////////
+	printf("VECTOR REFLECTION TESTS\n");
+	printf("-----------------------\n");
+	
+	// Test 1
+	v3_reflect(dstVector, firstVector, secondVector);
+	if (v3_equals(dstVector, testVector)) {
+		printf("Test 1 passed");
+	}
+	else {
+		printf("Test 1 passed");
+	}
+
+	// Test 2
+	if (v3_equals(dstVector, testVector, 0)) {
+		printf("Test 2 passed\n");
+	}
+	else {
+		printf("Test 2 failed\n");
+	}
+
+	// Test 3
+	if (v3_equals(dstVector, testVector, 0)) {
+		printf("Test 3 passed\n");
+	}
+	else {
+		printf("Test 3 failed\n");
+	}
+
+	// VECTOR LENGTH TEST //////////////////////////
+	printf("VECTOR LENGTH TESTS\n");
+	printf("-------------------\n");
+	
+	// Test 1
+	float vectorLength = v3_length(firstVector);
+	if (v3_equals(dstVector, testVector)) {
+		printf("Test 1 passed");
+	}
+	else {
+		printf("Test 1 passed");
+	}
+
+	// Test 2
+	if (v3_equals(dstVector, testVector, 0)) {
+		printf("Test 2 passed\n");
+	}
+	else {
+		printf("Test 2 failed\n");
+	}
+
+	// Test 3
+	if (v3_equals(dstVector, testVector, 0)) {
+		printf("Test 3 passed\n");
+	}
+	else {
+		printf("Test 3 failed\n");
+	}
+
+	// VECTOR NORMALIZATION TEST ///////////////////
+	printf("VECTOR NORMALIZATION TESTS\n");
+	printf("--------------------------\n");
+	
+	// Test 1
+	v3_normalize(dstVector, firstVector);
+	if (v3_equals(dstVector, testVector)) {
+		printf("Test 1 passed");
+	}
+	else {
+		printf("Test 1 passed");
+	}
+
+	// Test 2
+	if (v3_equals(dstVector, testVector, 0)) {
+		printf("Test 2 passed\n");
+	}
+	else {
+		printf("Test 2 failed\n");
+	}
+
+	// Test 3
+	if (v3_equals(dstVector, testVector, 0)) {
+		printf("Test 3 passed\n");
+	}
+	else {
+		printf("Test 3 failed\n");
+	}
 	
 	return 0;
 }
