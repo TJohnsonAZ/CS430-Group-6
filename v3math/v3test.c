@@ -185,7 +185,7 @@ int main() {
 	// Test 1
 	float dotProductTest = 29.0;
 	float dotProduct = v3_dot_product(firstVector, secondVector);
-	if (float_equals(dotProductTest, dotProduct)) {
+	if (float_equals(dotProductTest, dotProduct, 0)) {
 		printf("Test 1 passed");
 	}
 	else {
@@ -206,7 +206,7 @@ int main() {
 	// Test 3
 	dotProductTest = -48.075;
 	dotProduct = v3_dot_product(decimalVector, ultimateVector);
-	if (float_equals(dotProduct, dotProductTest, tolerance)) {
+	if (float_equals(dotProduct, dotProductTest, 0)) {
 		printf("Test 3 passed\n");
 	}
 	else {
@@ -228,7 +228,7 @@ int main() {
 	// Test 5
 	dotProductTest = 248.8125;
 	dotProduct = v3_dot_product(ultimateVector, ultimateVector);
-	if (float_equals(dotProduct, dotProductTest, 2.0)) {
+	if (float_equals(dotProduct, dotProductTest, 0)) {
 		printf("Test 5 passed");
 	}
 	else {
@@ -291,7 +291,7 @@ int main() {
 	
 	// Test 1
 	scalar = 3.0;
-	float scalarTest1[] = [3.0, 6.0, 9.0];
+	float scalarTest1[] = { 3.0, 6.0, 9.0 };
 	v3_scale(dstVector, scalar);
 	if (v3_equals(dstVector, scalarTest1, 0)) {
 		printf("Test 1 passed\n");
@@ -307,8 +307,8 @@ int main() {
 
 	// Test 2
 	scalar = -4.0;
-	float scalarTest2 = [-4.0, -20.0, -24.0];
-	v3_scale(dstVector[], scalar);
+	float scalarTest2[] = {-4.0, -20.0, -24.0};
+	v3_scale(dstVector, scalar);
 	if (v3_equals(dstVector, scalarTest2, 0)) {
 		printf("Test 2 passed\n");
 	}
@@ -323,7 +323,7 @@ int main() {
 
 	// Test 3
 	scalar = 2.5;
-	float scalarTest3[]  = [2.5, 12.5, 15.0];
+	float scalarTest3[] = { 2.5, 12.5, 15.0 };
 	v3_scale(dstVector, scalar);
 	if (v3_equals(dstVector, scalarTest3, 0)) {
 		printf("Test 3 passed\n");
@@ -344,7 +344,7 @@ int main() {
 	// Test 1
 	float angle = v3_angle(firstVector, secondVector);
 	float testAngle = 0.18;
-	if (float_equals(angle, testAngle)) {
+	if (float_equals(angle, testAngle, 0)) {
 		printf("Test 1 passed");
 	}
 	else {
@@ -360,7 +360,7 @@ int main() {
 	
 	angle = v3_angle(decimalVector, secondVector);
 	testAngle = 0.32;
-	if (float_equals(angle, testAngle)) {
+	if (float_equals(angle, testAngle, 0)) {
 		printf("Test 2 passed\n");
 	}
 	else {
@@ -375,7 +375,7 @@ int main() {
 	// Test 3
 	angle = v3_angle(firstVector, decimalVector);
 	testAngle = 0.24;
-	if (float_equals(angle, testAngle)) {
+	if (float_equals(angle, testAngle, 0)) {
 		printf("Test 3 passed\n");
 	}
 	else {
@@ -394,7 +394,7 @@ int main() {
 	// Test 1
 	angle = v3_angle_quick(firstVector, secondVector);
 	testAngle = 0.99;
-	if (float_equals(angle, testAngle)) {
+	if (float_equals(angle, testAngle, 0)) {
 		printf("Test 1 passed\n");
 		printf("Test 1 passed");
 	}
@@ -410,7 +410,7 @@ int main() {
 	// Test 2
 	angle = v3_angle_quick(firstVector, secondVector);
 	testAngle = 0.95;
-	if (float_equals(angle, testAngle)) {
+	if (float_equals(angle, testAngle, 0)) {
 		printf("Test 2 passed\n");
 	}
 	else {
@@ -425,7 +425,7 @@ int main() {
 	// Test 3
 	angle = v3_angle_quick(firstVector, secondVector);
 	testAngle = 0.97;
-	if (float_equals(angle, testAngle)) {
+	if (float_equals(angle, testAngle, 0)) {
 		printf("Test 3 passed\n");
 	}
 	else {
@@ -444,7 +444,7 @@ int main() {
 	// Test 1
     float reflectTest1[] = { -355, -1430 };
 	v3_reflect(dstVector, vector2D1, nVector);
-	if (v3_equals(dstVector, reflectTest1)) {
+	if (v3_equals(dstVector, reflectTest1, 0)) {
 		printf("Test 1 passed");
 	}
 	else {
@@ -542,8 +542,8 @@ int main() {
 	
 	// Test 1
 	v3_normalize(dstVector, firstVector);
-	float testVector[] = {0.28, 0.53, 0.8};
-	if (v3_equals(dstVector, testVector, 0.0)) {
+	float normalTest1[] = {0.28, 0.53, 0.8};
+	if (v3_equals(dstVector, normalTest1, 0.0)) {
 		printf("Test 1 passed");
 	}
 	else {
@@ -557,8 +557,8 @@ int main() {
 
 	// Test 2
 	v3_normalize(dstVector, secondVector);
-	float testVector[] = {0.13, 0.64, 0.76};
-	if (v3_equals(dstVector, testVector, 0.0)) {
+	float normalTest2[] = {0.13, 0.64, 0.76};
+	if (v3_equals(dstVector, normalTest2, 0.0)) {
 		printf("Test 2 passed\n");
 	}
 	else {
@@ -573,8 +573,8 @@ int main() {
 
 	// Test 3
 	v3_normalize(dstVector, secondVector);
-	float testVector[] = {0.16, 0.36, 0.92};
-	if (v3_equals(dstVector, testVector, 0.0)) {
+	float normalTest3[] = {0.16, 0.36, 0.92};
+	if (v3_equals(dstVector, normalTest3, 0.0)) {
 		printf("Test 3 passed\n");
 	}
 	else {
