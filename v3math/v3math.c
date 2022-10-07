@@ -28,6 +28,7 @@ void v3_add(float *dst, float *a, float *b) {
 
 void v3_subtract(float *dst, float *a, float *b) {
 
+    // This function a - b for its calculations
     dst[0] = a[0] - b[0];
     dst[1] = a[1] - b[1];
     dst[2] = a[2] - b[2];
@@ -115,6 +116,14 @@ void v3_normalize(float *dst, float *a) {
 
 bool v3_equals(float* a, float* b, float tolerance) {
 
+    bool firstValEqual = roundf(a[0] * pow(10, tolerance)) / pow(10, tolerance) == roundf(b[0] * pow(10, tolerance)) / pow(10, tolerance);
+    bool secondValEqual = roundf(a[1] * pow(10, tolerance)) / pow(10, tolerance) == roundf(b[1] * pow(10, tolerance)) / pow(10, tolerance);
+    bool thirdValEqual = roundf(a[2] * pow(10, tolerance)) / pow(10, tolerance) == roundf(b[2] * pow(10, tolerance)) / pow(10, tolerance);
+    
+    return firstValEqual && secondValEqual && thirdValEqual;
+}
+
+bool float_equals(float a, float b, float tolerance) {
     // TODO: implement tolerance somehow
-    return a[0] == b[0] && a[1] == b[1] && a[2] == b[2];
+    return roundf(a * pow(10, tolerance)) / pow(10, tolerance) == roundf(b * pow(10, tolerance)) / pow(10, tolerance);
 }
