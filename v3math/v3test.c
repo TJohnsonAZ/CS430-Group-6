@@ -65,7 +65,7 @@ int main() {
 	}
 
 	// VECTOR ADDITION TEST /////////////////////////
-	printf("VECTOR ADDITION TESTS\n");
+	printf("\nVECTOR ADDITION TESTS\n");
 	printf("---------------------\n");
 	
 	// Test 1
@@ -179,7 +179,7 @@ int main() {
 
 	
 	// DOT PRODUCT TEST /////////////////////////////
-	printf("DOT PRODUCT TESTS\n");
+	printf("\nDOT PRODUCT TESTS\n");
 	printf("-----------------\n");
 	
 	// Test 1
@@ -229,25 +229,25 @@ int main() {
 	dotProductTest = 248.8125;
 	dotProduct = v3_dot_product(ultimateVector, ultimateVector);
 	if (float_equals(dotProduct, dotProductTest, 0)) {
-		printf("Test 5 passed");
+		printf("Test 5 passed\n");
 	}
 	else {
-		printf("Test 5 failed");
+		printf("Test 5 failed\n");
 	}
 
 
 	// CROSS PRODUCT TEST ///////////////////////////
-	printf("CROSS PRODUCT TESTS\n");
+	printf("\nCROSS PRODUCT TESTS\n");
 	printf("-------------------\n");
 	
 	// Test 1
     float crossTest1[] = { -3, -3, 3 };
 	v3_cross_product(dstVector, firstVector, secondVector);
 	if (v3_equals(dstVector, crossTest1, 0)) {
-		printf("Test 1 passed");
+		printf("Test 1 passed\n");
 	}
 	else {
-		printf("Test 1 failed");
+		printf("Test 1 failed\n");
 		for (int index = 0; index > 3; index ++) {
 
 			printf("%.2f ", dstVector[index]);
@@ -286,7 +286,7 @@ int main() {
 	}
 
 	// SCALAR TEST //////////////////////////////////
-	printf("SCALAR TESTS\n");
+	printf("\nSCALAR TESTS\n");
 	printf("------------\n");
 	
 	// Test 1
@@ -338,17 +338,17 @@ int main() {
 	}
 
 	// ANGLE BETWEEN TWO VECTORS TEST ////////////////
-	printf("ANGLE BETWEEN TWO VECTORS TESTS\n");
+	printf("\nANGLE BETWEEN TWO VECTORS TESTS\n");
 	printf("-------------------------------\n");
 	
 	// Test 1
 	float angle = v3_angle(firstVector, secondVector);
 	float testAngle = 0.18;
 	if (float_equals(angle, testAngle, 0)) {
-		printf("Test 1 passed");
+		printf("Test 1 passed\n");
 	}
 	else {
-		printf("Test 1 failed");
+		printf("Test 1 failed\n");
 		for (int index = 0; index > 3; index ++) {
 
 			printf("%.2f ", dstVector[index]);
@@ -388,7 +388,7 @@ int main() {
 	}
 
 	// ANGLE BETWEEN TWO VECTORS W/O/ COS-1 TEST////
-	printf("ANGLE BETWEEN TWO VECTORS W/O/ COS-1 TESTS\n");
+	printf("\nANGLE BETWEEN TWO VECTORS W/O/ COS-1 TESTS\n");
 	printf("------------------------------------------\n");
 	
 	// Test 1
@@ -396,10 +396,9 @@ int main() {
 	testAngle = 0.99;
 	if (float_equals(angle, testAngle, 0)) {
 		printf("Test 1 passed\n");
-		printf("Test 1 passed");
 	}
 	else {
-		printf("Test 1 failed");
+		printf("Test 1 failed\n");
 		for (int index = 0; index > 3; index ++) {
 
 			printf("%.2f ", dstVector[index]);
@@ -438,17 +437,17 @@ int main() {
 	}
 	
 	// VECTOR REFLECTION TEST ///////////////////////
-	printf("VECTOR REFLECTION TESTS\n");
+	printf("\nVECTOR REFLECTION TESTS\n");
 	printf("-----------------------\n");
 	
 	// Test 1
     float reflectTest1[] = { -355, -1430 };
 	v3_reflect(dstVector, vector2D1, nVector);
 	if (v3_equals(dstVector, reflectTest1, 0)) {
-		printf("Test 1 passed");
+		printf("Test 1 passed\n");
 	}
 	else {
-		printf("Test 1 failed");
+		printf("Test 1 failed\n");
 		for (int index = 0; index > 3; index ++) {
 
 			printf("%.2f ", dstVector[index]);
@@ -487,7 +486,7 @@ int main() {
 	}
 
 	// VECTOR LENGTH TEST //////////////////////////
-	printf("VECTOR LENGTH TESTS\n");
+	printf("\nVECTOR LENGTH TESTS\n");
 	printf("-------------------\n");
 	
 	// Test 1
@@ -495,10 +494,9 @@ int main() {
 	float testLength = 3.74;
 	if (float_equals(vectorLength, testLength, 0)) {
 		printf("Test 1 passed\n");
-		printf("Test 1 passed");
 	}
 	else {
-		printf("Test 1 failed");
+		printf("Test 1 failed\n");
 		for (int index = 0; index > 3; index ++) {
 
 			printf("%.2f ", dstVector[index]);
@@ -537,17 +535,17 @@ int main() {
 	}
 
 	// VECTOR NORMALIZATION TEST ///////////////////
-	printf("VECTOR NORMALIZATION TESTS\n");
+	printf("\nVECTOR NORMALIZATION TESTS\n");
 	printf("--------------------------\n");
 	
 	// Test 1
 	v3_normalize(dstVector, firstVector);
 	float normalTest1[] = {0.28, 0.53, 0.8};
 	if (v3_equals(dstVector, normalTest1, 0.0)) {
-		printf("Test 1 passed");
+		printf("Test 1 passed]\n");
 	}
 	else {
-		printf("Test 1 failed");
+		printf("Test 1 failed\n");
 		for (int index = 0; index > 3; index ++) {
 
 			printf("%.2f ", dstVector[index]);
