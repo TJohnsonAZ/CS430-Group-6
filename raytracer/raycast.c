@@ -4,19 +4,37 @@
 void shoot(float* normalVector, float* hitPoint, Object camera, Object objects[]) {
     float* originPoint = camera.position;
     float tValue;
+    
+    // Calculate the direction vector of ray shot toward object and normalize it
+    float* directionVect = (float *)malloc(sizeof(float *));
+    float* directionVectNormal = (float*)malloc(sizeof(float*));
+    directionVect[0] = originPoint[0] - normalVector[0];
+    directionVect[1] = originPoint[1] - normalVector[1];
+    directionVect[2] = originPoint[2] - normalVector[2];
+    v3_normalize(directionVectNormal, directionVect);
 
     // Loop through list of objects
     for (int i = 0; i < 128; i++) {
+        // Get closest t value for a ray shot from the origin to a plane
         if (objects[i].objectKindFlag == PLANE) {
             // rayplaneIntersection(objects[i]);
         }
+        // Get closest t value for a ray shot from the origin to a sphere
         else if (objects[i].objectKindFlag == SPHERE) {
+            // Calculate the t value for a ray intersecting with a sphere
             tValue = raysphereIntersection(hitPoint, objects[i], normalVector, originPoint);
-            hitPoint[0] = originPoint[0] + objects[i].position[0] * tValue;
-            hitPoint[1] = originPoint[1] + objects[i].position[1] * tValue;
-            hitPoint[2] = originPoint[2] + objects[i].position[2] * tValue;
+
+            // Calcuate the hit point based on the equation R(t) = R_0 + R_d*t,
+            // where R_0 is the ray origin (the camera's position), R_d is the 
+            // ray direction 
+            hitPoint[0] = originPoint[0] + rdNormal[0] * tValue;
+            hitPoint[1] = originPoint[1] + rdNormal[1] * tValue;
+            hitPoint[2] = originPoint[2] + rdNormal[2] * tValue;
         }
     }
+    
+    free(rd);
+    free(rdNormal);
 }
 
 void shade(uint8_t *image, float* hitPoint, Object camera, Object objects[]) {
@@ -26,6 +44,7 @@ void shade(uint8_t *image, float* hitPoint, Object camera, Object objects[]) {
 float raysphereIntersection(float* hitPoint, Object sphere, float* normalVector, float* originPoint) {
     float tValue;
     
+    // The coefficients of the algebraic equation At^2 + Bt + C = 0 allow for the closest t value to be found
     float a = (normalVector[0] * normalVector[0]) + (normalVector[1] * normalVector[1]) + (normalVector[2] * normalVector[2]);
     float b = 2 * (normalVector[0] * (originPoint[0] - sphere.position[0])
         + normalVector[1] * (originPoint[1] - sphere.position[1])
@@ -34,8 +53,13 @@ float raysphereIntersection(float* hitPoint, Object sphere, float* normalVector,
         + ((originPoint[1] - sphere.position[1]) * (originPoint[1] - sphere.position[1]))
         + ((originPoint[2] - sphere.position[2]) * (originPoint[2] - sphere.position[2]));
 
+    // The t value can be found by using the quadratic formula on At^2 + Bt + C = 0
+    // Calculate the discriminant and plug it into the quadratic formula to get the correct t value
     float discriminant = (b * b) - (4 * a * c);
     tValue = (-b - sqrt(abs(discriminant))) / (2 * a);
+    
+    // If the t value is less than 0, then the hit point is behind the camera
+    // Calculate the other t value if this is the case
     if (tValue < 0) {
         tValue = (-b + sqrt(abs(discriminant))) / (2 * a);
     }
@@ -45,6 +69,29 @@ float raysphereIntersection(float* hitPoint, Object sphere, float* normalVector,
 
 void rayplaneIntersection(Object plane, Object camera) {
     // float* tValue = (-1 * v3_dot_product(plane.pn, (camera.position, )))
+}
+
+bool write_p3(char* fileName, int width, int height, int maxcol, uint8_t* image) {
+    // Open file and check that it was open correctly
+    FILE* fh = fopen(fileName, "w");
+    if (fh == NULL) {
+        fprintf(stderr, "Error: Output file not found");
+        return false;
+    }
+    
+    // Print the header of a P3 ppm file
+    fprintf(fh, "P3 %d %d %d\n", width, height, maxcol);
+
+    // Write the color values found in the image
+    for (int index = 0; index < width * height * 3; index += 3) {
+        int val1 = image[index];
+        int val2 = image[index + 1];
+        int val3 = image[index + 2];
+        fprintf(fh, "%d %d %d \n", val1, val2, val3);
+    }
+
+    fclose(fh);
+    return true;
 }
 
 int main(int argc, char** argv) {
@@ -249,8 +296,6 @@ int main(int argc, char** argv) {
     free(objName);
     free(prop);
 
-    FILE* outputfh = fopen(argv[4], "w");
-
     // Find the camera in the list of objects
     Object camera;
     bool cameraFound = false;
@@ -305,7 +350,7 @@ int main(int argc, char** argv) {
         }
     }
 
-    fclose(outputfh);
+    write_p3(argv[4], imageWidth, imageHeight, 255, image);
     
     return 0;
 
