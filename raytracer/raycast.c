@@ -1,7 +1,7 @@
 #include "raycast.h"
 #include "v3math.h"
 
-void shoot(float* normalVector, float* hitPoint, Object camera, Object objects[]) {
+Object shoot(float* normalVector, float* hitPoint, Object camera, Object objects[]) {
     float* originPoint = camera.position;
     float tValue;
     
@@ -18,6 +18,10 @@ void shoot(float* normalVector, float* hitPoint, Object camera, Object objects[]
         // Get closest t value for a ray shot from the origin to a plane
         if (objects[i].objectKindFlag == PLANE) {
             // rayplaneIntersection(objects[i]);
+            free(directionVect);
+            free(directionVectNormal);
+
+            return objects[i];
         }
         // Get closest t value for a ray shot from the origin to a sphere
         else if (objects[i].objectKindFlag == SPHERE) {
@@ -30,19 +34,27 @@ void shoot(float* normalVector, float* hitPoint, Object camera, Object objects[]
             hitPoint[0] = originPoint[0] + directionVectNormal[0] * tValue;
             hitPoint[1] = originPoint[1] + directionVectNormal[1] * tValue;
             hitPoint[2] = originPoint[2] + directionVectNormal[2] * tValue;
+
+            free(directionVect);
+            free(directionVectNormal);
+
+            return objects[i];
         }
     }
     
     free(directionVect);
     free(directionVectNormal);
+    return objects[127];
 }
 
-void shade(uint8_t* image, float* hitPoint, Object camera, Object objects[]) {
+void shade(uint8_t* image, int imageIndex, Object hitObject, float* hitPoint) {
     // The current pixel is black by default; it a hit point was
     // found, then an object of a certain color was found and the
     // current pixel's color needs to change
-    if (hitPoint[0] != 0 && hitPoint[1] != 0 && hitPoint[2] != 0) {
-
+    if (hitPoint[0] > 0 && hitPoint[1] > 0 && hitPoint[2] > 0) {
+        image[imageIndex] = hitObject.color[0] * 255;
+        image[imageIndex + 1] = hitObject.color[1] * 255;
+        image[imageIndex + 2] = hitObject.color[2] * 255;
     }
 }
 
@@ -319,9 +331,10 @@ int main(int argc, char** argv) {
     int viewscreenWidth = camera.width;
     int viewscreenHeight = camera.height;
 
-    float pixHeight = (float) viewscreenHeight / (float)imageHeight;
+    float pixHeight = (float)viewscreenHeight / (float)imageHeight;
     float pixWidth = (float)viewscreenWidth / (float)viewscreenHeight;
 
+    int imageIndex = 0;
     // Iterate through each row in the image
     for (int i = 0; i < imageHeight; i++) {
         // Get the current pixel's y-coord
@@ -344,12 +357,13 @@ int main(int argc, char** argv) {
 
             // Shoot ray out into scene; return position of first hit
             float* hitPoint = (float *)malloc(sizeof(float *));
-            shoot(pixVectorNormal, hitPoint, camera, objects);
+            Object hitObject = shoot(pixVectorNormal, hitPoint, camera, objects);
 
             // Store color values of hit position into image
-            shade(image, hitPoint, camera, objects);
+            shade(image, imageIndex, hitObject, hitPoint);
 
             free(hitPoint);
+            imageIndex += 3;
         }
     }
 
