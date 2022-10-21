@@ -24,11 +24,8 @@ int main(int argc, char** argv) {
     int i = 0;
     while (!feof(inputfh) && i < 128) {
         fscanf(inputfh, "%s,", objName);
-        printf("+++%s", objName);
         if (strcmp(objName, "camera,") == 0) {
-            printf("This is a camera\n");
-
-            // Camera's position is [0, 0, 0], which we set here
+            // Camera's position is always [0, 0, 0]
             currentObject.objectKindFlag = CAMERA;
             currentObject.position[0] = 0;
             currentObject.position[1] = 0;
@@ -66,8 +63,6 @@ int main(int argc, char** argv) {
         }
         
         else if (strcmp(objName, "sphere,") == 0) {
-            printf("This is a sphere\n");
-
             currentObject.objectKindFlag = SPHERE;
 
             // set default values
@@ -129,8 +124,6 @@ int main(int argc, char** argv) {
         }
         
         else if (strcmp(objName, "plane,") == 0) {
-            printf("This is a plane\n");
-
             currentObject.objectKindFlag = PLANE;
 
             // set default values
@@ -202,13 +195,55 @@ int main(int argc, char** argv) {
         i++;
     }
 
-    fprintf(stderr, "Number of objects exceeds maximum value (128), remaining objects will be ignored.");
-    
-    // Create object of type found in input file
-    /*while (!feof(inputfh)) {
-        
-    } */
+    fclose(inputfh);
 
+    if (i > 128) {
+        fprintf(stderr, "Number of objects exceeds maximum value (128), remaining objects will be ignored.");
+    }
+
+    // Find the camera in the list of objects
+    bool cameraFound = false;
+    Object camera;
+    for (int i = 0; !cameraFound; i++) {
+        camera = objects[i];
+
+        if (camera.objectKindFlag == CAMERA) {
+            cameraFound = true;
+        }
+    }
+
+    int imageHeight = atoi(argv[1]);
+    int imageWidth = atoi(argv[2]);
+    image = malloc(imageWidth * imageHeight * 3);
+
+    int viewscreenWidth = camera.width;
+    int viewscreenHeight = camera.height;
+
+    float pixHeight = float(viewscreenHeight) / float(imageHeight);
+    float pixWidth = float(viewscreenWidth) / float(viewscreenHeight);
+
+    // Iterate through each row in the image
+    for (int i = 0; i < imageHeight; i++) {
+        // Get the current pixel's y-coord
+
+        // Iterate through each column of the image
+        for (int j = 0; j < imageWidth; j++) {
+            // Get the current pixel's x-coord
+
+            // Get the current pixels's z-coord?
+
+            // Create vector out of pixel values
+
+            // Normalize pixel vector
+
+            // Shoot ray out into scene; return position of first hit
+            // (requires seperate function)
+
+            // Store color values of hit position into image
+            // (requires seperate function)
+        }
+    }
+    
     return 0;
 
 }
