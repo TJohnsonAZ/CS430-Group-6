@@ -1,20 +1,50 @@
 #include "raycast.h"
 #include "v3math.h"
 
-void shoot(float* hitPoint, Object camera, Object objects[]) {
+void shoot(float* normalVector, float* hitPoint, Object camera, Object objects[]) {
+    float* originPoint = camera.position;
+    float tValue;
+
+    // Loop through list of objects
+    for (int i = 0; i < 128; i++) {
+        if (objects[i].objectKindFlag == PLANE) {
+            // rayplaneIntersection(objects[i]);
+        }
+        else if (objects[i].objectKindFlag == SPHERE) {
+            tValue = raysphereIntersection(hitPoint, objects[i], normalVector, originPoint);
+            hitPoint[0] = originPoint[0] + objects[i].position[0] * tValue;
+            hitPoint[1] = originPoint[1] + objects[i].position[1] * tValue;
+            hitPoint[2] = originPoint[2] + objects[i].position[2] * tValue;
+        }
+    }
+}
+
+void shade(uint8_t *image, float* hitPoint, Object camera, Object objects[]) {
 
 }
 
-void shade(Object camera, Object objects[]) {
+float raysphereIntersection(float* hitPoint, Object sphere, float* normalVector, float* originPoint) {
+    float tValue;
+    
+    float a = (normalVector[0] * normalVector[0]) + (normalVector[1] * normalVector[1]) + (normalVector[2] * normalVector[2]);
+    float b = 2 * (normalVector[0] * (originPoint[0] - sphere.position[0])
+        + normalVector[1] * (originPoint[1] - sphere.position[1])
+        + normalVector[2] * (originPoint[2] - sphere.position[2]));
+    float c = ((originPoint[0] - sphere.position[0]) * (originPoint[0] - sphere.position[0]))
+        + ((originPoint[1] - sphere.position[1]) * (originPoint[1] - sphere.position[1]))
+        + ((originPoint[2] - sphere.position[2]) * (originPoint[2] - sphere.position[2]));
 
+    float discriminant = (b * b) - (4 * a * c);
+    tValue = (-b - sqrt(abs(discriminant))) / (2 * a);
+    if (tValue < 0) {
+        tValue = (-b + sqrt(abs(discriminant))) / (2 * a);
+    }
+
+    return tValue;
 }
 
-void raysphereIntersection() {
-
-}
-
-void rayplaneIntersection() {
-
+void rayplaneIntersection(Object plane, Object camera) {
+    // float* tValue = (-1 * v3_dot_product(plane.pn, (camera.position, )))
 }
 
 int main(int argc, char** argv) {
@@ -212,15 +242,18 @@ int main(int argc, char** argv) {
         i++;
     }
 
-    fclose(inputfh);
-
     if (i > 128) {
         fprintf(stderr, "Number of objects exceeds maximum value (128), remaining objects will be ignored.");
     }
+    fclose(inputfh);
+    free(objName);
+    free(prop);
+
+    FILE* outputfh = fopen(argv[4], "w");
 
     // Find the camera in the list of objects
-    bool cameraFound = false;
     Object camera;
+    bool cameraFound = false;
     for (int i = 0; !cameraFound; i++) {
         camera = objects[i];
 
@@ -261,14 +294,18 @@ int main(int argc, char** argv) {
 
             // Shoot ray out into scene; return position of first hit
             // (requires seperate function)
-            float* hitPoint;
-            shoot(hitPoint, camera, objects);
+            float* hitPoint = (float *)malloc(sizeof(float *));
+            shoot(pixVectorNormal, hitPoint, camera, objects);
 
             // Store color values of hit position into image
             // (requires seperate function)
-            shade(camera, objects);
+            shade(image, hitPoint, camera, objects);
+
+            free(hitPoint);
         }
     }
+
+    fclose(outputfh);
     
     return 0;
 
