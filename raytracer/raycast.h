@@ -45,7 +45,7 @@ typedef struct Object {
 void shoot(float *normalVector, float* hitPoint, Object camera, Object objects[]);
 void shade(uint8_t* image, float* hitPoint, Object camera, Object objects[]);
 float raysphereIntersection(float* hitPoint, Object sphere, float* normalVector, float* originPoint);
-void rayplaneIntersection(Object plane, Object camera);
+float rayplaneIntersection(Object plane, Object camera, float *normalVector);
 bool write_p3(char* fileName, int width, int height, int maxcol, uint8_t* image);
 
 
