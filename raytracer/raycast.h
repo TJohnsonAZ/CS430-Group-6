@@ -41,5 +41,11 @@ typedef struct Object {
 	};
 } Object;
 
+// function prototypes
+void shoot(float* hitPoint, Object camera, Object objects[]);
+void shade(Object camera, Object objects[]);
+void raysphereIntersection();
+void rayplaneIntersection();
+
 
 #endif  // CONFIG_OPS_H
