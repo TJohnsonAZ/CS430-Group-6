@@ -1,4 +1,21 @@
 #include "raycast.h"
+#include "v3math.h"
+
+void shoot(float* hitPoint, Object camera, Object objects[]) {
+
+}
+
+void shade(Object camera, Object objects[]) {
+
+}
+
+void raysphereIntersection() {
+
+}
+
+void rayplaneIntersection() {
+
+}
 
 int main(int argc, char** argv) {
     struct Object objects[128];
@@ -214,33 +231,42 @@ int main(int argc, char** argv) {
 
     int imageHeight = atoi(argv[1]);
     int imageWidth = atoi(argv[2]);
-    image = malloc(imageWidth * imageHeight * 3);
+    uint8_t image[imageWidth * imageHeight * 3];
 
     int viewscreenWidth = camera.width;
     int viewscreenHeight = camera.height;
 
-    float pixHeight = float(viewscreenHeight) / float(imageHeight);
-    float pixWidth = float(viewscreenWidth) / float(viewscreenHeight);
+    float pixHeight = (float) viewscreenHeight / (float)imageHeight;
+    float pixWidth = (float)viewscreenWidth / (float)viewscreenHeight;
 
     // Iterate through each row in the image
     for (int i = 0; i < imageHeight; i++) {
         // Get the current pixel's y-coord
+        float pixY = 0 - viewscreenHeight / 2 + pixHeight * (i + 0.5);
 
         // Iterate through each column of the image
         for (int j = 0; j < imageWidth; j++) {
             // Get the current pixel's x-coord
+            float pixX = 0 - viewscreenWidth / 2 + pixWidth * (j + 0.5);
 
             // Get the current pixels's z-coord?
+            float pixZ = -1;
 
             // Create vector out of pixel values
+            float pixVector[] = {pixX, pixY, pixZ};
 
             // Normalize pixel vector
+            float pixVectorNormal[3];
+            v3_normalize(pixVectorNormal, pixVector);
 
             // Shoot ray out into scene; return position of first hit
             // (requires seperate function)
+            float* hitPoint;
+            shoot(hitPoint, camera, objects);
 
             // Store color values of hit position into image
             // (requires seperate function)
+            shade(camera, objects);
         }
     }
     
