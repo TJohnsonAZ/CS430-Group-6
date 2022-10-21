@@ -10,4 +10,5 @@ Johnathan Ray - jdr479@nau.edu
 To create the object file that runs the program, type "make all" into your command line and it will create "raycast". To execute it, write "./raycast" followed by three arguments: width, height, input file (.scene), and output file (.ppm). To reset, type "make clean" into your command line and it will remove any object and miscellaneous files.
   
 # Known Issues
-The program is capabable of outputting ppm images, but color values are not written to the correct locations.
+- The program is capabable of outputting ppm images, but color values are not written to the correct locations.
+- Valgrind produces several "Invalid read/write of size 1" errors.
