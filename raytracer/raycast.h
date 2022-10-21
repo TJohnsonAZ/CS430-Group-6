@@ -42,10 +42,10 @@ typedef struct Object {
 } Object;
 
 // function prototypes
-void shoot(float* hitPoint, Object camera, Object objects[]);
-void shade(Object camera, Object objects[]);
-void raysphereIntersection();
-void rayplaneIntersection();
+void shoot(float *normalVector, float* hitPoint, Object camera, Object objects[]);
+void shade(uint8_t* image, float* hitPoint, Object camera, Object objects[]);
+float raysphereIntersection(float* hitPoint, Object sphere, float* normalVector, float* originPoint);
+void rayplaneIntersection(Object plane, Object camera);
 
 
 #endif  // CONFIG_OPS_H
