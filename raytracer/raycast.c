@@ -84,8 +84,14 @@ float raysphereIntersection(float* hitPoint, Object sphere, float* normalVector,
     return tValue;
 }
 
-void rayplaneIntersection(Object plane, Object camera) {
+float rayplaneIntersection(Object plane, Object camera, float *normalVector) {
     // float* tValue = (-1 * v3_dot_product(plane.pn, (camera.position, )))
+    float numerator = ((plane.pn[0] * camera.position[0]) + (plane.pn[1] * camera.position[1]) + (plane.pn[2] * camera.position[2]));
+    numerator += plane.d;
+    float denominator = (plane.pn[0] * normalVector[0]) + (plane.pn[1] * normalVector[1]) + (plane.pn[2] * normalVector[2]);
+    float tValue = -(numerator / denominator);
+                                            
+    return tValue;                     
 }
 
 bool write_p3(char* fileName, int width, int height, int maxcol, uint8_t* image) {
@@ -295,6 +301,10 @@ int main(int argc, char** argv) {
                 fprintf(stderr, "3rd Error: plane has missing or invalid property \"%s\"\n", prop);
                 fseek(inputfh, -strlen(prop), SEEK_CUR);
             }
+
+            float *position = currentObject.position;
+            currentObject.d = sqrt((position[0] * position[0]) + (position[1] * position[1])
+                                                                              + (position[2] * position[2]));
         }
 
         else {
