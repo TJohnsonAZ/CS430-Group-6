@@ -27,18 +27,23 @@ void shoot(float* normalVector, float* hitPoint, Object camera, Object objects[]
             // Calcuate the hit point based on the equation R(t) = R_0 + R_d*t,
             // where R_0 is the ray origin (the camera's position), R_d is the 
             // ray direction 
-            hitPoint[0] = originPoint[0] + rdNormal[0] * tValue;
-            hitPoint[1] = originPoint[1] + rdNormal[1] * tValue;
-            hitPoint[2] = originPoint[2] + rdNormal[2] * tValue;
+            hitPoint[0] = originPoint[0] + directionVectNormal[0] * tValue;
+            hitPoint[1] = originPoint[1] + directionVectNormal[1] * tValue;
+            hitPoint[2] = originPoint[2] + directionVectNormal[2] * tValue;
         }
     }
     
-    free(rd);
-    free(rdNormal);
+    free(directionVect);
+    free(directionVectNormal);
 }
 
-void shade(uint8_t *image, float* hitPoint, Object camera, Object objects[]) {
+void shade(uint8_t* image, float* hitPoint, Object camera, Object objects[]) {
+    // The current pixel is black by default; it a hit point was
+    // found, then an object of a certain color was found and the
+    // current pixel's color needs to change
+    if (hitPoint[0] != 0 && hitPoint[1] != 0 && hitPoint[2] != 0) {
 
+    }
 }
 
 float raysphereIntersection(float* hitPoint, Object sphere, float* normalVector, float* originPoint) {
@@ -338,12 +343,10 @@ int main(int argc, char** argv) {
             v3_normalize(pixVectorNormal, pixVector);
 
             // Shoot ray out into scene; return position of first hit
-            // (requires seperate function)
             float* hitPoint = (float *)malloc(sizeof(float *));
             shoot(pixVectorNormal, hitPoint, camera, objects);
 
             // Store color values of hit position into image
-            // (requires seperate function)
             shade(image, hitPoint, camera, objects);
 
             free(hitPoint);
