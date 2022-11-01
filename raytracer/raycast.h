@@ -22,22 +22,23 @@ typedef struct Object {
 	float position[3];
 
 	union {
-		float color[3];
-
-		// Camera values
-		struct {
-			float width;
-			float height;
-		};
-		// Plane values
-		struct {
-			float pn[3]; // plane unit normal (A, B, C)
-			float d; // distance from plane to (0, 0, 0)
-		};
-		// Sphere value
-		struct {
-			float radius;
-		};
+	    float color[3];
+	    float diffuse_color[3];
+	    float specular_color[3];
+            // Camera values
+	    struct {
+		float width;
+		float height;
+	    };
+	    // Plane values
+	    struct {
+	        float pn[3]; // plane unit normal (A, B, C)
+	        float d; // distance from plane to (0, 0, 0)
+	    };
+	    // Sphere value
+	    struct {
+	        float radius;
+	    };
 	};
 } Object;
 

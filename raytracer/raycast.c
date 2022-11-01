@@ -2,6 +2,80 @@
 #include "v3math.h"
 
 /*
+* Reads object properties from input file
+* Loops for all object properties and
+* Stores values in passed object parameter
+*/
+void read_properties(FILE *inputfh, Object curr_object) {
+    char* prop = (char *)malloc(sizeof(char *));
+
+    // loop to read all object properties
+    bool finished = false;
+    while (!finished && !feof(inputfh)) {
+	// read camera properties
+        if (curr_object.objectKindFlag == CAMERA) {
+            fscanf(inputfh, "%s ", prop);
+            if (!strcmp(prop, "width:")) {
+                fscanf(inputfh, "%f,", &curr_object.width);
+            }
+            else if (!strcmp(prop, "height:")) {
+                fscanf(inputfh, "%f,", &curr_object.height);
+            }
+            else {
+                fseek(inputfh, -strlen(prop) - 1, SEEK_CUR);
+		finished = true;
+            }
+        }
+	// read sphere properties
+        else if (curr_object.objectKindFlag == SPHERE) {
+            fscanf(inputfh, "%s", prop);
+            if (!strcmp(prop, "color:")) {
+                fscanf(inputfh, " [%f, %f, %f],", &curr_object.color[0], &curr_object.color[1], &curr_object.color[2]);
+            }
+	    else if (!strcmp(prop, "diffuse_color:")) {
+                fscanf(inputfh, " [%f, %f, %f],", &curr_object.diffuse_color[0], &curr_object.diffuse_color[1], &curr_object.diffuse_color[2]);
+            }
+	    else if (!strcmp(prop, "specular_color:")) {
+                fscanf(inputfh, " [%f, %f, %f],", &curr_object.specular_color[0], &curr_object.specular_color[1], &curr_object.specular_color[2]);
+            }
+            else if (!strcmp(prop, "position:")) {
+                fscanf(inputfh, " [%f, %f, %f],", &curr_object.position[0], &curr_object.position[1], &curr_object.position[2]);
+            }
+            else if (!strcmp(prop, "radius:")) {
+                fscanf(inputfh, " %f", &curr_object.radius);
+            }
+            else {
+                fseek(inputfh, -strlen(prop) - 1, SEEK_CUR);
+		finished = true;
+            }            
+        }
+        // read plane properties
+        else if (curr_object.objectKindFlag == PLANE) {
+            fscanf(inputfh, "%s", prop);
+            if (!strcmp(prop, "color:")) {
+                fscanf(inputfh, " [%f, %f, %f],\n", &curr_object.color[0], &curr_object.color[1], &curr_object.color[2]);
+            }
+	    else if (!strcmp(prop, "diffuse_color:")) {
+                fscanf(inputfh, " [%f, %f, %f],", &curr_object.diffuse_color[0], &curr_object.diffuse_color[1], &curr_object.diffuse_color[2]);
+            }
+	    else if (!strcmp(prop, "specular_color:")) {
+                fscanf(inputfh, " [%f, %f, %f],", &curr_object.specular_color[0], &curr_object.specular_color[1], &curr_object.specular_color[2]);
+            }
+            else if (!strcmp(prop, "position:")) {
+                fscanf(inputfh, " [%f, %f, %f],\n", &curr_object.position[0], &curr_object.position[1], &curr_object.position[2]);
+            }
+            else if (!strcmp(prop, "normal:")) {
+                fscanf(inputfh, " [%f, %f, %f],\n", &curr_object.pn[0], &curr_object.pn[1], &curr_object.pn[2]);
+            }
+            else {
+                fseek(inputfh, -strlen(prop) - 1, SEEK_CUR);
+		finished = true;
+            }
+        }
+    }
+}
+
+/*
 * Shoots ray from origin to current pixel
 * Returns name of object that was hit by ray
 * And stores the position of the hit point in a float pointer
@@ -162,31 +236,7 @@ int main(int argc, char** argv) {
             currentObject.width = 0;
             currentObject.height = 0;
 
-            // Get first property value (width or height)
-            fscanf(inputfh, "%s ", prop);
-            if (strcmp(prop, "width:") == 0) {
-                fscanf(inputfh, "%f,", &currentObject.width);
-            }
-            else if (strcmp(prop, "height:") == 0) {
-                fscanf(inputfh, "%f,", &currentObject.height);
-            }
-            else {
-                fprintf(stderr, "Error: camera has missing or invalid property \"%s\"\n", prop);
-                fseek(inputfh, -strlen(prop), SEEK_CUR);
-            }
-
-            // Get second property value (width or height)
-            fscanf(inputfh, "%s", prop);
-            if (strcmp(prop, "width:") == 0) {
-                fscanf(inputfh, "%f\n", &currentObject.width);
-            }
-            else if (strcmp(prop, "height:") == 0) {
-                fscanf(inputfh, "%f\n", &currentObject.height);
-            }
-            else {
-                fprintf(stderr, "Error: camera has missing or invalid property \"%s\"\n", prop);
-                fseek(inputfh, -strlen(prop), SEEK_CUR);
-            }
+	    read_properties(inputfh, currentObject);
         }
         // Check if the object is a sphere
         else if (strcmp(objName, "sphere,") == 0) {
@@ -196,58 +246,18 @@ int main(int argc, char** argv) {
             currentObject.color[0] = 0;
             currentObject.color[1] = 0;
             currentObject.color[2] = 0;
+            currentObject.diffuse_color[0] = 0;
+            currentObject.diffuse_color[1] = 0;
+            currentObject.diffuse_color[2] = 0;
+            currentObject.specular_color[0] = 0;
+            currentObject.specular_color[1] = 0;
+            currentObject.specular_color[2] = 0;
             currentObject.position[0] = 0;
             currentObject.position[1] = 0;
             currentObject.position[2] = 0;
             currentObject.radius = 0;
 
-            // Get first sphere property (color, position, or radius); throw error if none are found
-            fscanf(inputfh, "%s", prop);
-            if (strcmp(prop, "color:") == 0) {
-                fscanf(inputfh, " [%f, %f, %f],", &currentObject.color[0], &currentObject.color[1], &currentObject.color[2]);
-            }
-            else if (strcmp(prop, "position:") == 0) {
-                fscanf(inputfh, " [%f, %f, %f],", &currentObject.position[0], &currentObject.position[1], &currentObject.position[2]);
-            }
-            else if (strcmp(prop, "radius:") == 0) {
-                fscanf(inputfh, " %f", &currentObject.radius);
-            }
-            else {
-                fprintf(stderr, "Error: sphere has missing or invalid property \"%s\"\n", prop);
-                fseek(inputfh, -strlen(prop), SEEK_CUR);
-            }
-            
-            // Get second sphere property (color, position, or radius); throw error if none are found
-            fscanf(inputfh, "%s", prop);
-            if (strcmp(prop, "color:") == 0) {
-                fscanf(inputfh, " [%f, %f, %f],", &currentObject.color[0], &currentObject.color[1], &currentObject.color[2]);
-            }
-            else if (strcmp(prop, "position:") == 0) {
-                fscanf(inputfh, " [%f, %f, %f],", &currentObject.position[0], &currentObject.position[1], &currentObject.position[2]);
-            }
-            else if (strcmp(prop, "radius:") == 0) {
-                fscanf(inputfh, " %f,", &currentObject.radius);
-            }
-            else {
-                fprintf(stderr, "Error: sphere has missing or invalid property \"%s\"\n", prop);
-                fseek(inputfh, -strlen(prop), SEEK_CUR);
-            }
-
-            // Get third sphere property (color, position, or radius); throw error if none are found
-            fscanf(inputfh, "%s", prop);
-            if (strcmp(prop, "color:") == 0) {
-                fscanf(inputfh, " [%f, %f, %f]\n", &currentObject.color[0], &currentObject.color[1], &currentObject.color[2]);
-            }
-            else if (strcmp(prop, "position:") == 0) {
-                fscanf(inputfh, " [%f, %f, %f]\n", &currentObject.position[0], &currentObject.position[1], &currentObject.position[2]);
-            }
-            else if (strcmp(prop, "radius:") == 0) {
-                fscanf(inputfh, " %f\n", &currentObject.radius);
-            }
-            else {
-                fprintf(stderr, "Error: sphere has missing or invalid property \"%s\"\n", prop);
-                fseek(inputfh, -strlen(prop), SEEK_CUR);
-            }
+            read_properties(inputfh, currentObject);
         }
         // Check if the object is a plane
         else if (strcmp(objName, "plane,") == 0) {
@@ -257,6 +267,12 @@ int main(int argc, char** argv) {
             currentObject.color[0] = 0;
             currentObject.color[1] = 0;
             currentObject.color[2] = 0;
+            currentObject.diffuse_color[0] = 0;
+            currentObject.diffuse_color[1] = 0;
+            currentObject.diffuse_color[2] = 0;
+            currentObject.specular_color[0] = 0;
+            currentObject.specular_color[1] = 0;
+            currentObject.specular_color[2] = 0;
             currentObject.position[0] = 0;
             currentObject.position[1] = 0;
             currentObject.position[2] = 0;
@@ -264,57 +280,9 @@ int main(int argc, char** argv) {
             currentObject.pn[1] = 0;
             currentObject.pn[2] = 0;
 
-            // Get first plane property (color, position, or normal); throw error if none are found
-            fscanf(inputfh, "%s", prop);
-            if (strcmp(prop, "color:") == 0) {
-                fscanf(inputfh, " [%f, %f, %f],\n", &currentObject.color[0], &currentObject.color[1], &currentObject.color[2]);
-            }
-            else if (strcmp(prop, "position:") == 0) {
-                fscanf(inputfh, " [%f, %f, %f],\n", &currentObject.position[0], &currentObject.position[1], &currentObject.position[2]);
-            }
-            else if (strcmp(prop, "normal:") == 0) {
-                fscanf(inputfh, " [%f, %f, %f],\n", &currentObject.pn[0], &currentObject.pn[1], &currentObject.pn[2]);
-            }
-            else {
-                fprintf(stderr, "Error: plane has missing or invalid property \"%s\"\n", prop);
-                fseek(inputfh, -strlen(prop), SEEK_CUR);
-            }
+	    read_properties(inputfh, currentObject);
 
-            // Get second plane property (color, position, or normal); throw error if none are found
-            fscanf(inputfh, "%s", prop);
-            if (strcmp(prop, "color:") == 0) {
-                fscanf(inputfh, " [%f, %f, %f],\n", &currentObject.color[0], &currentObject.color[1], &currentObject.color[2]);
-            }
-            else if (strcmp(prop, "position:") == 0) {
-                fscanf(inputfh, " [%f, %f, %f],\n", &currentObject.position[0], &currentObject.position[1], &currentObject.position[2]);
-            }
-            else if (strcmp(prop, "normal:") == 0) {
-                fscanf(inputfh, " [%f, %f, %f],\n", &currentObject.pn[0], &currentObject.pn[1], &currentObject.pn[2]);
-            }
-            else {
-                fprintf(stderr, "Error: plane has missing or invalid property \"%s\"\n", prop);
-                fseek(inputfh, -strlen(prop), SEEK_CUR);
-            }
-
-            // Get third plane property (color, position, or normal); throw error if none are found
-            fscanf(inputfh, "%s", prop);
-            if (strcmp(prop, "color:") == 0) {
-                fscanf(inputfh, " [%f, %f, %f]\n", &currentObject.color[0], &currentObject.color[1], &currentObject.color[2]);
-            }
-            else if (strcmp(prop, "position:") == 0) {
-                fscanf(inputfh, " [%f, %f, %f]\n", &currentObject.position[0], &currentObject.position[1], &currentObject.position[2]);
-            }
-            else if (strcmp(prop, "normal:") == 0) {
-                fscanf(inputfh, " [%f, %f, %f]\n", &currentObject.pn[0], &currentObject.pn[1], &currentObject.pn[2]);
-            }
-            else {
-                fprintf(stderr, "Error: plane has missing or invalid property \"%s\"\n", prop);
-                fseek(inputfh, -strlen(prop), SEEK_CUR);
-            }
-
-            float *position = currentObject.position;
-            currentObject.d = sqrt((position[0] * position[0]) + (position[1] * position[1])
-                                                                              + (position[2] * position[2]));
+            currentObject.d = -(v3_dot_product(currentObject.position, currentObject.pn));
         }
         // Assume it is an unknown object and throw error
         else {
