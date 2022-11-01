@@ -12,7 +12,7 @@ void readProperties(FILE *inputfh, Object *curr_object) {
     // loop to read all object properties
     bool finished = false;
     while (!finished && !feof(inputfh)) {
-	    // read camera properties
+	// read camera properties
         if (curr_object->objectKindFlag == CAMERA) {
             fscanf(inputfh, "%s ", prop);
             if (strcmp(prop, "width:") == 0) {
@@ -26,7 +26,7 @@ void readProperties(FILE *inputfh, Object *curr_object) {
 		    finished = true;
             }
         }
-	    // read sphere properties
+	// read sphere properties
         else if (curr_object->objectKindFlag == SPHERE) {
             fscanf(inputfh, "%s", prop);
             if (strcmp(prop, "color:") == 0) {
