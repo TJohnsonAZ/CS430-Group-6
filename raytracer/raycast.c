@@ -6,20 +6,20 @@
 * Loops for all object properties and
 * Stores values in passed object parameter
 */
-void read_properties(FILE *inputfh, Object curr_object) {
+void read_properties(FILE *inputfh, Object *curr_object) {
     char* prop = (char *)malloc(sizeof(char *));
 
     // loop to read all object properties
     bool finished = false;
     while (!finished && !feof(inputfh)) {
 	// read camera properties
-        if (curr_object.objectKindFlag == CAMERA) {
+        if (curr_object->objectKindFlag == CAMERA) {
             fscanf(inputfh, "%s ", prop);
-            if (!strcmp(prop, "width:")) {
-                fscanf(inputfh, "%f,", &curr_object.width);
+            if (strcmp(prop, "width:") == 0) {
+                fscanf(inputfh, "%f,", &curr_object->width);
             }
-            else if (!strcmp(prop, "height:")) {
-                fscanf(inputfh, "%f,", &curr_object.height);
+            else if (strcmp(prop, "height:") == 0) {
+                fscanf(inputfh, "%f,", &curr_object->height);
             }
             else {
                 fseek(inputfh, -strlen(prop) - 1, SEEK_CUR);
@@ -27,22 +27,22 @@ void read_properties(FILE *inputfh, Object curr_object) {
             }
         }
 	// read sphere properties
-        else if (curr_object.objectKindFlag == SPHERE) {
+        else if (curr_object->objectKindFlag == SPHERE) {
             fscanf(inputfh, "%s", prop);
-            if (!strcmp(prop, "color:")) {
-                fscanf(inputfh, " [%f, %f, %f],", &curr_object.color[0], &curr_object.color[1], &curr_object.color[2]);
+            if (strcmp(prop, "color:") == 0) {
+                fscanf(inputfh, " [%f, %f, %f],", &curr_object->color[0], &curr_object->color[1], &curr_object->color[2]);
             }
-	    else if (!strcmp(prop, "diffuse_color:")) {
-                fscanf(inputfh, " [%f, %f, %f],", &curr_object.diffuse_color[0], &curr_object.diffuse_color[1], &curr_object.diffuse_color[2]);
+	    else if (strcmp(prop, "diffuse_color:") == 0) {
+                fscanf(inputfh, " [%f, %f, %f],", &curr_object->diffuse_color[0], &curr_object->diffuse_color[1], &curr_object->diffuse_color[2]);
             }
-	    else if (!strcmp(prop, "specular_color:")) {
-                fscanf(inputfh, " [%f, %f, %f],", &curr_object.specular_color[0], &curr_object.specular_color[1], &curr_object.specular_color[2]);
+	    else if (strcmp(prop, "specular_color:") == 0) {
+                fscanf(inputfh, " [%f, %f, %f],", &curr_object->specular_color[0], &curr_object->specular_color[1], &curr_object->specular_color[2]);
             }
-            else if (!strcmp(prop, "position:")) {
-                fscanf(inputfh, " [%f, %f, %f],", &curr_object.position[0], &curr_object.position[1], &curr_object.position[2]);
+            else if (strcmp(prop, "position:") == 0) {
+                fscanf(inputfh, " [%f, %f, %f],", &curr_object->position[0], &curr_object->position[1], &curr_object->position[2]);
             }
-            else if (!strcmp(prop, "radius:")) {
-                fscanf(inputfh, " %f", &curr_object.radius);
+            else if (strcmp(prop, "radius:") == 0) {
+                fscanf(inputfh, " %f", &curr_object->radius);
             }
             else {
                 fseek(inputfh, -strlen(prop) - 1, SEEK_CUR);
@@ -50,22 +50,22 @@ void read_properties(FILE *inputfh, Object curr_object) {
             }            
         }
         // read plane properties
-        else if (curr_object.objectKindFlag == PLANE) {
+        else if (curr_object->objectKindFlag == PLANE) {
             fscanf(inputfh, "%s", prop);
-            if (!strcmp(prop, "color:")) {
-                fscanf(inputfh, " [%f, %f, %f],\n", &curr_object.color[0], &curr_object.color[1], &curr_object.color[2]);
+            if (strcmp(prop, "color:") == 0) {
+                fscanf(inputfh, " [%f, %f, %f],\n", &curr_object->color[0], &curr_object->color[1], &curr_object->color[2]);
             }
-	    else if (!strcmp(prop, "diffuse_color:")) {
-                fscanf(inputfh, " [%f, %f, %f],", &curr_object.diffuse_color[0], &curr_object.diffuse_color[1], &curr_object.diffuse_color[2]);
+	    else if (strcmp(prop, "diffuse_color:") == 0) {
+                fscanf(inputfh, " [%f, %f, %f],", &curr_object->diffuse_color[0], &curr_object->diffuse_color[1], &curr_object->diffuse_color[2]);
             }
-	    else if (!strcmp(prop, "specular_color:")) {
-                fscanf(inputfh, " [%f, %f, %f],", &curr_object.specular_color[0], &curr_object.specular_color[1], &curr_object.specular_color[2]);
+	    else if (strcmp(prop, "specular_color:") == 0) {
+                fscanf(inputfh, " [%f, %f, %f],", &curr_object->specular_color[0], &curr_object->specular_color[1], &curr_object->specular_color[2]);
             }
-            else if (!strcmp(prop, "position:")) {
-                fscanf(inputfh, " [%f, %f, %f],\n", &curr_object.position[0], &curr_object.position[1], &curr_object.position[2]);
+            else if (strcmp(prop, "position:") == 0) {
+                fscanf(inputfh, " [%f, %f, %f],\n", &curr_object->position[0], &curr_object->position[1], &curr_object->position[2]);
             }
-            else if (!strcmp(prop, "normal:")) {
-                fscanf(inputfh, " [%f, %f, %f],\n", &curr_object.pn[0], &curr_object.pn[1], &curr_object.pn[2]);
+            else if (strcmp(prop, "normal:") == 0) {
+                fscanf(inputfh, " [%f, %f, %f],\n", &curr_object->pn[0], &curr_object->pn[1], &curr_object->pn[2]);
             }
             else {
                 fseek(inputfh, -strlen(prop) - 1, SEEK_CUR);
@@ -74,8 +74,8 @@ void read_properties(FILE *inputfh, Object curr_object) {
         }
     }
 
-    if (curr_object.objectKindFlag == SPHERE) {
-        printf("===%.2f %.2f %.2f\n", curr_object.color[0], curr_object.color[1], curr_object.color[2]);
+    if (curr_object->objectKindFlag == SPHERE) {
+        printf("===%.2f %.2f %.2f\n", curr_object->color[0], curr_object->color[1], curr_object->color[2]);
     }
 }
 
@@ -242,7 +242,7 @@ int main(int argc, char** argv) {
             currentObject.width = 0;
             currentObject.height = 0;
 
-	    read_properties(inputfh, currentObject);
+	    read_properties(inputfh, &currentObject);
         }
         // Check if the object is a sphere
         else if (strcmp(objName, "sphere,") == 0) {
@@ -263,7 +263,7 @@ int main(int argc, char** argv) {
             currentObject.position[2] = 0;
             currentObject.radius = 0;
 
-            read_properties(inputfh, currentObject);
+            read_properties(inputfh, &currentObject);
 
             printf("%d+++%.2f %.2f %.2f\n", currentObject.objectKindFlag, currentObject.color[0], currentObject.color[1], currentObject.color[2]);
         }
@@ -288,7 +288,7 @@ int main(int argc, char** argv) {
             currentObject.pn[1] = 0;
             currentObject.pn[2] = 0;
 
-	    read_properties(inputfh, currentObject);
+	    read_properties(inputfh, &currentObject);
 
             currentObject.d = -(v3_dot_product(currentObject.position, currentObject.pn));
         }
