@@ -73,6 +73,10 @@ void read_properties(FILE *inputfh, Object curr_object) {
             }
         }
     }
+
+    if (curr_object.objectKindFlag == SPHERE) {
+        printf("===%.2f %.2f %.2f\n", curr_object.color[0], curr_object.color[1], curr_object.color[2]);
+    }
 }
 
 /*
@@ -80,86 +84,88 @@ void read_properties(FILE *inputfh, Object curr_object) {
 * Returns name of object that was hit by ray
 * And stores the position of the hit point in a float pointer
 */
-Object shoot(float* normalVector, float* hitPoint, Object camera, Object objects[]) {
-    float* originPoint = camera.position;
-    float tValue;
-    
-    // Calculate the direction vector of ray shot toward object and normalize it
-    float* directionVect = (float *)malloc(sizeof(float *));
-    float* directionVectNormal = (float*)malloc(sizeof(float*));
-    directionVect[0] = originPoint[0] - normalVector[0];
-    directionVect[1] = originPoint[1] - normalVector[1];
-    directionVect[2] = originPoint[2] - normalVector[2];
-    v3_normalize(directionVectNormal, directionVect);
+float* shoot(Object objects[], float* normalVector, Object camera) {
+    float* hitObjectColor = (float*)malloc(sizeof(float*));
+    hitObjectColor[0] = 0.0;
+    hitObjectColor[1] = 0.0;
+    hitObjectColor[2] = 0.0;
 
-    // Loop through list of objects
-    int i;
-    for (i = 0; i < 128; i++) {
-        // Check if current object is a plane
-        if (objects[i].objectKindFlag == PLANE) {
-            // Calculate closest t value for a ray intersecting with a plane
-            tValue = rayplaneIntersection(objects[i], camera, normalVector);
+    // Get Ro, Rd
+    float* Ro = camera.position;
+    float* Rd = (float*)malloc(sizeof(float*));
+    Rd[0] = normalVector[0] - Ro[0];
+    Rd[1] = normalVector[1] - Ro[1];
+    Rd[2] = normalVector[2] - Ro[2];
+
+    // Loop through objects
+    float tValue = -1;
+    for (int i = 0; objects[i].objectKindFlag != 0; i++) {
+        // Check if valid t values found for sphere
+        if (objects[i].objectKindFlag == SPHERE) {
+            // Ray-sphere intersection test
+            tValue = raysphereIntersection(objects[i], Ro, Rd);
+
+            if (tValue != -1) {
+                // printf("THE RAY HIT!!!");
+                hitObjectColor = objects[i].color;
+                // printf("\t%d\n", objects[i].objectKindFlag);
+            }
         }
-        // Check if current object is a sphere
-        else if (objects[i].objectKindFlag == SPHERE) {
-            // Calculate closest t value for a ray intersecting with a sphere
-            tValue = raysphereIntersection(objects[i], normalVector, originPoint);
+        // Check if valid t values found for plane
+        /*else if (objects[i].objectKindFlag == PLANE) {
+            // Ray-plane intersection test
+            tValue = rayplaneIntersection(objects[i], Ro, Rd);
+        }*/
+        // Skip over camera object
+        else if (objects[i].objectKindFlag == CAMERA) {
+            continue;
         }
-
-        // Calcuate the hit point based on the equation R(t) = R_0 + R_d*t,
-            // where R_0 is the ray origin (the camera's position), R_d is the 
-            // ray direction 
-        hitPoint[0] = originPoint[0] + directionVectNormal[0] * tValue;
-        hitPoint[1] = originPoint[1] + directionVectNormal[1] * tValue;
-        hitPoint[2] = originPoint[2] + directionVectNormal[2] * tValue;
-
-        break;
+        else {
+            break;
+        }
     }
-    
-    free(directionVect);
-    free(directionVectNormal);
-    return objects[i];
+
+    free(Rd);
+
+    // Return black pixel values
+    return hitObjectColor;
 }
 
 /*
 * Stores the color values of the hit object in the image
 */
-void shade(uint8_t* image, int imageIndex, Object hitObject, float* hitPoint) {
-    // The current pixel is black by default; it a hit point was
-    // found, then an object of a certain color was found and the
-    // current pixel's color needs to change
-    if (hitPoint[0] > 0 && hitPoint[1] > 0 && hitPoint[2] > 0) {
-        image[imageIndex] = hitObject.color[0] * 255;
-        image[imageIndex + 1] = hitObject.color[1] * 255;
-        image[imageIndex + 2] = hitObject.color[2] * 255;
-    }
+void shade(uint8_t* image, int imageIndex, float* hitObjectColor) {
+    image[imageIndex] = hitObjectColor[0] * 255;
+    image[imageIndex + 1] = hitObjectColor[1] * 255;
+    image[imageIndex + 2] = hitObjectColor[2] * 255;
 }
 
 /*
 * Calculates the t value for a ray that hits a sphere
 */
-float raysphereIntersection(Object sphere, float* normalVector, float* originPoint) {
-    // The coefficients of the algebraic equation At^2 + Bt + C = 0 allow for the closest t value to be found
-    float a = (normalVector[0] * normalVector[0]) + (normalVector[1] * normalVector[1]) + (normalVector[2] * normalVector[2]);
-    float b = 2 * (normalVector[0] * (originPoint[0] - sphere.position[0])
-        + normalVector[1] * (originPoint[1] - sphere.position[1])
-        + normalVector[2] * (originPoint[2] - sphere.position[2]));
-    float c = ((originPoint[0] - sphere.position[0]) * (originPoint[0] - sphere.position[0]))
-        + ((originPoint[1] - sphere.position[1]) * (originPoint[1] - sphere.position[1]))
-        + ((originPoint[2] - sphere.position[2]) * (originPoint[2] - sphere.position[2]));
+float raysphereIntersection(Object sphere, float* Ro, float* Rd) {
+    float a = (Rd[0] * Rd[0]) + (Rd[1] * Rd[1]) + (Rd[2] * Rd[2]);
+    float b = 2 * (Rd[0] * (Ro[0] - sphere.position[0])
+        + Rd[1] * (Ro[1] - sphere.position[1])
+        + Rd[2] * (Ro[2] - sphere.position[2]));
+    float c = ((Ro[0] - sphere.position[0]) * (Ro[0] - sphere.position[0]))
+        + ((Ro[1] - sphere.position[1]) * (Ro[1] - sphere.position[1]))
+        + ((Ro[2] - sphere.position[2]) * (Ro[2] - sphere.position[2]))
+        - (sphere.radius * sphere.radius);
 
-    // The t value can be found by using the quadratic formula on At^2 + Bt + C = 0
-    // Calculate the discriminant and plug it into the quadratic formula to get the correct t value
     float discriminant = (b * b) - (4 * a * c);
-    float tValue = (-b - sqrt(abs(discriminant))) / (2 * a);
-    
-    // If the t value is less than 0, then the hit point is behind the camera
-    // Calculate the other t value if this is the case
-    if (tValue < 0) {
-        tValue = (-b + sqrt(abs(discriminant))) / (2 * a);
-    }
 
-    return tValue;
+    if (discriminant < 0.0) {
+        return -1;
+    }
+    else {
+        float tValue = (-b - sqrt(discriminant)) / (2 * a);
+        if (tValue < 0.0) {
+            tValue = (-b - sqrt(discriminant)) / (2 * a);
+        }
+
+        return tValue;
+    }
 }
 
 /*
@@ -258,6 +264,8 @@ int main(int argc, char** argv) {
             currentObject.radius = 0;
 
             read_properties(inputfh, currentObject);
+
+            printf("%d+++%.2f %.2f %.2f\n", currentObject.objectKindFlag, currentObject.color[0], currentObject.color[1], currentObject.color[2]);
         }
         // Check if the object is a plane
         else if (strcmp(objName, "plane,") == 0) {
@@ -294,7 +302,7 @@ int main(int argc, char** argv) {
         objects[objectArrayIndex] = currentObject;
         objectArrayIndex++;
     }
-
+    
     if (objectArrayIndex > 128) {
         fprintf(stderr, "Number of objects exceeds maximum value (128), remaining objects will be ignored.");
     }
@@ -348,14 +356,14 @@ int main(int argc, char** argv) {
             float pixVectorNormal[3];
             v3_normalize(pixVectorNormal, pixVector);
 
-            // Shoot ray out into scene; return name of object hit & position of hit
-            float* hitPoint = (float *)malloc(sizeof(float *));
-            Object hitObject = shoot(pixVectorNormal, hitPoint, camera, objects);
+            // Shoot ray out into scene; return color of object hit, or RGB values
+            // for black if no object hit
+            float* hitObjectColor = shoot(objects, pixVectorNormal, camera);
 
             // Store color values of hit position into image
-            shade(image, imageIndex, hitObject, hitPoint);
+            shade(image, imageIndex, hitObjectColor);
 
-            free(hitPoint);
+            // free(hitObjectColor);
             imageIndex += 3;
         }
     }
