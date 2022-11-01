@@ -43,6 +43,7 @@ typedef struct Object {
 } Object;
 
 // function prototypes
+void read_properties(FILE *inputfh, Object *curr_object);
 float* shoot(Object objects[], float *normalVector, Object camera);
 void shade(uint8_t* image, int imageIndex, float* hitObjectColor);
 float raysphereIntersection(Object sphere, float* Ro, float* Rd);
