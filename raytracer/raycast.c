@@ -46,7 +46,7 @@ void readProperties(FILE *inputfh, Object *curr_object) {
             }
             else {
                 fseek(inputfh, -strlen(prop) - 1, SEEK_CUR);
-		        finished = true;
+		finished = true;
             }            
         }
         // read plane properties
@@ -69,7 +69,7 @@ void readProperties(FILE *inputfh, Object *curr_object) {
             }
             else {
                 fseek(inputfh, -strlen(prop) - 1, SEEK_CUR);
-		    finished = true;
+		finished = true;
             }
         }
     }
