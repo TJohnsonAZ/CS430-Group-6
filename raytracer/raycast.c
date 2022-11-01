@@ -23,7 +23,7 @@ void readProperties(FILE *inputfh, Object *curr_object) {
             }
             else {
                 fseek(inputfh, -strlen(prop) - 1, SEEK_CUR);
-		    finished = true;
+		finished = true;
             }
         }
 	// read sphere properties
@@ -32,10 +32,10 @@ void readProperties(FILE *inputfh, Object *curr_object) {
             if (strcmp(prop, "color:") == 0) {
                 fscanf(inputfh, " [%f, %f, %f],", &curr_object->color[0], &curr_object->color[1], &curr_object->color[2]);
             }
-	        else if (strcmp(prop, "diffuse_color:") == 0) {
+	    else if (strcmp(prop, "diffuse_color:") == 0) {
                 fscanf(inputfh, " [%f, %f, %f],", &curr_object->diffuse_color[0], &curr_object->diffuse_color[1], &curr_object->diffuse_color[2]);
             }
-	        else if (strcmp(prop, "specular_color:") == 0) {
+	    else if (strcmp(prop, "specular_color:") == 0) {
                 fscanf(inputfh, " [%f, %f, %f],", &curr_object->specular_color[0], &curr_object->specular_color[1], &curr_object->specular_color[2]);
             }
             else if (strcmp(prop, "position:") == 0) {
@@ -55,10 +55,10 @@ void readProperties(FILE *inputfh, Object *curr_object) {
             if (strcmp(prop, "color:") == 0) {
                 fscanf(inputfh, " [%f, %f, %f],\n", &curr_object->color[0], &curr_object->color[1], &curr_object->color[2]);
             }
-	        else if (strcmp(prop, "diffuse_color:") == 0) {
+	    else if (strcmp(prop, "diffuse_color:") == 0) {
                 fscanf(inputfh, " [%f, %f, %f],", &curr_object->diffuse_color[0], &curr_object->diffuse_color[1], &curr_object->diffuse_color[2]);
             }
-	        else if (strcmp(prop, "specular_color:") == 0) {
+	    else if (strcmp(prop, "specular_color:") == 0) {
                 fscanf(inputfh, " [%f, %f, %f],", &curr_object->specular_color[0], &curr_object->specular_color[1], &curr_object->specular_color[2]);
             }
             else if (strcmp(prop, "position:") == 0) {
