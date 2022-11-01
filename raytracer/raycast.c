@@ -6,7 +6,7 @@
 * Loops for all object properties and
 * Stores values in passed object parameter
 */
-void read_properties(FILE *inputfh, Object *curr_object) {
+void readProperties(FILE *inputfh, Object *curr_object) {
     char* prop = (char *)malloc(sizeof(char *));
 
     // loop to read all object properties
@@ -73,10 +73,6 @@ void read_properties(FILE *inputfh, Object *curr_object) {
             }
         }
     }
-
-    if (curr_object->objectKindFlag == SPHERE) {
-        printf("===%.2f %.2f %.2f\n", curr_object->color[0], curr_object->color[1], curr_object->color[2]);
-    }
 }
 
 /*
@@ -84,7 +80,7 @@ void read_properties(FILE *inputfh, Object *curr_object) {
 * Returns name of object that was hit by ray
 * And stores the position of the hit point in a float pointer
 */
-float* shoot(Object objects[], float* normalVector, Object camera) {
+float* shoot(Object objects[], float* pixVectorNormal, Object camera) {
     float* hitObjectColor = (float*)malloc(sizeof(float*));
     hitObjectColor[0] = 0.0;
     hitObjectColor[1] = 0.0;
@@ -93,9 +89,9 @@ float* shoot(Object objects[], float* normalVector, Object camera) {
     // Get Ro, Rd
     float* Ro = camera.position;
     float* Rd = (float*)malloc(sizeof(float*));
-    Rd[0] = normalVector[0] - Ro[0];
-    Rd[1] = normalVector[1] - Ro[1];
-    Rd[2] = normalVector[2] - Ro[2];
+    Rd[0] = pixVectorNormal[0] - Ro[0];
+    Rd[1] = pixVectorNormal[1] - Ro[1];
+    Rd[2] = pixVectorNormal[2] - Ro[2];
 
     // Loop through objects
     float tValue = -1;
@@ -106,16 +102,21 @@ float* shoot(Object objects[], float* normalVector, Object camera) {
             tValue = raysphereIntersection(objects[i], Ro, Rd);
 
             if (tValue != -1) {
-                // printf("THE RAY HIT!!!");
+                // printf("THE RAY HIT THE SPHERE!!!");
                 hitObjectColor = objects[i].color;
                 // printf("\t%d\n", objects[i].objectKindFlag);
             }
         }
         // Check if valid t values found for plane
-        /*else if (objects[i].objectKindFlag == PLANE) {
+        else if (objects[i].objectKindFlag == PLANE) {
             // Ray-plane intersection test
             tValue = rayplaneIntersection(objects[i], Ro, Rd);
-        }*/
+
+            if (tValue > 0.0) {
+                printf("THE RAY HIT THE PLANE!!!");
+                hitObjectColor = objects[i].color;
+            }
+        }
         // Skip over camera object
         else if (objects[i].objectKindFlag == CAMERA) {
             continue;
@@ -171,10 +172,10 @@ float raysphereIntersection(Object sphere, float* Ro, float* Rd) {
 /*
 * Calculates the t value for a ray that hits a plane
 */
-float rayplaneIntersection(Object plane, Object camera, float *normalVector) {
-    float numerator = ((plane.pn[0] * camera.position[0]) + (plane.pn[1] * camera.position[1]) + (plane.pn[2] * camera.position[2]));
+float rayplaneIntersection(Object plane, float* Ro, float* Rd) {
+    float numerator = ((plane.pn[0] * Ro[0]) + (plane.pn[1] * Ro[1]) + (plane.pn[2] * Ro[2]));
     numerator += plane.d;
-    float denominator = (plane.pn[0] * normalVector[0]) + (plane.pn[1] * normalVector[1]) + (plane.pn[2] * normalVector[2]);
+    float denominator = (plane.pn[0] * Rd[0]) + (plane.pn[1] * Rd[1]) + (plane.pn[2] * Rd[2]);
     float tValue = -(numerator / denominator);
                                             
     return tValue;                     
@@ -242,7 +243,7 @@ int main(int argc, char** argv) {
             currentObject.width = 0;
             currentObject.height = 0;
 
-	    read_properties(inputfh, &currentObject);
+	    readProperties(inputfh, &currentObject);
         }
         // Check if the object is a sphere
         else if (strcmp(objName, "sphere,") == 0) {
@@ -263,9 +264,7 @@ int main(int argc, char** argv) {
             currentObject.position[2] = 0;
             currentObject.radius = 0;
 
-            read_properties(inputfh, &currentObject);
-
-            printf("%d+++%.2f %.2f %.2f\n", currentObject.objectKindFlag, currentObject.color[0], currentObject.color[1], currentObject.color[2]);
+            readProperties(inputfh, &currentObject);
         }
         // Check if the object is a plane
         else if (strcmp(objName, "plane,") == 0) {
@@ -288,7 +287,7 @@ int main(int argc, char** argv) {
             currentObject.pn[1] = 0;
             currentObject.pn[2] = 0;
 
-	    read_properties(inputfh, &currentObject);
+	    readProperties(inputfh, &currentObject);
 
             currentObject.d = -(v3_dot_product(currentObject.position, currentObject.pn));
         }
