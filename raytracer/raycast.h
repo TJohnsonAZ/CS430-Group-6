@@ -20,12 +20,11 @@
 typedef struct Object {
 	int objectKindFlag;
 	float position[3];
-
-	// Camera/shapes
+  float color[3];
+	float diffuse_color[3];
+	float specular_color[3];
+  
 	union {
-	    float color[3];
-	    float diffuse_color[3];
-	    float specular_color[3];
             // Camera values
 	    struct {
 		float width;
@@ -33,8 +32,8 @@ typedef struct Object {
 	    };
 	    // Plane values
 	    struct {
-	        float pn[3]; // plane unit normal (A, B, C)
 	        float d; // distance from plane to (0, 0, 0)
+	        float pn[3]; // plane unit normal (A, B, C)
 	    };
 	    // Sphere value
 	    struct {
