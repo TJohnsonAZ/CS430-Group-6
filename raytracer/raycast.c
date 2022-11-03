@@ -75,6 +75,55 @@ void readProperties(FILE *inputfh, Object *curr_object) {
     }
 }
 
+float* illuminate(float* Rd, float* point, Object lights[], Object object, float* color) {
+    // Default color values
+    color[0] = 0.0;
+    color[1] = 0.0;
+    color[2] = 0.0;
+
+    // for l in lights:
+    for (int i = 0; lights[i].objectKindFlag != DEFAULT; i++) {
+
+        // TODO: modify shoot so that it supports the below
+        // t = shoot(from point to light)
+        // if t > 0 and t < distance from point to light: continue
+
+        // Create light vector: L
+        // Calculate normal if needed: N
+        // L = point - light.position (use v3_subtract)
+        // TODO: when to normalize L?
+        float* lightVector;
+        lightVector[0] = 0.0;
+        lightVector[1] = 0.0;
+        lightVector[2] = 0.0;
+
+        // Calculate radial attenuation
+        float d = v3_length(lightVector);
+        float radialAtt = 1 / (lights[i].radial_a0 + lights[i].radial_a1 * d, lights[i].radial_a2 * d * d);
+
+        // Calculate angular attenuation
+        float* v0 = v3_scale(lightVector, -1.0);
+        float* vL;
+        float* vDotProduct;
+        float angularAtt = pow(v3_dot_product(vDotProduct, v0, vL), lights[i].angular_a0);
+
+        // Diffuse (c += diffuse * attenuation (radial and angular))
+        // diffuse = (kd * Id)
+            // kd = object.diffuse_color
+            // Id = -(v3_dot_product(L, N)) * lights[i].color * object.diffuse_color
+                // Must check that v3_dot_product(L, N) > 0; otherwise Id = 0
+        // Specular (c += specular * attenuation(radial and angular))
+        // specular = (ks * Is)
+            // ks = object.specular_color
+            // Is = pow(v3_dot_product(u'L, v), n) * lights[i].color * object.specular_color
+
+    }
+    // c += ambient (not needed?)
+
+    // return c
+    return color;
+}
+
 /*
 * Shoots ray from origin to current pixel
 * Returns name of object that was hit by ray
@@ -352,6 +401,8 @@ int main(int argc, char** argv) {
             // for black if no object hit
             float hitObjectColor[3];
             shoot(objects, pixVectorNormal, camera, hitObjectColor);
+
+            // Get illuminate value from illuminate function
 
             image[((imageHeight - y - 1) * imageWidth + x) * 3] = hitObjectColor[0] * 255;
             image[(((imageHeight - y - 1) * imageWidth + x) * 3) + 1] = hitObjectColor[1] * 255;

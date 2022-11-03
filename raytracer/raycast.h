@@ -20,10 +20,10 @@
 typedef struct Object {
 	int objectKindFlag;
 	float position[3];
-	float color[3];
+  float color[3];
 	float diffuse_color[3];
 	float specular_color[3];
-	
+  
 	union {
             // Camera values
 	    struct {
@@ -40,10 +40,24 @@ typedef struct Object {
 	        float radius;
 	    };
 	};
+	
+	// Light values
+	union {
+		float radial_a0;
+		float radial_a1;
+		float radial_a2;
+		// Spot light values
+		struct {
+			float theta;
+			float angular_a0;
+			float direction[3];
+		};
+	};
 } Object;
 
 // function prototypes
 void readProperties(FILE *inputfh, Object *curr_object);
+float* illuminate(float* Rd, float* point, Object lights[], Object object, float* color);
 float* shoot(Object objects[], float* pixVectorNormal, Object camera, float* hitObjectColor);
 // void shade(uint8_t* image, int imageIndex, float* hitObjectColor);
 float raysphereIntersection(Object sphere, float* Ro, float* Rd);
