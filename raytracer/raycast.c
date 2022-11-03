@@ -81,18 +81,12 @@ void readProperties(FILE *inputfh, Object *curr_object) {
 * And stores the position of the hit point in a float pointer
 */
 float* shoot(Object objects[], float* Rd, Object camera, float* hitObjectColor) {
-    // float* hitObjectColor = (float*)malloc(sizeof(float*));
     hitObjectColor[0] = 0.0;
     hitObjectColor[1] = 0.0;
     hitObjectColor[2] = 0.0;
 
     // Get Ro, Rd
     float* Ro = camera.position;
-  //  float Rd[] = {//(float*)malloc(sizeof(float*));
-  //  pixVectorNormal[0] - Ro[0],
-  //  pixVectorNormal[1] - Ro[1],
-  //  pixVectorNormal[2] - Ro[2]
-  //  };
     // Loop through objects
     float tValue = -1;
     for (int i = 0; objects[i].objectKindFlag != 0; i++) {
@@ -100,10 +94,8 @@ float* shoot(Object objects[], float* Rd, Object camera, float* hitObjectColor) 
         if (objects[i].objectKindFlag == SPHERE) {
             // Ray-sphere intersection test
             tValue = raysphereIntersection(objects[i], Ro, Rd);
-            printf("%f\n", tValue);
 
             if (tValue > 0) {
-                printf("THE RAY HIT!!!");
                 hitObjectColor[0] = objects[i].color[0];
                 hitObjectColor[1] = objects[i].color[1];
                 hitObjectColor[2] = objects[i].color[2];
@@ -115,7 +107,6 @@ float* shoot(Object objects[], float* Rd, Object camera, float* hitObjectColor) 
             tValue = rayplaneIntersection(objects[i], Ro, Rd);
 
             if (tValue > 0.0) {
-                printf("RAY HIT THE PLANE!!!");
                 hitObjectColor[0] = objects[i].color[0];
                 hitObjectColor[1] = objects[i].color[1];
                 hitObjectColor[2] = objects[i].color[2];
@@ -130,8 +121,6 @@ float* shoot(Object objects[], float* Rd, Object camera, float* hitObjectColor) 
         }
     }
 
-//    free(Rd);
-
     // Return black pixel values
     return hitObjectColor;
 }
@@ -139,9 +128,7 @@ float* shoot(Object objects[], float* Rd, Object camera, float* hitObjectColor) 
 /*
 * Stores the color values of the hit object in the image
 */
-/*void shade(uint8_t* image, int x, int y, int width, float* hitObjectColor) {
-    
-}
+/*
 void shade(uint8_t* image, int imageIndex, float* hitObjectColor) {
     image[imageIndex] = hitObjectColor[0] * 255;
     image[imageIndex + 1] = hitObjectColor[1] * 255;
@@ -161,27 +148,18 @@ float raysphereIntersection(Object sphere, float* Ro, float* Rd) {
         + ((Ro[2] - sphere.position[2]) * (Ro[2] - sphere.position[2]))
         - (sphere.radius * sphere.radius);
 
-    //printf("Radius: %f\n", sphere.radius);
-    //printf("Sphere position: %f %f %f\n", sphere.position[0], sphere.position[1], sphere.position[2]);
-    //printf("Direction: %f %f %f\n", Rd[0], Rd[1], Rd[2]);
-    //printf("Origin: %f %f %f\n", Ro[0], Ro[1], Ro[2]);
-    /*if (b * b >= 80) {
-        printf("b * b value: %.2f\t", b * b);
-        printf("4 * c value: %.2f\n", 4 * c);
-    }*/
     float discriminant = (b * b) - (4 * a * c);
 
     if (discriminant < 0.0) {
         return -1;
     }
-    //printf("Discriminant: %f\n\n", discriminant);
     
-        float tValue = (-b - sqrt(discriminant)) / (2 * a);
-        if (tValue < 0.0) {
-            tValue = (-b + sqrt(discriminant)) / (2 * a);
-        }
+    float tValue = (-b - sqrt(discriminant)) / (2 * a);
+    if (tValue < 0.0) {
+        tValue = (-b + sqrt(discriminant)) / (2 * a);
+    }
 
-        return tValue;
+    return tValue;
 }
 
 /*
@@ -224,18 +202,6 @@ bool write_p3(char* fileName, int width, int height, int maxcol, uint8_t* image)
 }
 // float raysphereIntersection(Object sphere, float* Ro, float* Rd);
 int main(int argc, char** argv) {
-    /*struct Object sphere;
-    float Ro[] = {0, 0, 0};
-    sphere.position[0] = 0;
-    sphere.position[1] = 0;
-    sphere.position[2] = -2;
-    sphere.radius = 1;
-    float Rd[] = {0, 0, -1};
-    float tValue = raysphereIntersection(sphere, Ro, Rd);
-    printf("%f\n", tValue);
-
-    return 0;*/
-    
     struct Object objects[128];
     
     // Check if command line has missing arguments
