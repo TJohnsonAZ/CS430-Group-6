@@ -12,7 +12,7 @@ void readProperties(FILE *inputfh, Object *curr_object) {
     // loop to read all object properties
     bool finished = false;
     while (!finished && !feof(inputfh)) {
-	    // read camera properties
+        // read camera properties
         if (curr_object->objectKindFlag == CAMERA) {
             fscanf(inputfh, "%s ", prop);
             if (strcmp(prop, "width:") == 0) {
@@ -26,16 +26,16 @@ void readProperties(FILE *inputfh, Object *curr_object) {
 		    finished = true;
             }
         }
-	    // read sphere properties
+        // read sphere properties
         else if (curr_object->objectKindFlag == SPHERE) {
             fscanf(inputfh, "%s", prop);
             if (strcmp(prop, "color:") == 0) {
                 fscanf(inputfh, " [%f, %f, %f],", &curr_object->color[0], &curr_object->color[1], &curr_object->color[2]);
             }
-	        else if (strcmp(prop, "diffuse_color:") == 0) {
+            else if (strcmp(prop, "diffuse_color:") == 0) {
                 fscanf(inputfh, " [%f, %f, %f],", &curr_object->diffuse_color[0], &curr_object->diffuse_color[1], &curr_object->diffuse_color[2]);
             }
-	        else if (strcmp(prop, "specular_color:") == 0) {
+            else if (strcmp(prop, "specular_color:") == 0) {
                 fscanf(inputfh, " [%f, %f, %f],", &curr_object->specular_color[0], &curr_object->specular_color[1], &curr_object->specular_color[2]);
             }
             else if (strcmp(prop, "position:") == 0) {
@@ -55,10 +55,10 @@ void readProperties(FILE *inputfh, Object *curr_object) {
             if (strcmp(prop, "color:") == 0) {
                 fscanf(inputfh, " [%f, %f, %f],\n", &curr_object->color[0], &curr_object->color[1], &curr_object->color[2]);
             }
-	        else if (strcmp(prop, "diffuse_color:") == 0) {
+            else if (strcmp(prop, "diffuse_color:") == 0) {
                 fscanf(inputfh, " [%f, %f, %f],", &curr_object->diffuse_color[0], &curr_object->diffuse_color[1], &curr_object->diffuse_color[2]);
             }
-	        else if (strcmp(prop, "specular_color:") == 0) {
+            else if (strcmp(prop, "specular_color:") == 0) {
                 fscanf(inputfh, " [%f, %f, %f],", &curr_object->specular_color[0], &curr_object->specular_color[1], &curr_object->specular_color[2]);
             }
             else if (strcmp(prop, "position:") == 0) {
@@ -75,7 +75,7 @@ void readProperties(FILE *inputfh, Object *curr_object) {
     }
 }
 
-float* illuminate(float* Rd, float* point, Object lights[], Object object, float* color) {
+float *illuminate(float *Rd, float *point, Object *lights, Object object, float *color) {
     // Default color values
     color[0] = 0.0;
     color[1] = 0.0;
@@ -89,34 +89,89 @@ float* illuminate(float* Rd, float* point, Object lights[], Object object, float
         // if t > 0 and t < distance from point to light: continue
 
         // Create light vector: L
+        float L[3];
+
+	// L = point - light.position
+        v3_subtract(L, point, lights[i].position);
+
         // Calculate normal if needed: N
-        // L = point - light.position (use v3_subtract)
-        // TODO: when to normalize L?
-        float* lightVector;
-        lightVector[0] = 0.0;
-        lightVector[1] = 0.0;
-        lightVector[2] = 0.0;
+	float N[3];
+	v3_normalize(N, L);
 
         // Calculate radial attenuation
-        float d = v3_length(lightVector);
-        float radialAtt = 1 / (lights[i].radial_a0 + lights[i].radial_a1 * d, lights[i].radial_a2 * d * d);
+        float d = v3_length(L);
+        float radialAtt = 1 / (lights[i].radial_a0 + lights[i].radial_a1 * d + lights[i].radial_a2 * d * d);
 
         // Calculate angular attenuation
-        float* v0 = v3_scale(lightVector, -1.0);
-        float* vL;
-        float* vDotProduct;
-        float angularAtt = pow(v3_dot_product(vDotProduct, v0, vL), lights[i].angular_a0);
+        v3_scale(L, -1.0);
+        float *v0 = L;
+        float *vL = 0;
+        float angularAtt = pow(v3_dot_product(v0, vL), lights[i].angular_a0);
 
-        // Diffuse (c += diffuse * attenuation (radial and angular))
-        // diffuse = (kd * Id)
-            // kd = object.diffuse_color
-            // Id = -(v3_dot_product(L, N)) * lights[i].color * object.diffuse_color
-                // Must check that v3_dot_product(L, N) > 0; otherwise Id = 0
-        // Specular (c += specular * attenuation(radial and angular))
+        // Diffuse 
+	// diffuse = (kd * Id)
+	    // kd = object.diffuse_color
+	    // Id = -(v3_dot_product(L, N)) * lights[i].color * object.diffuse_color
+	        // Must check that v3_dot_product(L, N) > 0; otherwise Id = 0
+	float Id_dot = v3_dot_product(L, N);
+	float Id[3];
+	if (Id_dot > 0) {
+	    Id[0] = -(Id_dot) * lights[i].color[0] * object.diffuse_color[0];
+	    Id[1] = -(Id_dot) * lights[i].color[1] * object.diffuse_color[1];
+	    Id[2] = -(Id_dot) * lights[i].color[2] * object.diffuse_color[2];
+	}
+	else {
+	    Id[0] = 0;
+	    Id[1] = 0;
+	    Id[2] = 0;
+	}	
+
+        float diffuse[3];
+        diffuse[0] = Id[0] * object.diffuse_color[0];
+        diffuse[1] = Id[1] * object.diffuse_color[1];
+        diffuse[2] = Id[2] * object.diffuse_color[2];
+
+        // (c += diffuse * attenuation (radial and angular))
+	float attn = radialAtt + angularAtt;
+	color[0] += diffuse[0] * attn;
+	color[1] += diffuse[1] * attn;
+	color[2] += diffuse[2] * attn;
+
+        // Specular 
         // specular = (ks * Is)
             // ks = object.specular_color
-            // Is = pow(v3_dot_product(u'L, v), n) * lights[i].color * object.specular_color
+            // Is = pow(v3_dot_product(L, v), n) * lights[i].color * object.specular_color
+	float R[3];
+	v3_reflect(R, L, N); 
 
+	float V[3];
+	V[0] = -(Rd[0]);
+	V[1] = -(Rd[1]);
+	V[2] = -(Rd[2]);
+
+	float Is_dot = v3_dot_product(V, R);
+	float Is[3];
+	if (Is_dot > 0 && Id_dot > 0) {
+	    float Is_dot_ex = pow(Is_dot, *N); // N?
+            Is[0] = Is_dot_ex * lights[i].color[0] * object.specular_color[0];
+            Is[1] = Is_dot_ex * lights[i].color[1] * object.specular_color[1];
+            Is[2] = Is_dot_ex * lights[i].color[2] * object.specular_color[2];
+	}
+	else {
+            Is[0] = 0;
+            Is[1] = 0;
+            Is[2] = 0;
+	}
+
+	float specular[3];
+	specular[0] = Is[0] * object.specular_color[0];
+	specular[1] = Is[1] * object.specular_color[1];
+	specular[2] = Is[2] * object.specular_color[2];
+
+        // (c += specular * attenuation(radial and angular))
+        color[0] += specular[0] * attn;	
+        color[1] += specular[1] * attn;	
+        color[2] += specular[2] * attn;	
     }
     // c += ambient (not needed?)
 

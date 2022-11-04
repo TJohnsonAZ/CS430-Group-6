@@ -18,11 +18,11 @@
 
 // structures
 typedef struct Object {
-	int objectKindFlag;
-	float position[3];
-  float color[3];
-	float diffuse_color[3];
-	float specular_color[3];
+        int objectKindFlag;
+        float position[3];
+        float color[3];
+        float diffuse_color[3];
+        float specular_color[3];
   
 	union {
             // Camera values
@@ -43,15 +43,15 @@ typedef struct Object {
 	
 	// Light values
 	union {
-		float radial_a0;
-		float radial_a1;
-		float radial_a2;
-		// Spot light values
-		struct {
-			float theta;
-			float angular_a0;
-			float direction[3];
-		};
+            float radial_a0;
+            float radial_a1;
+            float radial_a2;
+            // Spot light values
+            struct {
+                float theta;
+                float angular_a0;
+                float direction[3];
+            };
 	};
 } Object;
 
