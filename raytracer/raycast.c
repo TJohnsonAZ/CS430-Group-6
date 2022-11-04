@@ -23,7 +23,7 @@ void readProperties(FILE *inputfh, Object *curr_object) {
             }
             else {
                 fseek(inputfh, -strlen(prop) - 1, SEEK_CUR);
-		    finished = true;
+                finished = true;
             }
         }
         // read sphere properties
@@ -46,14 +46,14 @@ void readProperties(FILE *inputfh, Object *curr_object) {
             }
             else {
                 fseek(inputfh, -strlen(prop) - 1, SEEK_CUR);
-		        finished = true;
+                finished = true;
             }            
         }
         // read plane properties
         else if (curr_object->objectKindFlag == PLANE) {
             fscanf(inputfh, "%s", prop);
             if (strcmp(prop, "color:") == 0) {
-                fscanf(inputfh, " [%f, %f, %f],\n", &curr_object->color[0], &curr_object->color[1], &curr_object->color[2]);
+                fscanf(inputfh, " [%f, %f, %f],", &curr_object->color[0], &curr_object->color[1], &curr_object->color[2]);
             }
             else if (strcmp(prop, "diffuse_color:") == 0) {
                 fscanf(inputfh, " [%f, %f, %f],", &curr_object->diffuse_color[0], &curr_object->diffuse_color[1], &curr_object->diffuse_color[2]);
@@ -62,16 +62,48 @@ void readProperties(FILE *inputfh, Object *curr_object) {
                 fscanf(inputfh, " [%f, %f, %f],", &curr_object->specular_color[0], &curr_object->specular_color[1], &curr_object->specular_color[2]);
             }
             else if (strcmp(prop, "position:") == 0) {
-                fscanf(inputfh, " [%f, %f, %f],\n", &curr_object->position[0], &curr_object->position[1], &curr_object->position[2]);
+                fscanf(inputfh, " [%f, %f, %f],", &curr_object->position[0], &curr_object->position[1], &curr_object->position[2]);
             }
             else if (strcmp(prop, "normal:") == 0) {
-                fscanf(inputfh, " [%f, %f, %f],\n", &curr_object->pn[0], &curr_object->pn[1], &curr_object->pn[2]);
+                fscanf(inputfh, " [%f, %f, %f],", &curr_object->pn[0], &curr_object->pn[1], &curr_object->pn[2]);
             }
             else {
                 fseek(inputfh, -strlen(prop) - 1, SEEK_CUR);
-		    finished = true;
+                finished = true;
             }
         }
+	// read light properties
+	else if (curr_object->objectKindFlag == LIGHT) {
+            fscanf(inputfh, "%s", prop);
+            if (strcmp(prop, "color:") == 0) {
+                fscanf(inputfh, " [%f, %f, %f],", &curr_object->color[0], &curr_object->color[1], &curr_object->color[2]);
+            }
+            else if (strcmp(prop, "position:") == 0) {
+                fscanf(inputfh, " [%f, %f, %f],", &curr_object->position[0], &curr_object->position[1], &curr_object->position[2]);
+            }
+	    else if (strcmp(prop, "radial-a0:") == 0) {
+                fscanf(inputfh, " %f", &curr_object->radial_a0);
+	    }
+	    else if (strcmp(prop, "radial-a1:") == 0) {
+                fscanf(inputfh, " %f", &curr_object->radial_a1);
+	    }
+	    else if (strcmp(prop, "radial-a2:") == 0) {
+                fscanf(inputfh, " %f", &curr_object->radial_a2);
+	    }
+	    else if (strcmp(prop, "angular-a0:") == 0) {
+                fscanf(inputfh, " %f", &curr_object->angular_a0);
+	    }
+	    else if (strcmp(prop, "theta:") == 0) {
+                fscanf(inputfh, " %f", &curr_object->theta);
+	    }
+            else if (strcmp(prop, "direction:") == 0) {
+                fscanf(inputfh, " [%f, %f, %f],", &curr_object->direction[0], &curr_object->direction[1], &curr_object->direction[2]);
+            }
+	    else {
+                fseek(inputfh, -strlen(prop) - 1, SEEK_CUR);
+                finished = true;
+	    }
+	}
     }
 }
 
@@ -307,6 +339,7 @@ bool write_p3(char* fileName, int width, int height, int maxcol, uint8_t* image)
 // float raysphereIntersection(Object sphere, float* Ro, float* Rd);
 int main(int argc, char** argv) {
     struct Object objects[128];
+    struct Object lights[128];
     
     // Check if command line has missing arguments
     if (argc != 5) {
@@ -388,6 +421,28 @@ int main(int argc, char** argv) {
 
             currentObject.d = -(v3_dot_product(currentObject.position, currentObject.pn));
         }
+        // Check if the object is a light
+        else if (strcmp(objName, "light,") == 0) {
+            currentObject.objectKindFlag = LIGHT;
+
+	    // set default values for light
+            currentObject.color[0] = 0;
+            currentObject.color[1] = 0;
+            currentObject.color[2] = 0;
+	    currentObject.position[0] = 0;
+	    currentObject.position[1] = 0;
+	    currentObject.position[2] = 0;
+	    currentObject.radial_a0 = 0;
+	    currentObject.radial_a1 = 0;
+	    currentObject.radial_a2 = 0;
+	    currentObject.theta = 0;
+	    currentObject.angular_a0 = 0;
+	    currentObject.direction[0] = 0;
+	    currentObject.direction[1] = 0;
+	    currentObject.direction[2] = 0;
+
+	    readProperties(inputfh, &currentObject);
+	}
         // Assume it is an unknown object and throw error
         else {
             fprintf(stderr, "Error: unknown object found: %s\n", objName);
@@ -395,7 +450,12 @@ int main(int argc, char** argv) {
         }
 
         // Add current object to list of objects
-        objects[objectArrayIndex] = currentObject;
+	if (currentObject.objectKindFlag == LIGHT) {
+            lights[objectArrayIndex] = currentObject;
+	}
+	else {
+            objects[objectArrayIndex] = currentObject;
+	}
         objectArrayIndex++;
     }
     
