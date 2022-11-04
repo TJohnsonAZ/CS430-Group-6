@@ -110,6 +110,11 @@ void readProperties(FILE *inputfh, Object *curr_object) {
 }
 
 float *illuminate(float *Rd, float *point, Object *lights, Object object, float *color) {
+    // If no object was hit, return given color (presumably black)
+    if (object.objectKindFlag == DEFAULT) {
+        return color;
+    }
+    
     // Loop through all lights found
     for (int i = 0; lights[i].objectKindFlag != DEFAULT; i++) {
         // Shoot ray from point to current light's position;
@@ -140,9 +145,10 @@ float *illuminate(float *Rd, float *point, Object *lights, Object object, float 
         float radialAtt = 1 / (lights[i].radial_a0 + lights[i].radial_a1 * d + lights[i].radial_a2 * d * d);
 
         // Calculate angular attenuation
-        float *v0 = L;
-        v3_scale(v0, -1.0);
-        float *vL = 0;
+        float v0[3], vL[3];
+        v0[0] = L[0] * -1;
+        v0[1] = L[1] * -1;
+        v0[2] = L[2] * -1;
         float angularAtt = pow(v3_dot_product(v0, vL), lights[i].angular_a0);
 
         // Diffuse calculations
@@ -259,7 +265,7 @@ Object shoot(Object objects[], float* Rd, Object camera, float* hitObjectColor) 
         }
     }
 
-    // Return black pixel values
+    // Return hit object
     return hitObject;
 }
 
@@ -502,8 +508,7 @@ int main(int argc, char** argv) {
             float pixVectorNormal[3];
             v3_normalize(pixVectorNormal, pixVector);
 
-            // Shoot ray out into scene; return color of object hit, or RGB values
-            // for black if no object hit
+            // Shoot ray out into scene; if object hit, return object and its color
             float hitObjectColor[3];
             Object hitObject;
             hitObject = shoot(objects, pixVectorNormal, camera, hitObjectColor);
