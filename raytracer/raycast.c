@@ -105,28 +105,33 @@ void readProperties(FILE *inputfh, Object *curr_object) {
 	    }
 	}
     }
+
+    free(prop);
 }
 
 float *illuminate(float *Rd, float *point, Object *lights, Object object, float *color) {
-    // Default color values
-    color[0] = 0.0;
-    color[1] = 0.0;
-    color[2] = 0.0;
-
-    // for l in lights:
+    // Loop through all lights found
     for (int i = 0; lights[i].objectKindFlag != DEFAULT; i++) {
+        // Shoot ray from point to current light's position;
+        // If t value indicates point is in shadow, continue
+        /*float* lightRo;
+        lightRo[0] = point[0];
+        lightRo[1] = point[1];
+        lightRo[2] = point[2];
 
-        // TODO: modify shoot so that it supports the below
-        // t = shoot(from point to light)
-        // if t > 0 and t < distance from point to light: continue
+        float* lightRd;
+        float* lightRdNormal;
+        v3_from_points(lightRd, lights[i].position, point);
+        v3_normalize(lightRdNormal, lightRd);
+        
+        float tValue = 0.0;*/
+        
 
-        // Create light vector: L
+        // Create light vector: L (vector from light to point)
         float L[3];
-
-	// L = point - light.position
         v3_subtract(L, point, lights[i].position);
 
-        // Calculate normal if needed: N
+        // Calculate normal of light vector
 	float N[3];
 	v3_normalize(N, L);
 
@@ -135,16 +140,12 @@ float *illuminate(float *Rd, float *point, Object *lights, Object object, float 
         float radialAtt = 1 / (lights[i].radial_a0 + lights[i].radial_a1 * d + lights[i].radial_a2 * d * d);
 
         // Calculate angular attenuation
-        v3_scale(L, -1.0);
         float *v0 = L;
+        v3_scale(v0, -1.0);
         float *vL = 0;
         float angularAtt = pow(v3_dot_product(v0, vL), lights[i].angular_a0);
 
-        // Diffuse 
-	// diffuse = (kd * Id)
-	    // kd = object.diffuse_color
-	    // Id = -(v3_dot_product(L, N)) * lights[i].color * object.diffuse_color
-	        // Must check that v3_dot_product(L, N) > 0; otherwise Id = 0
+        // Diffuse calculations
 	float Id_dot = v3_dot_product(L, N);
 	float Id[3];
 	if (Id_dot > 0) {
@@ -163,16 +164,13 @@ float *illuminate(float *Rd, float *point, Object *lights, Object object, float 
         diffuse[1] = Id[1] * object.diffuse_color[1];
         diffuse[2] = Id[2] * object.diffuse_color[2];
 
-        // (c += diffuse * attenuation (radial and angular))
+        // Add diffuse color to provided color values
 	float attn = radialAtt + angularAtt;
 	color[0] += diffuse[0] * attn;
 	color[1] += diffuse[1] * attn;
 	color[2] += diffuse[2] * attn;
 
-        // Specular 
-        // specular = (ks * Is)
-            // ks = object.specular_color
-            // Is = pow(v3_dot_product(L, v), n) * lights[i].color * object.specular_color
+        // Specular calculations
 	float R[3];
 	v3_reflect(R, L, N); 
 
@@ -184,7 +182,7 @@ float *illuminate(float *Rd, float *point, Object *lights, Object object, float 
 	float Is_dot = v3_dot_product(V, R);
 	float Is[3];
 	if (Is_dot > 0 && Id_dot > 0) {
-	    float Is_dot_ex = pow(Is_dot, *N); // N?
+	    float Is_dot_ex = pow(Is_dot, *N); 
             Is[0] = Is_dot_ex * lights[i].color[0] * object.specular_color[0];
             Is[1] = Is_dot_ex * lights[i].color[1] * object.specular_color[1];
             Is[2] = Is_dot_ex * lights[i].color[2] * object.specular_color[2];
@@ -200,14 +198,12 @@ float *illuminate(float *Rd, float *point, Object *lights, Object object, float 
 	specular[1] = Is[1] * object.specular_color[1];
 	specular[2] = Is[2] * object.specular_color[2];
 
-        // (c += specular * attenuation(radial and angular))
+        // Add specular color to provided color values
         color[0] += specular[0] * attn;	
         color[1] += specular[1] * attn;	
         color[2] += specular[2] * attn;	
     }
-    // c += ambient (not needed?)
 
-    // return c
     return color;
 }
 
@@ -216,7 +212,9 @@ float *illuminate(float *Rd, float *point, Object *lights, Object object, float 
 * Returns name of object that was hit by ray
 * And stores the position of the hit point in a float pointer
 */
-float* shoot(Object objects[], float* Rd, Object camera, float* hitObjectColor) {
+Object shoot(Object objects[], float* Rd, Object camera, float* hitObjectColor) {
+    Object hitObject;
+    
     hitObjectColor[0] = 0.0;
     hitObjectColor[1] = 0.0;
     hitObjectColor[2] = 0.0;
@@ -235,6 +233,8 @@ float* shoot(Object objects[], float* Rd, Object camera, float* hitObjectColor) 
                 hitObjectColor[0] = objects[i].color[0];
                 hitObjectColor[1] = objects[i].color[1];
                 hitObjectColor[2] = objects[i].color[2];
+
+                hitObject = objects[i];
             }
         }
         // Check if valid t values found for plane
@@ -246,6 +246,8 @@ float* shoot(Object objects[], float* Rd, Object camera, float* hitObjectColor) 
                 hitObjectColor[0] = objects[i].color[0];
                 hitObjectColor[1] = objects[i].color[1];
                 hitObjectColor[2] = objects[i].color[2];
+
+                hitObject = objects[i];
             }
         }
         // Skip over camera object
@@ -258,18 +260,8 @@ float* shoot(Object objects[], float* Rd, Object camera, float* hitObjectColor) 
     }
 
     // Return black pixel values
-    return hitObjectColor;
+    return hitObject;
 }
-
-/*
-* Stores the color values of the hit object in the image
-*/
-/*
-void shade(uint8_t* image, int imageIndex, float* hitObjectColor) {
-    image[imageIndex] = hitObjectColor[0] * 255;
-    image[imageIndex + 1] = hitObjectColor[1] * 255;
-    image[imageIndex + 2] = hitObjectColor[2] * 255;
-}*/
 
 /*
 * Calculates the t value for a ray that hits a sphere
@@ -356,7 +348,6 @@ int main(int argc, char** argv) {
 
     struct Object currentObject;
     char* objName = (char *)malloc(sizeof(char *));
-    char* prop = (char *)malloc(sizeof(char *));
 
     int objectArrayIndex = 0;
     // Loop through the input file
@@ -464,7 +455,6 @@ int main(int argc, char** argv) {
     }
     fclose(inputfh);
     free(objName);
-    free(prop);
 
     // Find the camera in the list of objects
     Object camera;
@@ -515,18 +505,17 @@ int main(int argc, char** argv) {
             // Shoot ray out into scene; return color of object hit, or RGB values
             // for black if no object hit
             float hitObjectColor[3];
-            shoot(objects, pixVectorNormal, camera, hitObjectColor);
+            Object hitObject;
+            hitObject = shoot(objects, pixVectorNormal, camera, hitObjectColor);
 
             // Get illuminate value from illuminate function
+            illuminate(pixVectorNormal, pixVector, lights, hitObject, hitObjectColor);
 
+            // Color current pixel in image  
             image[((imageHeight - y - 1) * imageWidth + x) * 3] = hitObjectColor[0] * 255;
             image[(((imageHeight - y - 1) * imageWidth + x) * 3) + 1] = hitObjectColor[1] * 255;
             image[(((imageHeight - y - 1) * imageWidth + x) * 3) + 2] = hitObjectColor[2] * 255;
 
-            // Store color values of hit position into image
-            // shade(image, imageIndex, hitObjectColor);
-
-            // free(hitObjectColor);
             imageIndex += 3;
         }
     }
@@ -535,5 +524,4 @@ int main(int argc, char** argv) {
     write_p3(argv[4], imageWidth, imageHeight, 255, image);
     
     return 0;
-
 }
