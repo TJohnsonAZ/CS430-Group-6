@@ -89,8 +89,11 @@ float v3_angle_quick(float *a, float *b) {
 void v3_reflect(float *dst, float *v, float *n) {
 
     // v_r = v - 2(n * v)n
-    dst[0] = v[0] - 2 * (n[0] * v[0]) * n[0];
-    dst[1] = v[1] - 2 * (n[1] * v[1]) * n[1];
+    float dot = v3_dot_product(v, n);
+	
+    dst[0] = v[0] - 2 * dot * n[0];
+    dst[1] = v[1] - 2 * dot * n[1];
+    dst[2] = v[1] - 2 * dot * n[2];
 
 }
 
