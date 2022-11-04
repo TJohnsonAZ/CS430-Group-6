@@ -15,6 +15,7 @@
 #define CAMERA 1
 #define SPHERE 2
 #define PLANE 3
+#define LIGHT 4
 
 // structures
 typedef struct Object {
