@@ -42,7 +42,7 @@ void readProperties(FILE *inputfh, Object *curr_object) {
                 fscanf(inputfh, " [%f, %f, %f],", &curr_object->position[0], &curr_object->position[1], &curr_object->position[2]);
             }
             else if (strcmp(prop, "radius:") == 0) {
-                fscanf(inputfh, " %f", &curr_object->radius);
+                fscanf(inputfh, " %f,", &curr_object->radius);
             }
             else {
                 fseek(inputfh, -strlen(prop) - 1, SEEK_CUR);
@@ -82,19 +82,19 @@ void readProperties(FILE *inputfh, Object *curr_object) {
                 fscanf(inputfh, " [%f, %f, %f],", &curr_object->position[0], &curr_object->position[1], &curr_object->position[2]);
             }
 	    else if (strcmp(prop, "radial-a0:") == 0) {
-                fscanf(inputfh, " %f", &curr_object->radial_a0);
+                fscanf(inputfh, " %f,", &curr_object->radial_a0);
 	    }
 	    else if (strcmp(prop, "radial-a1:") == 0) {
-                fscanf(inputfh, " %f", &curr_object->radial_a1);
+                fscanf(inputfh, " %f,", &curr_object->radial_a1);
 	    }
 	    else if (strcmp(prop, "radial-a2:") == 0) {
-                fscanf(inputfh, " %f", &curr_object->radial_a2);
+                fscanf(inputfh, " %f,", &curr_object->radial_a2);
 	    }
 	    else if (strcmp(prop, "angular-a0:") == 0) {
-                fscanf(inputfh, " %f", &curr_object->angular_a0);
+                fscanf(inputfh, " %f,", &curr_object->angular_a0);
 	    }
 	    else if (strcmp(prop, "theta:") == 0) {
-                fscanf(inputfh, " %f", &curr_object->theta);
+                fscanf(inputfh, " %f,", &curr_object->theta);
 	    }
             else if (strcmp(prop, "direction:") == 0) {
                 fscanf(inputfh, " [%f, %f, %f],", &curr_object->direction[0], &curr_object->direction[1], &curr_object->direction[2]);
