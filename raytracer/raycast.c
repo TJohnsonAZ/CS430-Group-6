@@ -41,6 +41,9 @@ void readProperties(FILE *inputfh, Object *curr_object) {
             else if (strcmp(prop, "position:") == 0) {
                 fscanf(inputfh, " [%f, %f, %f],", &curr_object->position[0], &curr_object->position[1], &curr_object->position[2]);
             }
+            else if (strcmp(prop, "reflectivity:") == 0) {
+                fscanf(inputfh, " %f,", &curr_object->reflectivity);
+            }
             else if (strcmp(prop, "radius:") == 0) {
                 fscanf(inputfh, " %f,", &curr_object->radius);
             }
@@ -66,6 +69,9 @@ void readProperties(FILE *inputfh, Object *curr_object) {
             }
             else if (strcmp(prop, "normal:") == 0) {
                 fscanf(inputfh, " [%f, %f, %f],", &curr_object->pn[0], &curr_object->pn[1], &curr_object->pn[2]);
+            }
+            else if (strcmp(prop, "reflectivity:") == 0) {
+                fscanf(inputfh, " %f,", &curr_object->reflectivity);
             }
             else {
                 fseek(inputfh, -strlen(prop) - 1, SEEK_CUR);

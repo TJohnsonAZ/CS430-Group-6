@@ -24,6 +24,7 @@ typedef struct Object {
         float color[3];
         float diffuse_color[3];
         float specular_color[3];
+	float reflectivity;
   
 	union {
             // Camera values
