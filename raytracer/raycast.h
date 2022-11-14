@@ -58,8 +58,9 @@ typedef struct Object {
 
 // function prototypes
 void readProperties(FILE *inputfh, Object *curr_object);
-float* illuminate(float* Rd, float* point, Object* lights, Object object, float* color);
-Object shoot(Object objects[], float* Rd, Object camera, float* hitObjectColor);
+void illuminate(Object objects[], Object lights[], float* Rd, float* point, Object object, float* color);
+void adjustColor(float* color);
+float shoot(Object objects[], float* Ro, float* Rd, Object hitObject);
 float raysphereIntersection(Object sphere, float* Ro, float* Rd);
 float rayplaneIntersection(Object plane, float* Ro, float* Rd);
 bool write_p3(char* fileName, int width, int height, int maxcol, uint8_t* image);

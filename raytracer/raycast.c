@@ -109,29 +109,36 @@ void readProperties(FILE *inputfh, Object *curr_object) {
     free(prop);
 }
 
-float *illuminate(float *Rd, float *point, Object *lights, Object object, float *color) {
-    // If no object was hit, return given color (presumably black)
-    if (object.objectKindFlag == DEFAULT) {
-        return color;
-    }
+void illuminate(Object objects[], Object lights[], float* Rd, float* point, Object object, float* color) {
+    // Set default color to black
+    color[0] = 0.0;
+    color[1] = 0.0;
+    color[2] = 0.0;
     
     // Loop through all lights found
     for (int i = 0; lights[i].objectKindFlag != DEFAULT; i++) {
         // Shoot ray from point to current light's position;
         // If t value indicates point is in shadow, continue
-        /*float* lightRo;
-        lightRo[0] = point[0];
-        lightRo[1] = point[1];
-        lightRo[2] = point[2];
+        float lightRo[3];
+        lightRo[0] = object.position[0];
+        lightRo[1] = object.position[1];
+        lightRo[2] = object.position[2];
 
-        float* lightRd;
-        float* lightRdNormal;
-        v3_from_points(lightRd, lights[i].position, point);
+        // Calculate Rd (distance from point to light)
+        float lightRd[3];
+        float lightRdNormal[3];
+        v3_from_points(lightRd, lights[i].position, object.position);
         v3_normalize(lightRdNormal, lightRd);
-        
-        float tValue = 0.0;*/
-        
 
+        // Shoot ray from point to light
+        float tValue = -1;
+        Object hitObject;
+        tValue = shoot(objects, lightRo, lightRdNormal, hitObject);
+
+        if(tValue > 0 && tValue < v3_length(lightRd)) {
+            continue;
+        }
+        
         // Create light vector: L (vector from light to point)
         float L[3];
         v3_subtract(L, point, lights[i].position);
@@ -207,10 +214,16 @@ float *illuminate(float *Rd, float *point, Object *lights, Object object, float 
         // Add specular color to provided color values
         color[0] += specular[0] * attn;	
         color[1] += specular[1] * attn;	
-        color[2] += specular[2] * attn;	
+        color[2] += specular[2] * attn;
     }
+}
 
-    return color;
+void adjustColor(float* color) {
+    for (int i = 0; i < 3; i++) {
+        if (color[i] > 1) {
+            color[i] = 1;
+        }
+    }
 }
 
 /*
@@ -218,15 +231,7 @@ float *illuminate(float *Rd, float *point, Object *lights, Object object, float 
 * Returns name of object that was hit by ray
 * And stores the position of the hit point in a float pointer
 */
-Object shoot(Object objects[], float* Rd, Object camera, float* hitObjectColor) {
-    Object hitObject;
-    
-    hitObjectColor[0] = 0.0;
-    hitObjectColor[1] = 0.0;
-    hitObjectColor[2] = 0.0;
-
-    // Get Ro, Rd
-    float* Ro = camera.position;
+float shoot(Object objects[], float* Ro, float* Rd, Object hitObject) {
     // Loop through objects
     float tValue = -1;
     for (int i = 0; objects[i].objectKindFlag != 0; i++) {
@@ -236,10 +241,6 @@ Object shoot(Object objects[], float* Rd, Object camera, float* hitObjectColor) 
             tValue = raysphereIntersection(objects[i], Ro, Rd);
 
             if (tValue > 0) {
-                hitObjectColor[0] = objects[i].color[0];
-                hitObjectColor[1] = objects[i].color[1];
-                hitObjectColor[2] = objects[i].color[2];
-
                 hitObject = objects[i];
             }
         }
@@ -249,10 +250,6 @@ Object shoot(Object objects[], float* Rd, Object camera, float* hitObjectColor) 
             tValue = rayplaneIntersection(objects[i], Ro, Rd);
 
             if (tValue > 0.0) {
-                hitObjectColor[0] = objects[i].color[0];
-                hitObjectColor[1] = objects[i].color[1];
-                hitObjectColor[2] = objects[i].color[2];
-
                 hitObject = objects[i];
             }
         }
@@ -260,13 +257,13 @@ Object shoot(Object objects[], float* Rd, Object camera, float* hitObjectColor) 
         else if (objects[i].objectKindFlag == CAMERA) {
             continue;
         }
+        // Assume gone through all objects
         else {
             break;
         }
     }
 
-    // Return hit object
-    return hitObject;
+    return tValue;
 }
 
 /*
@@ -356,8 +353,9 @@ int main(int argc, char** argv) {
     char* objName = (char *)malloc(sizeof(char *));
 
     int objectArrayIndex = 0;
+    int lightArrayIndex = 0;
     // Loop through the input file
-    while (!feof(inputfh) && objectArrayIndex < 128) {
+    while (!feof(inputfh) && objectArrayIndex < 128 && lightArrayIndex < 128) {
         // Get the name of the object at beginning of current line
         fscanf(inputfh, "%s,", objName);
         // Check if the object is a camera
@@ -448,12 +446,13 @@ int main(int argc, char** argv) {
 
         // Add current object to list of objects
 	if (currentObject.objectKindFlag == LIGHT) {
-            lights[objectArrayIndex] = currentObject;
+            lights[lightArrayIndex] = currentObject;
+            lightArrayIndex++;
 	}
 	else {
             objects[objectArrayIndex] = currentObject;
+            objectArrayIndex++;
 	}
-        objectArrayIndex++;
     }
     
     if (objectArrayIndex > 128) {
@@ -509,12 +508,21 @@ int main(int argc, char** argv) {
             v3_normalize(pixVectorNormal, pixVector);
 
             // Shoot ray out into scene; if object hit, return object and its color
-            float hitObjectColor[3];
             Object hitObject;
-            hitObject = shoot(objects, pixVectorNormal, camera, hitObjectColor);
+            float tValue = -1;
+            tValue = shoot(objects, camera.position, pixVectorNormal, hitObject);
 
             // Get illuminate value from illuminate function
-            illuminate(pixVectorNormal, pixVector, lights, hitObject, hitObjectColor);
+            float hitObjectColor[3];
+            if(tValue > -1) {
+                illuminate(objects, lights, pixVectorNormal, pixVector, hitObject, hitObjectColor);
+                adjustColor(hitObjectColor);
+            }
+            else {
+            	hitObjectColor[0] = 0.0;
+                hitObjectColor[1] = 0.0;
+                hitObjectColor[2] = 0.0;
+            }
 
             // Color current pixel in image  
             image[((imageHeight - y - 1) * imageWidth + x) * 3] = hitObjectColor[0] * 255;
