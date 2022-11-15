@@ -16,6 +16,7 @@
 #define SPHERE 2
 #define PLANE 3
 #define LIGHT 4
+#define PI 3.141592653
 
 // structures
 typedef struct Object {
@@ -61,7 +62,8 @@ typedef struct Object {
 void readProperties(FILE *inputfh, Object *curr_object);
 void illuminate(Object objects[], Object lights[], float* Rd, float* point, Object object, float* color);
 void adjustColor(float* color);
-float shoot(Object objects[], float* Ro, float* Rd, Object hitObject);
+void copyObject(Object *dstObject, Object *srcObject);
+float shoot(Object objects[], float* Ro, float* Rd, Object *hitObject);
 float raysphereIntersection(Object sphere, float* Ro, float* Rd);
 float rayplaneIntersection(Object plane, float* Ro, float* Rd);
 bool write_p3(char* fileName, int width, int height, int maxcol, uint8_t* image);

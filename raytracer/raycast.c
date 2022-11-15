@@ -126,101 +126,89 @@ void illuminate(Object objects[], Object lights[], float* Rd, float* point, Obje
         // Shoot ray from point to current light's position;
         // If t value indicates point is in shadow, continue
         float lightRo[3];
-        lightRo[0] = object.position[0];
-        lightRo[1] = object.position[1];
-        lightRo[2] = object.position[2];
+        lightRo[0] = point[0];
+        lightRo[1] = point[1];
+        lightRo[2] = point[2];
 
         // Calculate Rd (distance from point to light)
         float lightRd[3];
         float lightRdNormal[3];
-        v3_from_points(lightRd, lights[i].position, object.position);
+        v3_from_points(lightRd, lights[i].position, point);
         v3_normalize(lightRdNormal, lightRd);
 
         // Shoot ray from point to light
         float tValue = -1;
         Object hitObject;
-        tValue = shoot(objects, lightRo, lightRdNormal, hitObject);
+        tValue = shoot(objects, lightRo, lightRd, &hitObject);
 
         if(tValue > 0 && tValue < v3_length(lightRd)) {
             continue;
         }
-        
-        // Create light vector: L (vector from light to point)
-        float L[3];
-        v3_subtract(L, point, lights[i].position);
-
-        // Calculate normal of light vector
-	float N[3];
-	v3_normalize(N, L);
 
         // Calculate radial attenuation
-        float d = v3_length(L);
-        float radialAtt = 1 / (lights[i].radial_a0 + lights[i].radial_a1 * d + lights[i].radial_a2 * d * d);
+        float distance = v3_length(lightRd);
+        float radialAttenuation = 1 / (lights[i].radial_a0 + lights[i].radial_a1 * distance + lights[i].radial_a2 * distance * distance);
 
         // Calculate angular attenuation
-        float v0[3], vL[3];
-        v0[0] = L[0] * -1;
-        v0[1] = L[1] * -1;
-        v0[2] = L[2] * -1;
-        float angularAtt = pow(v3_dot_product(v0, vL), lights[i].angular_a0);
+        float v0[3];
+        v0[0] = lightRd[0] * -1;
+        v0[1] = lightRd[1] * -1;
+        v0[2] = lightRd[2] * -1;
 
-        // Diffuse calculations
-	float Id_dot = v3_dot_product(L, N);
-	float Id[3];
-	if (Id_dot > 0) {
-	    Id[0] = -(Id_dot) * lights[i].color[0] * object.diffuse_color[0];
-	    Id[1] = -(Id_dot) * lights[i].color[1] * object.diffuse_color[1];
-	    Id[2] = -(Id_dot) * lights[i].color[2] * object.diffuse_color[2];
-	}
-	else {
-	    Id[0] = 0;
-	    Id[1] = 0;
-	    Id[2] = 0;
-	}	
+        // Check if the current light is a spot light; set angular attenuation to 1 if not
+        float angularAttenuation;
+        if (lights[i].theta == 0) {
+            angularAttenuation = 1.0;
+        }
+        // Assume current light is a spot light
+        else {            
+            float angularAttenuationDot = v3_dot_product(v0, lights[i].direction);
+            float thetaRadians = (lights[i].theta * PI) / 180;
 
-        float diffuse[3];
-        diffuse[0] = Id[0] * object.diffuse_color[0];
-        diffuse[1] = Id[1] * object.diffuse_color[1];
-        diffuse[2] = Id[2] * object.diffuse_color[2];
+            if (angularAttenuationDot < cos(thetaRadians)) {
+                angularAttenuation = 0.0;
+            }
+            else {
+                angularAttenuation = pow(angularAttenuationDot, lights[i].angular_a0);
+            }
+        }
 
-        // Add diffuse color to provided color values
-	float attn = radialAtt + angularAtt;
-	color[0] += diffuse[0] * attn;
-	color[1] += diffuse[1] * attn;
-	color[2] += diffuse[2] * attn;
+        // Calculate diffuse light
+        float diffuseLight[3];
+        float diffuseLightDot = v3_dot_product(lightRd, lightRdNormal);
 
-        // Specular calculations
-	float R[3];
-	v3_reflect(R, L, N); 
+        // Dot product of light vector and its normal must be greater than 0 in order to contribute diffuse light
+        // Otherwise it is 0
+        if (diffuseLightDot > 0) {
+            diffuseLight[0] = diffuseLightDot * lights[i].color[0] * object.diffuse_color[0];
+            diffuseLight[1] = diffuseLightDot * lights[i].color[1] * object.diffuse_color[1];
+            diffuseLight[2] = diffuseLightDot * lights[i].color[2] * object.diffuse_color[2];
+        }
+        else {
+            diffuseLight[0] = 0.0;
+            diffuseLight[1] = 0.0;
+            diffuseLight[2] = 0.0;
+        }
 
-	float V[3];
-	V[0] = -(Rd[0]);
-	V[1] = -(Rd[1]);
-	V[2] = -(Rd[2]);
+        // Calculate specular light
+        float specularLight[3];
+        float R[3];
+        v3_reflect(R, lightRd, Rd);
+        float specularLightDot = /*v3_dot_product(v0, R) */0 ;
+        if (diffuseLightDot > 0 && specularLightDot > 0) {
+            specularLight[0] = pow(specularLightDot, 20) * lights[i].color[0] * object.specular_color[0];
+            specularLight[1] = pow(specularLightDot, 20) * lights[i].color[1] * object.specular_color[1];
+            specularLight[2] = pow(specularLightDot, 20) * lights[i].color[2] * object.specular_color[2];
+        }
+        else {
+            specularLight[0] = 0.0;
+            specularLight[1] = 0.0;
+            specularLight[2] = 0.0;
+        }
 
-	float Is_dot = v3_dot_product(V, R);
-	float Is[3];
-	if (Is_dot > 0 && Id_dot > 0) {
-	    float Is_dot_ex = pow(Is_dot, *N); 
-            Is[0] = Is_dot_ex * lights[i].color[0] * object.specular_color[0];
-            Is[1] = Is_dot_ex * lights[i].color[1] * object.specular_color[1];
-            Is[2] = Is_dot_ex * lights[i].color[2] * object.specular_color[2];
-	}
-	else {
-            Is[0] = 0;
-            Is[1] = 0;
-            Is[2] = 0;
-	}
-
-	float specular[3];
-	specular[0] = Is[0] * object.specular_color[0];
-	specular[1] = Is[1] * object.specular_color[1];
-	specular[2] = Is[2] * object.specular_color[2];
-
-        // Add specular color to provided color values
-        color[0] += specular[0] * attn;	
-        color[1] += specular[1] * attn;	
-        color[2] += specular[2] * attn;
+        color[0] += radialAttenuation * 1 * (diffuseLight[0] + specularLight[0]);
+        color[1] += radialAttenuation * 1 * (diffuseLight[1] + specularLight[1]);
+        color[2] += radialAttenuation * 1 * (diffuseLight[2] + specularLight[2]);
     }
 }
 
@@ -229,7 +217,50 @@ void adjustColor(float* color) {
         if (color[i] > 1) {
             color[i] = 1;
         }
+        else if (color[i] < 0) {
+            color[i] = 0;
+        }
     }
+}
+
+void copyObject(Object *dstObject, Object *srcObject) {
+    dstObject->objectKindFlag = srcObject->objectKindFlag;
+    
+    dstObject->position[0] = srcObject->position[0];
+    dstObject->position[1] = srcObject->position[1];
+    dstObject->position[2] = srcObject->position[2];
+    
+    dstObject->color[0] = srcObject->color[0];
+    dstObject->color[1] = srcObject->color[1];
+    dstObject->color[2] = srcObject->color[2];
+    dstObject->diffuse_color[0] = srcObject->diffuse_color[0];
+    dstObject->diffuse_color[1] = srcObject->diffuse_color[1];
+    dstObject->diffuse_color[2] = srcObject->diffuse_color[2];
+    dstObject->specular_color[0] = srcObject->specular_color[0];
+    dstObject->specular_color[1] = srcObject->specular_color[1];
+    dstObject->specular_color[2] = srcObject->specular_color[2];
+    
+    dstObject->reflectivity = srcObject->reflectivity;
+    
+    dstObject->width = srcObject->width;
+    dstObject->height = srcObject->height;
+    
+    dstObject->d = srcObject->d;
+    dstObject->pn[0] = srcObject->pn[0];
+    dstObject->pn[1] = srcObject->pn[1];
+    dstObject->pn[2] = srcObject->pn[2];
+    
+    dstObject->radius = srcObject->radius;
+    
+    dstObject->radial_a0 = srcObject->radial_a0;
+    dstObject->radial_a1 = srcObject->radial_a1;
+    dstObject->radial_a2 = srcObject->radial_a2;
+    
+    dstObject->theta = srcObject->theta;
+    dstObject->angular_a0 = srcObject->angular_a0;
+    dstObject->direction[0] = srcObject->direction[0];
+    dstObject->direction[1] = srcObject->direction[1];
+    dstObject->direction[2] = srcObject->direction[2];
 }
 
 /*
@@ -237,7 +268,7 @@ void adjustColor(float* color) {
 * Returns name of object that was hit by ray
 * And stores the position of the hit point in a float pointer
 */
-float shoot(Object objects[], float* Ro, float* Rd, Object hitObject) {
+float shoot(Object objects[], float* Ro, float* Rd, Object *hitObject) {
     // Loop through objects
     float tValue = -1;
     for (int i = 0; objects[i].objectKindFlag != 0; i++) {
@@ -247,7 +278,7 @@ float shoot(Object objects[], float* Ro, float* Rd, Object hitObject) {
             tValue = raysphereIntersection(objects[i], Ro, Rd);
 
             if (tValue > 0) {
-                hitObject = objects[i];
+                copyObject(hitObject, &objects[i]);
             }
         }
         // Check if valid t values found for plane
@@ -256,7 +287,7 @@ float shoot(Object objects[], float* Ro, float* Rd, Object hitObject) {
             tValue = rayplaneIntersection(objects[i], Ro, Rd);
 
             if (tValue > 0.0) {
-                hitObject = objects[i];
+                copyObject(hitObject, &objects[i]);
             }
         }
         // Skip over camera object
@@ -442,7 +473,7 @@ int main(int argc, char** argv) {
 	    currentObject.direction[1] = 0;
 	    currentObject.direction[2] = 0;
 
-	    readProperties(inputfh, &currentObject);
+        readProperties(inputfh, &currentObject);
 	}
         // Assume it is an unknown object and throw error
         else {
@@ -516,7 +547,7 @@ int main(int argc, char** argv) {
             // Shoot ray out into scene; if object hit, return object and its color
             Object hitObject;
             float tValue = -1;
-            tValue = shoot(objects, camera.position, pixVectorNormal, hitObject);
+            tValue = shoot(objects, camera.position, pixVectorNormal, &hitObject);
 
             // Get illuminate value from illuminate function
             float hitObjectColor[3];
