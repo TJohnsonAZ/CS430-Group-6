@@ -139,7 +139,7 @@ void illuminate(Object objects[], Object lights[], float* Rd, float* point, Obje
         // Shoot ray from point to light
         float tValue = -1;
         Object hitObject;
-        tValue = shoot(objects, lightRo, lightRd, &hitObject);
+        tValue = shoot(objects, lightRo, lightRd, object, &hitObject);
 
         if(tValue > 0 && tValue < v3_length(lightRd)) {
             continue;
@@ -175,9 +175,21 @@ void illuminate(Object objects[], Object lights[], float* Rd, float* point, Obje
 
         // Calculate diffuse light
         float diffuseLight[3];
-        float diffuseLightDot = v3_dot_product(lightRd, lightRdNormal);
+        float normal[3];
+        if (object.objectKindFlag == SPHERE) {
+            normal[0] = point[0] - object.position[0];
+            normal[1] = point[1] - object.position[1];
+            normal[2] = point[2] - object.position[2];
+        }
+        else if (object.objectKindFlag == PLANE) {
+            normal[0] = object.pn[0];
+            normal[1] = object.pn[1];
+            normal[2] = object.pn[2];
+        }
+        v3_normalize(normal, normal);
+        float diffuseLightDot = v3_dot_product(normal, lightRdNormal);
 
-        // Dot product of light vector and its normal must be greater than 0 in order to contribute diffuse light
+        // Dot product of light vector and object's normal must be greater than 0 in order to contribute diffuse light
         // Otherwise it is 0
         if (diffuseLightDot > 0) {
             diffuseLight[0] = diffuseLightDot * lights[i].color[0] * object.diffuse_color[0];
@@ -193,8 +205,10 @@ void illuminate(Object objects[], Object lights[], float* Rd, float* point, Obje
         // Calculate specular light
         float specularLight[3];
         float R[3];
-        v3_reflect(R, lightRd, Rd);
-        float specularLightDot = /*v3_dot_product(v0, R) */0 ;
+        float v0Normal[3];
+        v3_normalize(v0Normal, v0);
+        v3_reflect(R, lightRdNormal, normal);
+        float specularLightDot = v3_dot_product(v0Normal, R);
         if (diffuseLightDot > 0 && specularLightDot > 0) {
             specularLight[0] = pow(specularLightDot, 20) * lights[i].color[0] * object.specular_color[0];
             specularLight[1] = pow(specularLightDot, 20) * lights[i].color[1] * object.specular_color[1];
@@ -206,9 +220,10 @@ void illuminate(Object objects[], Object lights[], float* Rd, float* point, Obje
             specularLight[2] = 0.0;
         }
 
-        color[0] += radialAttenuation * 1 * (diffuseLight[0] + specularLight[0]);
-        color[1] += radialAttenuation * 1 * (diffuseLight[1] + specularLight[1]);
-        color[2] += radialAttenuation * 1 * (diffuseLight[2] + specularLight[2]);
+        angularAttenuation = 1;
+        color[0] += radialAttenuation * angularAttenuation * (diffuseLight[0] + specularLight[0]);
+        color[1] += radialAttenuation * angularAttenuation * (diffuseLight[1] + specularLight[1]);
+        color[2] += radialAttenuation * angularAttenuation * (diffuseLight[2] + specularLight[2]);
     }
 }
 
@@ -268,31 +283,38 @@ void copyObject(Object *dstObject, Object *srcObject) {
 * Returns name of object that was hit by ray
 * And stores the position of the hit point in a float pointer
 */
-float shoot(Object objects[], float* Ro, float* Rd, Object *hitObject) {
+float shoot(Object objects[], float* Ro, float* Rd, Object currentObject, Object *hitObject) {
     // Loop through objects
-    float tValue = -1;
+    float returnTValue = -1;
+    float currentTValue;
     for (int i = 0; objects[i].objectKindFlag != 0; i++) {
+        // Skip over camera object or the current object
+        if (objects[i].objectKindFlag == CAMERA || compareObjectPosition(objects[i], currentObject)) {
+            continue;
+        }
         // Check if valid t values found for sphere
-        if (objects[i].objectKindFlag == SPHERE) {
+        else if (objects[i].objectKindFlag == SPHERE) {
             // Ray-sphere intersection test
-            tValue = raysphereIntersection(objects[i], Ro, Rd);
+            currentTValue = raysphereIntersection(objects[i], Ro, Rd);
 
-            if (tValue > 0) {
-                copyObject(hitObject, &objects[i]);
+            if (currentTValue > 0) {
+                if (returnTValue == -1 || currentTValue < returnTValue) {
+                    returnTValue = currentTValue;
+                    copyObject(hitObject, &objects[i]);
+                }
             }
         }
         // Check if valid t values found for plane
         else if (objects[i].objectKindFlag == PLANE) {
             // Ray-plane intersection test
-            tValue = rayplaneIntersection(objects[i], Ro, Rd);
+            currentTValue = rayplaneIntersection(objects[i], Ro, Rd);
 
-            if (tValue > 0.0) {
-                copyObject(hitObject, &objects[i]);
+            if (currentTValue > 0) {
+                if (returnTValue == -1 || currentTValue < returnTValue) {
+                    returnTValue = currentTValue;
+                    copyObject(hitObject, &objects[i]);
+                }
             }
-        }
-        // Skip over camera object
-        else if (objects[i].objectKindFlag == CAMERA) {
-            continue;
         }
         // Assume gone through all objects
         else {
@@ -300,7 +322,15 @@ float shoot(Object objects[], float* Ro, float* Rd, Object *hitObject) {
         }
     }
 
-    return tValue;
+    return returnTValue;
+}
+
+/*
+* Return true if the two object's positions are the same, implying
+* that they are the same object
+*/
+bool compareObjectPosition(Object obj1, Object obj2) {
+    return obj1.position[0] == obj2.position[0] && obj1.position[1] == obj2.position[1] && obj1.position[2] == obj2.position[2];
 }
 
 /*
@@ -492,6 +522,9 @@ int main(int argc, char** argv) {
 	}
     }
     
+    for (int i = 0; i < 5; i++) {
+        printf("+++%d", objects[i].objectKindFlag);
+    }
     if (objectArrayIndex > 128) {
         fprintf(stderr, "Number of objects exceeds maximum value (128), remaining objects will be ignored.");
     }
@@ -547,12 +580,16 @@ int main(int argc, char** argv) {
             // Shoot ray out into scene; if object hit, return object and its color
             Object hitObject;
             float tValue = -1;
-            tValue = shoot(objects, camera.position, pixVectorNormal, &hitObject);
+            tValue = shoot(objects, camera.position, pixVectorNormal, camera, &hitObject);
 
             // Get illuminate value from illuminate function
             float hitObjectColor[3];
             if(tValue > -1) {
-                illuminate(objects, lights, pixVectorNormal, pixVector, hitObject, hitObjectColor);
+                float point[3];
+                point[0] = camera.position[0] + (pixVectorNormal[0] * tValue);
+                point[1] = camera.position[1] + (pixVectorNormal[1] * tValue);
+                point[2] = camera.position[2] + (pixVectorNormal[2] * tValue);
+                illuminate(objects, lights, pixVectorNormal, point, hitObject, hitObjectColor);
                 adjustColor(hitObjectColor);
             }
             else {
