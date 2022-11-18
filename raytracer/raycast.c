@@ -115,7 +115,54 @@ void readProperties(FILE *inputfh, Object *curr_object) {
     free(prop);
 }
 
-void illuminate(Object objects[], Object lights[], float* Rd, float* point, Object object, float* color) {
+float* shade(Object objects[], Object lights[], Object object, float* point, float* Rd, int level) {
+    /* MAX RECURSION LEVEL = 7
+    * Set object_color to black
+    * 
+    * if (recursion_level <= 0) {
+    *   return;
+    * }
+    * for all lights:
+        diffuse_color & specular_color calculations
+    * 
+    
+    * if reflectivity > 0:
+    *   illuminate(recursion_level-1, reflected_color)
+    *   final_color = (1 - reflectivity) * object_color + reflectivity * reflected_color
+    */
+    
+    // Set the background color (black)
+    float* color;
+    color[0] = 0.0;
+    color[1] = 0.0;
+    color[2] = 0.0;
+
+    if (level > object.reflectivity) { // TODO: double check that reflectivity = max_recursion_level
+        return color;
+    }
+    else {
+        float* reflectedRd;
+        // TODO: reflect Rd
+
+        // Shoot "bounce" ray from point in direction of reflected Rd
+        Object *hitObject;
+        float tValue = shoot(objects, point, reflectedRd, object, hitObject);
+
+        // If no object hit, exit function and keep pixel color as the background color
+        if (tValue == -1) {
+            return color;
+        }
+        // Assume ray hit an object
+        else {
+            float* m_color = shade(objects, lights, hitObject, point + tValue * reflectedRd, reflectedRd, level + 1); //TODO: fix 4th parameter
+            illuminate(objects, lights, point, object, color);
+        }
+
+        return color;
+    }
+}
+
+void illuminate(Object objects[], Object lights[], float* point, Object object, float* color) {
     // Set default color to black
     color[0] = 0.0;
     color[1] = 0.0;
