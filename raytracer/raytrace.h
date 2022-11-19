@@ -61,8 +61,7 @@ typedef struct Object {
 
 // function prototypes
 void readProperties(FILE *inputfh, Object *curr_object);
-float* shade(Object objects[], Object lights[], Object object, float* point, float* Rd, int level);
-void illuminate(Object objects[], Object lights[], float* point, Object object, float* color);
+void illuminate(Object objects[], Object lights[], float* point, Object object, float* Rd, float* color, int recursionLevel);
 void adjustColor(float* color);
 void copyObject(Object *dstObject, Object *srcObject);
 float shoot(Object objects[], float* Ro, float* Rd, Object currentObject, Object *hitObject);
