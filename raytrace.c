@@ -6,14 +6,14 @@
 * Loops for all object properties and
 * Stores values in passed object parameter
 */
-void readProperties(FILE *inputfh, Object *curr_object) {
-    char* prop = (char *)malloc(sizeof(char *));
+void read_properties(FILE *inputfh, Object *curr_object) {
+    char *prop = (char *)malloc(sizeof(char *));
 
     // loop to read all object properties
     bool finished = false;
     while (!finished && !feof(inputfh)) {
         // read camera properties
-        if (curr_object->objectKindFlag == CAMERA) {
+        if (curr_object->object_kind_flag == CAMERA) {
             fscanf(inputfh, "%s ", prop);
             if (strcmp(prop, "width:") == 0) {
                 fscanf(inputfh, "%f,", &curr_object->width);
@@ -27,7 +27,7 @@ void readProperties(FILE *inputfh, Object *curr_object) {
             }
         }
         // read sphere properties
-        else if (curr_object->objectKindFlag == SPHERE) {
+        else if (curr_object->object_kind_flag == SPHERE) {
             fscanf(inputfh, "%s", prop);
             if (strcmp(prop, "color:") == 0) {
                 fscanf(inputfh, " [%f, %f, %f],", &curr_object->color[0], &curr_object->color[1], &curr_object->color[2]);
@@ -53,7 +53,7 @@ void readProperties(FILE *inputfh, Object *curr_object) {
             }            
         }
         // read plane properties
-        else if (curr_object->objectKindFlag == PLANE) {
+        else if (curr_object->object_kind_flag == PLANE) {
             fscanf(inputfh, "%s", prop);
             if (strcmp(prop, "color:") == 0) {
                 fscanf(inputfh, " [%f, %f, %f],", &curr_object->color[0], &curr_object->color[1], &curr_object->color[2]);
@@ -79,7 +79,7 @@ void readProperties(FILE *inputfh, Object *curr_object) {
             }
         }
 	// read light properties
-	else if (curr_object->objectKindFlag == LIGHT) {
+	else if (curr_object->object_kind_flag == LIGHT) {
             fscanf(inputfh, "%s", prop);
             if (strcmp(prop, "color:") == 0) {
                 fscanf(inputfh, " [%f, %f, %f],", &curr_object->color[0], &curr_object->color[1], &curr_object->color[2]);
@@ -87,48 +87,48 @@ void readProperties(FILE *inputfh, Object *curr_object) {
             else if (strcmp(prop, "position:") == 0) {
                 fscanf(inputfh, " [%f, %f, %f],", &curr_object->position[0], &curr_object->position[1], &curr_object->position[2]);
             }
-	    else if (strcmp(prop, "radial-a0:") == 0) {
+            else if (strcmp(prop, "radial-a0:") == 0) {
                 fscanf(inputfh, " %f,", &curr_object->radial_a0);
-	    }
-	    else if (strcmp(prop, "radial-a1:") == 0) {
+            }
+            else if (strcmp(prop, "radial-a1:") == 0) {
                 fscanf(inputfh, " %f,", &curr_object->radial_a1);
-	    }
-	    else if (strcmp(prop, "radial-a2:") == 0) {
+            }
+            else if (strcmp(prop, "radial-a2:") == 0) {
                 fscanf(inputfh, " %f,", &curr_object->radial_a2);
-	    }
-	    else if (strcmp(prop, "angular-a0:") == 0) {
+            }
+            else if (strcmp(prop, "angular-a0:") == 0) {
                 fscanf(inputfh, " %f,", &curr_object->angular_a0);
-	    }
-	    else if (strcmp(prop, "theta:") == 0) {
+            }
+            else if (strcmp(prop, "theta:") == 0) {
                 fscanf(inputfh, " %f,", &curr_object->theta);
-	    }
+            }
             else if (strcmp(prop, "direction:") == 0) {
                 fscanf(inputfh, " [%f, %f, %f],", &curr_object->direction[0], &curr_object->direction[1], &curr_object->direction[2]);
             }
-	    else {
+            else {
                 fseek(inputfh, -strlen(prop) - 1, SEEK_CUR);
                 finished = true;
-	    }
-	}
+            }
+        }
     }
 
     free(prop);
 }
 
-void illuminate(Object objects[], Object lights[], float* point, Object object, float* Rd, float* color, int recursionLevel) {
-    float currentColor[3];
+void illuminate(Object objects[], Object lights[], float *point, Object object, float *Rd, float *color, int recursion_level) {
+    float current_color[3];
     
-    if (recursionLevel == 1) {
-        currentColor[0] = 0.0;
-        currentColor[1] = 0.0;
-        currentColor[2] = 0.0;
+    if (recursion_level == 1) {
+        current_color[0] = 0.0;
+        current_color[1] = 0.0;
+        current_color[2] = 0.0;
     }
-    else if (recursionLevel > MAX_RECURSION_LEVEL) {
+    else if (recursion_level > MAX_RECURSION_LEVEL) {
         return;
     }
     
     // Loop through all lights found
-    for (int i = 0; lights[i].objectKindFlag != DEFAULT; i++) {
+    for (int i = 0; lights[i].object_kind_flag != DEFAULT; i++) {
         // Shoot ray from point to current light's position;
         // If t value indicates point is in shadow, continue
         float lightRo[3];
@@ -138,14 +138,14 @@ void illuminate(Object objects[], Object lights[], float* point, Object object, 
 
         // Calculate Rd (distance from point to light)
         float lightRd[3];
-        float lightRdNormal[3];
+        float lightRd_normal[3];
         v3_from_points(lightRd, lights[i].position, point);
-        v3_normalize(lightRdNormal, lightRd);
+        v3_normalize(lightRd_normal, lightRd);
 
         // Shoot ray from point to light
         float tValue = -1;
-        Object hitObject;
-        tValue = shoot(objects, lightRo, lightRd, object, &hitObject);
+        Object hit_object;
+        tValue = shoot(objects, lightRo, lightRd, object, &hit_object);
 
         if(tValue > 0 && tValue < v3_length(lightRd)) {
             continue;
@@ -153,7 +153,7 @@ void illuminate(Object objects[], Object lights[], float* point, Object object, 
 
         // Calculate radial attenuation
         float distance = v3_length(lightRd);
-        float radialAttenuation = 1 / (lights[i].radial_a0 + lights[i].radial_a1 * distance + lights[i].radial_a2 * distance * distance);
+        float radial_attenuation = 1 / (lights[i].radial_a0 + lights[i].radial_a1 * distance + lights[i].radial_a2 * distance * distance);
 
         // Calculate angular attenuation
         float v0[3];
@@ -162,74 +162,74 @@ void illuminate(Object objects[], Object lights[], float* point, Object object, 
         v0[2] = lightRd[2] * -1;
 
         // Check if the current light is a spot light; set angular attenuation to 1 if not
-        float angularAttenuation;
+        float angular_attenuation;
         if (lights[i].theta == 0) {
-            angularAttenuation = 1.0;
+            angular_attenuation = 1.0;
         }
         // Assume current light is a spot light
         else {            
-            float angularAttenuationDot = v3_dot_product(v0, lights[i].direction);
-            float thetaRadians = (lights[i].theta * PI) / 180;
+            float angular_attenuationDot = v3_dot_product(v0, lights[i].direction);
+            float theta_radians = (lights[i].theta * PI) / 180;
 
-            if (angularAttenuationDot < cos(thetaRadians)) {
-                angularAttenuation = 0.0;
+            if (angular_attenuationDot < cos(theta_radians)) {
+                angular_attenuation = 0.0;
             }
             else {
-                angularAttenuation = pow(angularAttenuationDot, lights[i].angular_a0);
+                angular_attenuation = pow(angular_attenuationDot, lights[i].angular_a0);
             }
         }
 
         // Calculate diffuse light
-        float diffuseLight[3];
+        float diffuse_light[3];
         float normal[3];
-        if (object.objectKindFlag == SPHERE) {
+        if (object.object_kind_flag == SPHERE) {
             normal[0] = point[0] - object.position[0];
             normal[1] = point[1] - object.position[1];
             normal[2] = point[2] - object.position[2];
         }
-        else if (object.objectKindFlag == PLANE) {
+        else if (object.object_kind_flag == PLANE) {
             normal[0] = object.pn[0];
             normal[1] = object.pn[1];
             normal[2] = object.pn[2];
         }
         v3_normalize(normal, normal);
-        float diffuseLightDot = v3_dot_product(normal, lightRdNormal);
+        float diffuse_lightDot = v3_dot_product(normal, lightRd_normal);
 
         // Dot product of light vector and object's normal must be greater than 0 in order to contribute diffuse light
         // Otherwise it is 0
-        if (diffuseLightDot > 0) {
-            diffuseLight[0] = diffuseLightDot * lights[i].color[0] * object.diffuse_color[0];
-            diffuseLight[1] = diffuseLightDot * lights[i].color[1] * object.diffuse_color[1];
-            diffuseLight[2] = diffuseLightDot * lights[i].color[2] * object.diffuse_color[2];
+        if (diffuse_lightDot > 0) {
+            diffuse_light[0] = diffuse_lightDot * lights[i].color[0] * object.diffuse_color[0];
+            diffuse_light[1] = diffuse_lightDot * lights[i].color[1] * object.diffuse_color[1];
+            diffuse_light[2] = diffuse_lightDot * lights[i].color[2] * object.diffuse_color[2];
         }
         else {
-            diffuseLight[0] = 0.0;
-            diffuseLight[1] = 0.0;
-            diffuseLight[2] = 0.0;
+            diffuse_light[0] = 0.0;
+            diffuse_light[1] = 0.0;
+            diffuse_light[2] = 0.0;
         }
 
         // Calculate specular light
-        float specularLight[3];
+        float specular_light[3];
         float R[3];
-        float v0Normal[3];
-        v3_normalize(v0Normal, v0);
-        v3_reflect(R, lightRdNormal, normal);
-        float specularLightDot = v3_dot_product(v0Normal, R);
-        if (diffuseLightDot > 0 && specularLightDot > 0) {
-            specularLight[0] = pow(specularLightDot, 20) * lights[i].color[0] * object.specular_color[0];
-            specularLight[1] = pow(specularLightDot, 20) * lights[i].color[1] * object.specular_color[1];
-            specularLight[2] = pow(specularLightDot, 20) * lights[i].color[2] * object.specular_color[2];
+        float v0_normal[3];
+        v3_normalize(v0_normal, v0);
+        v3_reflect(R, lightRd_normal, normal);
+        float specular_lightDot = v3_dot_product(v0_normal, R);
+        if (diffuse_lightDot > 0 && specular_lightDot > 0) {
+            specular_light[0] = pow(specular_lightDot, 20) * lights[i].color[0] * object.specular_color[0];
+            specular_light[1] = pow(specular_lightDot, 20) * lights[i].color[1] * object.specular_color[1];
+            specular_light[2] = pow(specular_lightDot, 20) * lights[i].color[2] * object.specular_color[2];
         }
         else {
-            specularLight[0] = 0.0;
-            specularLight[1] = 0.0;
-            specularLight[2] = 0.0;
+            specular_light[0] = 0.0;
+            specular_light[1] = 0.0;
+            specular_light[2] = 0.0;
         }
 
-        angularAttenuation = 1;
-        currentColor[0] += radialAttenuation * angularAttenuation * (diffuseLight[0] + specularLight[0]);
-        currentColor[1] += radialAttenuation * angularAttenuation * (diffuseLight[1] + specularLight[1]);
-        currentColor[2] += radialAttenuation * angularAttenuation * (diffuseLight[2] + specularLight[2]);
+        angular_attenuation = 1;
+        current_color[0] += radial_attenuation * angular_attenuation * (diffuse_light[0] + specular_light[0]);
+        current_color[1] += radial_attenuation * angular_attenuation * (diffuse_light[1] + specular_light[1]);
+        current_color[2] += radial_attenuation * angular_attenuation * (diffuse_light[2] + specular_light[2]);
     }
 
     if (object.reflectivity > 0) {
@@ -238,12 +238,12 @@ void illuminate(Object objects[], Object lights[], float* point, Object object, 
 
         // Calculate object's normal
         float normal[3];
-        if (object.objectKindFlag == SPHERE) {
+        if (object.object_kind_flag == SPHERE) {
             normal[0] = point[0] - object.position[0];
             normal[1] = point[1] - object.position[1];
             normal[2] = point[2] - object.position[2];
         }
-        else if (object.objectKindFlag == PLANE) {
+        else if (object.object_kind_flag == PLANE) {
             normal[0] = object.pn[0];
             normal[1] = object.pn[1];
             normal[2] = object.pn[2];
@@ -253,8 +253,8 @@ void illuminate(Object objects[], Object lights[], float* point, Object object, 
         v3_normalize(reflectedRd, reflectedRd);
 
         // Shoot "bounce" ray from point in direction of reflected Rd
-        Object reflectedObject;
-        float tValue = shoot(objects, point, reflectedRd, object, &reflectedObject);
+        Object reflected_object;
+        float tValue = shoot(objects, point, reflectedRd, object, &reflected_object);
 
         // If no object hit, exit function and keep pixel color as the background color
         if (tValue == -1) {
@@ -268,21 +268,21 @@ void illuminate(Object objects[], Object lights[], float* point, Object object, 
             reflectedPoint[2] = point[2] + (tValue * reflectedRd[2]);
 
             float reflectedColor[3];
-            illuminate(objects, lights, reflectedPoint, reflectedObject, reflectedRd, reflectedColor, recursionLevel + 1);
+            illuminate(objects, lights, reflectedPoint, reflected_object, reflectedRd, reflectedColor, recursion_level + 1);
             
             printf("%f %f %f\n", reflectedColor[0], reflectedColor[1], reflectedColor[2]);
-            currentColor[0] = (1 - object.reflectivity) * currentColor[0] + (object.reflectivity * reflectedColor[0]);
-            currentColor[1] = (1 - object.reflectivity) * currentColor[1] + (object.reflectivity * reflectedColor[1]);
-            currentColor[2] = (1 - object.reflectivity) * currentColor[2] + (object.reflectivity * reflectedColor[2]);
+            current_color[0] = (1 - object.reflectivity) * current_color[0] + (object.reflectivity * reflectedColor[0]);
+            current_color[1] = (1 - object.reflectivity) * current_color[1] + (object.reflectivity * reflectedColor[1]);
+            current_color[2] = (1 - object.reflectivity) * current_color[2] + (object.reflectivity * reflectedColor[2]);
         }
     }
 
-    color[0] = currentColor[0];
-    color[1] = currentColor[1];
-    color[2] = currentColor[2];
+    color[0] = current_color[0];
+    color[1] = current_color[1];
+    color[2] = current_color[2];
 }
 
-void adjustColor(float* color) {
+void adjust_color(float *color) {
     for (int i = 0; i < 3; i++) {
         if (color[i] > 1) {
             color[i] = 1;
@@ -293,44 +293,44 @@ void adjustColor(float* color) {
     }
 }
 
-void copyObject(Object *dstObject, Object *srcObject) {
-    dstObject->objectKindFlag = srcObject->objectKindFlag;
+void copy_object(Object *dst_object, Object *src_object) {
+    dst_object->object_kind_flag = src_object->object_kind_flag;
     
-    dstObject->position[0] = srcObject->position[0];
-    dstObject->position[1] = srcObject->position[1];
-    dstObject->position[2] = srcObject->position[2];
+    dst_object->position[0] = src_object->position[0];
+    dst_object->position[1] = src_object->position[1];
+    dst_object->position[2] = src_object->position[2];
     
-    dstObject->color[0] = srcObject->color[0];
-    dstObject->color[1] = srcObject->color[1];
-    dstObject->color[2] = srcObject->color[2];
-    dstObject->diffuse_color[0] = srcObject->diffuse_color[0];
-    dstObject->diffuse_color[1] = srcObject->diffuse_color[1];
-    dstObject->diffuse_color[2] = srcObject->diffuse_color[2];
-    dstObject->specular_color[0] = srcObject->specular_color[0];
-    dstObject->specular_color[1] = srcObject->specular_color[1];
-    dstObject->specular_color[2] = srcObject->specular_color[2];
+    dst_object->color[0] = src_object->color[0];
+    dst_object->color[1] = src_object->color[1];
+    dst_object->color[2] = src_object->color[2];
+    dst_object->diffuse_color[0] = src_object->diffuse_color[0];
+    dst_object->diffuse_color[1] = src_object->diffuse_color[1];
+    dst_object->diffuse_color[2] = src_object->diffuse_color[2];
+    dst_object->specular_color[0] = src_object->specular_color[0];
+    dst_object->specular_color[1] = src_object->specular_color[1];
+    dst_object->specular_color[2] = src_object->specular_color[2];
     
-    dstObject->reflectivity = srcObject->reflectivity;
+    dst_object->reflectivity = src_object->reflectivity;
     
-    dstObject->width = srcObject->width;
-    dstObject->height = srcObject->height;
+    dst_object->width = src_object->width;
+    dst_object->height = src_object->height;
     
-    dstObject->d = srcObject->d;
-    dstObject->pn[0] = srcObject->pn[0];
-    dstObject->pn[1] = srcObject->pn[1];
-    dstObject->pn[2] = srcObject->pn[2];
+    dst_object->d = src_object->d;
+    dst_object->pn[0] = src_object->pn[0];
+    dst_object->pn[1] = src_object->pn[1];
+    dst_object->pn[2] = src_object->pn[2];
     
-    dstObject->radius = srcObject->radius;
+    dst_object->radius = src_object->radius;
     
-    dstObject->radial_a0 = srcObject->radial_a0;
-    dstObject->radial_a1 = srcObject->radial_a1;
-    dstObject->radial_a2 = srcObject->radial_a2;
+    dst_object->radial_a0 = src_object->radial_a0;
+    dst_object->radial_a1 = src_object->radial_a1;
+    dst_object->radial_a2 = src_object->radial_a2;
     
-    dstObject->theta = srcObject->theta;
-    dstObject->angular_a0 = srcObject->angular_a0;
-    dstObject->direction[0] = srcObject->direction[0];
-    dstObject->direction[1] = srcObject->direction[1];
-    dstObject->direction[2] = srcObject->direction[2];
+    dst_object->theta = src_object->theta;
+    dst_object->angular_a0 = src_object->angular_a0;
+    dst_object->direction[0] = src_object->direction[0];
+    dst_object->direction[1] = src_object->direction[1];
+    dst_object->direction[2] = src_object->direction[2];
 }
 
 /*
@@ -338,36 +338,36 @@ void copyObject(Object *dstObject, Object *srcObject) {
 * Returns name of object that was hit by ray
 * And stores the position of the hit point in a float pointer
 */
-float shoot(Object objects[], float* Ro, float* Rd, Object currentObject, Object *hitObject) {
+float shoot(Object objects[], float *Ro, float *Rd, Object curr_object, Object *hit_object) {
     // Loop through objects
-    float returnTValue = -1;
-    float currentTValue;
-    for (int i = 0; objects[i].objectKindFlag != 0; i++) {
+    float return_TValue = -1;
+    float curr_TValue;
+    for (int i = 0; objects[i].object_kind_flag != 0; i++) {
         // Skip over camera object or the current object
-        if (objects[i].objectKindFlag == CAMERA || compareObjectPosition(objects[i], currentObject)) {
+        if (objects[i].object_kind_flag == CAMERA || compare_object_position(objects[i], curr_object)) {
             continue;
         }
         // Check if valid t values found for sphere
-        else if (objects[i].objectKindFlag == SPHERE) {
+        else if (objects[i].object_kind_flag == SPHERE) {
             // Ray-sphere intersection test
-            currentTValue = raysphereIntersection(objects[i], Ro, Rd);
+            curr_TValue = ray_sphere_intersection(objects[i], Ro, Rd);
 
-            if (currentTValue > 0) {
-                if (returnTValue == -1 || currentTValue < returnTValue) {
-                    returnTValue = currentTValue;
-                    copyObject(hitObject, &objects[i]);
+            if (curr_TValue > 0) {
+                if (return_TValue == -1 || curr_TValue < return_TValue) {
+                    return_TValue = curr_TValue;
+                    copy_object(hit_object, &objects[i]);
                 }
             }
         }
         // Check if valid t values found for plane
-        else if (objects[i].objectKindFlag == PLANE) {
+        else if (objects[i].object_kind_flag == PLANE) {
             // Ray-plane intersection test
-            currentTValue = rayplaneIntersection(objects[i], Ro, Rd);
+            curr_TValue = ray_plane_intersection(objects[i], Ro, Rd);
 
-            if (currentTValue > 0) {
-                if (returnTValue == -1 || currentTValue < returnTValue) {
-                    returnTValue = currentTValue;
-                    copyObject(hitObject, &objects[i]);
+            if (curr_TValue > 0) {
+                if (return_TValue == -1 || curr_TValue < return_TValue) {
+                    return_TValue = curr_TValue;
+                    copy_object(hit_object, &objects[i]);
                 }
             }
         }
@@ -377,21 +377,21 @@ float shoot(Object objects[], float* Ro, float* Rd, Object currentObject, Object
         }
     }
 
-    return returnTValue;
+    return return_TValue;
 }
 
 /*
 * Return true if the two object's positions are the same, implying
 * that they are the same object
 */
-bool compareObjectPosition(Object obj1, Object obj2) {
+bool compare_object_position(Object obj1, Object obj2) {
     return obj1.position[0] == obj2.position[0] && obj1.position[1] == obj2.position[1] && obj1.position[2] == obj2.position[2];
 }
 
 /*
 * Calculates the t value for a ray that hits a sphere
 */
-float raysphereIntersection(Object sphere, float* Ro, float* Rd) {
+float ray_sphere_intersection(Object sphere, float *Ro, float *Rd) {
     float a = (Rd[0] * Rd[0]) + (Rd[1] * Rd[1]) + (Rd[2] * Rd[2]);
     float b = 2 * (Rd[0] * (Ro[0] - sphere.position[0])
         + Rd[1] * (Ro[1] - sphere.position[1])
@@ -418,7 +418,7 @@ float raysphereIntersection(Object sphere, float* Ro, float* Rd) {
 /*
 * Calculates the t value for a ray that hits a plane
 */
-float rayplaneIntersection(Object plane, float* Ro, float* Rd) {
+float ray_plane_intersection(Object plane, float *Ro, float *Rd) {
     float numerator = ((plane.pn[0] * Ro[0]) + (plane.pn[1] * Ro[1]) + (plane.pn[2] * Ro[2]));
     numerator += plane.d;
     float denominator = (plane.pn[0] * Rd[0]) + (plane.pn[1] * Rd[1]) + (plane.pn[2] * Rd[2]);
@@ -431,9 +431,9 @@ float rayplaneIntersection(Object plane, float* Ro, float* Rd) {
 * Writes the header and color values from the given image into 
 * a ppm file with a P3 format
 */
-bool write_p3(char* fileName, int width, int height, int maxcol, uint8_t* image) {
+bool write_p3(char *fileName, int width, int height, int maxcol, uint8_t *image) {
     // Open file and check that it was open correctly
-    FILE* fh = fopen(fileName, "w");
+    FILE *fh = fopen(fileName, "w");
     if (fh == NULL) {
         fprintf(stderr, "Error: Output file not found");
         return false;
@@ -453,8 +453,8 @@ bool write_p3(char* fileName, int width, int height, int maxcol, uint8_t* image)
     fclose(fh);
     return true;
 }
-// float raysphereIntersection(Object sphere, float* Ro, float* Rd);
-int main(int argc, char** argv) {
+// float ray_sphere_intersection(Object sphere, float* Ro, float* Rd);
+int main(int argc, char **argv) {
     struct Object objects[128];
     struct Object lights[128];
     
@@ -471,197 +471,197 @@ int main(int argc, char** argv) {
         return 1;
     }
 
-    struct Object currentObject;
-    char* objName = (char *)malloc(sizeof(char *));
+    struct Object curr_object;
+    char* obj_name = (char *)malloc(sizeof(char *));
 
-    int objectArrayIndex = 0;
-    int lightArrayIndex = 0;
+    int object_array_index = 0;
+    int light_array_index = 0;
     // Loop through the input file
-    while (!feof(inputfh) && objectArrayIndex < 128 && lightArrayIndex < 128) {
+    while (!feof(inputfh) && object_array_index < 128 && light_array_index < 128) {
         // Get the name of the object at beginning of current line
-        fscanf(inputfh, "%s,", objName);
+        fscanf(inputfh, "%s,", obj_name);
         // Check if the object is a camera
-        if (strcmp(objName, "camera,") == 0) {
+        if (strcmp(obj_name, "camera,") == 0) {
             // Set default values for camera
-            currentObject.objectKindFlag = CAMERA;
-            currentObject.position[0] = 0;
-            currentObject.position[1] = 0;
-            currentObject.position[2] = 0;
-            currentObject.width = 0;
-            currentObject.height = 0;
+            curr_object.object_kind_flag = CAMERA;
+            curr_object.position[0] = 0;
+            curr_object.position[1] = 0;
+            curr_object.position[2] = 0;
+            curr_object.width = 0;
+            curr_object.height = 0;
 
-	    readProperties(inputfh, &currentObject);
+	    read_properties(inputfh, &curr_object);
         }
         // Check if the object is a sphere
-        else if (strcmp(objName, "sphere,") == 0) {
-            currentObject.objectKindFlag = SPHERE;
+        else if (strcmp(obj_name, "sphere,") == 0) {
+            curr_object.object_kind_flag = SPHERE;
 
             // Set default values for sphere
-            currentObject.color[0] = 0;
-            currentObject.color[1] = 0;
-            currentObject.color[2] = 0;
-            currentObject.diffuse_color[0] = 0;
-            currentObject.diffuse_color[1] = 0;
-            currentObject.diffuse_color[2] = 0;
-            currentObject.specular_color[0] = 0;
-            currentObject.specular_color[1] = 0;
-            currentObject.specular_color[2] = 0;
-            currentObject.position[0] = 0;
-            currentObject.position[1] = 0;
-            currentObject.position[2] = 0;
-            currentObject.radius = 0;
+            curr_object.color[0] = 0;
+            curr_object.color[1] = 0;
+            curr_object.color[2] = 0;
+            curr_object.diffuse_color[0] = 0;
+            curr_object.diffuse_color[1] = 0;
+            curr_object.diffuse_color[2] = 0;
+            curr_object.specular_color[0] = 0;
+            curr_object.specular_color[1] = 0;
+            curr_object.specular_color[2] = 0;
+            curr_object.position[0] = 0;
+            curr_object.position[1] = 0;
+            curr_object.position[2] = 0;
+            curr_object.radius = 0;
 
-            readProperties(inputfh, &currentObject);
+            read_properties(inputfh, &curr_object);
         }
         // Check if the object is a plane
-        else if (strcmp(objName, "plane,") == 0) {
-            currentObject.objectKindFlag = PLANE;
+        else if (strcmp(obj_name, "plane,") == 0) {
+            curr_object.object_kind_flag = PLANE;
 
             // Set default values for plane
-            currentObject.color[0] = 0;
-            currentObject.color[1] = 0;
-            currentObject.color[2] = 0;
-            currentObject.diffuse_color[0] = 0;
-            currentObject.diffuse_color[1] = 0;
-            currentObject.diffuse_color[2] = 0;
-            currentObject.specular_color[0] = 0;
-            currentObject.specular_color[1] = 0;
-            currentObject.specular_color[2] = 0;
-            currentObject.position[0] = 0;
-            currentObject.position[1] = 0;
-            currentObject.position[2] = 0;
-            currentObject.pn[0] = 0;
-            currentObject.pn[1] = 0;
-            currentObject.pn[2] = 0;
+            curr_object.color[0] = 0;
+            curr_object.color[1] = 0;
+            curr_object.color[2] = 0;
+            curr_object.diffuse_color[0] = 0;
+            curr_object.diffuse_color[1] = 0;
+            curr_object.diffuse_color[2] = 0;
+            curr_object.specular_color[0] = 0;
+            curr_object.specular_color[1] = 0;
+            curr_object.specular_color[2] = 0;
+            curr_object.position[0] = 0;
+            curr_object.position[1] = 0;
+            curr_object.position[2] = 0;
+            curr_object.pn[0] = 0;
+            curr_object.pn[1] = 0;
+            curr_object.pn[2] = 0;
 
-	    readProperties(inputfh, &currentObject);
+	    read_properties(inputfh, &curr_object);
 
-            currentObject.d = -(v3_dot_product(currentObject.position, currentObject.pn));
+            curr_object.d = -(v3_dot_product(curr_object.position, curr_object.pn));
         }
         // Check if the object is a light
-        else if (strcmp(objName, "light,") == 0) {
-            currentObject.objectKindFlag = LIGHT;
+        else if (strcmp(obj_name, "light,") == 0) {
+            curr_object.object_kind_flag = LIGHT;
 
-	    // set default values for light
-            currentObject.color[0] = 0;
-            currentObject.color[1] = 0;
-            currentObject.color[2] = 0;
-	    currentObject.position[0] = 0;
-	    currentObject.position[1] = 0;
-	    currentObject.position[2] = 0;
-	    currentObject.radial_a0 = 0;
-	    currentObject.radial_a1 = 0;
-	    currentObject.radial_a2 = 0;
-	    currentObject.theta = 0;
-	    currentObject.angular_a0 = 0;
-	    currentObject.direction[0] = 0;
-	    currentObject.direction[1] = 0;
-	    currentObject.direction[2] = 0;
+	        // set default values for light
+            curr_object.color[0] = 0;
+            curr_object.color[1] = 0;
+            curr_object.color[2] = 0;
+            curr_object.position[0] = 0;
+            curr_object.position[1] = 0;
+            curr_object.position[2] = 0;
+            curr_object.radial_a0 = 0;
+            curr_object.radial_a1 = 0;
+            curr_object.radial_a2 = 0;
+            curr_object.theta = 0;
+            curr_object.angular_a0 = 0;
+            curr_object.direction[0] = 0;
+            curr_object.direction[1] = 0;
+            curr_object.direction[2] = 0;
 
-            readProperties(inputfh, &currentObject);
-	}
+        read_properties(inputfh, &curr_object);
+        }
         // Assume it is an unknown object and throw error
         else {
-            fprintf(stderr, "Error: unknown object found: %s\n", objName);
+            fprintf(stderr, "Error: unknown object found: %s\n", obj_name);
             return 1;
         }
 
         // Add current object to list of objects
-	if (currentObject.objectKindFlag == LIGHT) {
-            lights[lightArrayIndex] = currentObject;
-            lightArrayIndex++;
-	}
-	else {
-            objects[objectArrayIndex] = currentObject;
-            objectArrayIndex++;
-	}
+        if (curr_object.object_kind_flag == LIGHT) {
+            lights[light_array_index] = curr_object;
+            light_array_index++;
+        }
+        else {
+            objects[object_array_index] = curr_object;
+            object_array_index++;
+        }
     }
     
-    if (objectArrayIndex > 128) {
+    if (object_array_index > 128) {
         fprintf(stderr, "Number of objects exceeds maximum value (128), remaining objects will be ignored.");
     }
     fclose(inputfh);
-    free(objName);
+    free(obj_name);
 
     // Find the camera in the list of objects
     Object camera;
-    bool cameraFound = false;
-    for (int i = 0; !cameraFound; i++) {
+    bool camera_found = false;
+    for (int i = 0; !camera_found; i++) {
         camera = objects[i];
 
-        if (camera.objectKindFlag == CAMERA) {
-            cameraFound = true;
+        if (camera.object_kind_flag == CAMERA) {
+            camera_found = true;
         }
     }
 
     // Get data about image size
-    int imageHeight = atoi(argv[1]);
-    int imageWidth = atoi(argv[2]);
-    uint8_t image[imageWidth * imageHeight * 3];
+    int imadge_height = atoi(argv[1]);
+    int imadge_width = atoi(argv[2]);
+    uint8_t image[imadge_width * imadge_height * 3];
 
     // Get data about viewscreen size from camera
-    int viewscreenWidth = camera.width;
-    int viewscreenHeight = camera.height;
+    int viewscreen_width = camera.width;
+    int viewscreen_height = camera.height;
 
     // Calculate pixel width and height based on viewscreen & image size
-    float pixHeight = (float)viewscreenHeight / (float)imageHeight;
-    float pixWidth = (float)viewscreenWidth / (float)imageWidth;
+    float pix_height = (float)viewscreen_height / (float)imadge_height;
+    float pix_width = (float)viewscreen_width / (float)imadge_width;
 
     int imageIndex = 0;
     // Iterate through each row in the image
-    for (int y = 0; y < imageHeight; y++) {
+    for (int y = 0; y < imadge_height; y++) {
         // Get the current pixel's y-coord
-        float pixY = (-1 * viewscreenHeight) / 2 + pixHeight * (y + 0.5);
+        float pixY = (-1 * viewscreen_height) / 2 + pix_height * (y + 0.5);
 
         // Iterate through each column of the image
-        for (int x = 0; x < imageWidth; x++) {
+        for (int x = 0; x < imadge_width; x++) {
             // Get the current pixel's x-coord
-            float pixX = (-1 * viewscreenWidth) / 2 + pixWidth * (x + 0.5);
+            float pixX = (-1 * viewscreen_width) / 2 + pix_width * (x + 0.5);
 
             // Get the current pixels's z-coord
             // (always 1 unit away from camera in the -z direction)
             float pixZ = -1;
 
             // Create vector out of pixel values
-            float pixVector[] = {pixX, pixY, pixZ};
+            float pix_vector[] = {pixX, pixY, pixZ};
 
             // Normalize pixel vector
-            float pixVectorNormal[3];
-            v3_normalize(pixVectorNormal, pixVector);
+            float pix_vector_normal[3];
+            v3_normalize(pix_vector_normal, pix_vector);
 
             // Shoot ray out into scene; if object hit, return object and its color
-            Object hitObject;
+            Object hit_object;
             float tValue = -1;
-            tValue = shoot(objects, camera.position, pixVectorNormal, camera, &hitObject);
+            tValue = shoot(objects, camera.position, pix_vector_normal, camera, &hit_object);
 
             // Get illuminate value from illuminate function
-            float hitObjectColor[3];
+            float hit_object_color[3];
             if(tValue > -1) {
                 float point[3];
-                int recursionLevel = 1;
-                point[0] = camera.position[0] + (pixVectorNormal[0] * tValue);
-                point[1] = camera.position[1] + (pixVectorNormal[1] * tValue);
-                point[2] = camera.position[2] + (pixVectorNormal[2] * tValue);
-                illuminate(objects, lights, point, hitObject, pixVectorNormal, hitObjectColor, recursionLevel);
-                adjustColor(hitObjectColor);
+                int recursion_level = 1;
+                point[0] = camera.position[0] + (pix_vector_normal[0] * tValue);
+                point[1] = camera.position[1] + (pix_vector_normal[1] * tValue);
+                point[2] = camera.position[2] + (pix_vector_normal[2] * tValue);
+                illuminate(objects, lights, point, hit_object, pix_vector_normal, hit_object_color, recursion_level);
+                adjust_color(hit_object_color);
             }
             else {
-            	hitObjectColor[0] = 0.0;
-                hitObjectColor[1] = 0.0;
-                hitObjectColor[2] = 0.0;
+            	hit_object_color[0] = 0.0;
+                hit_object_color[1] = 0.0;
+                hit_object_color[2] = 0.0;
             }
 
             // Color current pixel in image  
-            image[((imageHeight - y - 1) * imageWidth + x) * 3] = hitObjectColor[0] * 255;
-            image[(((imageHeight - y - 1) * imageWidth + x) * 3) + 1] = hitObjectColor[1] * 255;
-            image[(((imageHeight - y - 1) * imageWidth + x) * 3) + 2] = hitObjectColor[2] * 255;
+            image[((imadge_height - y - 1) * imadge_width + x) * 3] = hit_object_color[0] * 255;
+            image[(((imadge_height - y - 1) * imadge_width + x) * 3) + 1] = hit_object_color[1] * 255;
+            image[(((imadge_height - y - 1) * imadge_width + x) * 3) + 2] = hit_object_color[2] * 255;
 
             imageIndex += 3;
         }
     }
 
     // Write color values in image to ppm file with p3 format
-    write_p3(argv[4], imageWidth, imageHeight, 255, image);
+    write_p3(argv[4], imadge_width, imadge_height, 255, image);
     
     return 0;
 }
