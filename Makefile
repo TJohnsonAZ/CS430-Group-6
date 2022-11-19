@@ -1,7 +1,7 @@
-all: ppmrw
+all: raytrace
 
-ppmrw:
-	gcc -Wall ppmrw.c -o ppmrw.o
+raytrace:
+	gcc -Wall -std=c99 raytrace.c v3math.c -o raytrace -lm
 
 clean:
-	rm -rf *.o *~
+	rm -rf raytrace *~
