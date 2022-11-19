@@ -17,6 +17,7 @@
 #define PLANE 3
 #define LIGHT 4
 #define PI 3.141592653
+#define MAX_RECURSION_LEVEL 7
 
 // structures
 typedef struct Object {
@@ -26,6 +27,9 @@ typedef struct Object {
         float diffuse_color[3];
         float specular_color[3];
 	float reflectivity;
+        float radial_a0;
+        float radial_a1;
+        float radial_a2;
   
 	union {
             // Camera values
@@ -46,9 +50,6 @@ typedef struct Object {
 	
 	// Light values
 	union {
-            float radial_a0;
-            float radial_a1;
-            float radial_a2;
             // Spot light values
             struct {
                 float theta;

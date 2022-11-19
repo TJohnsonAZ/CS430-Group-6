@@ -116,36 +116,23 @@ void readProperties(FILE *inputfh, Object *curr_object) {
 }
 
 float* shade(Object objects[], Object lights[], Object object, float* point, float* Rd, int level) {
-    /* MAX RECURSION LEVEL = 7
-    * Set object_color to black
-    * 
-    * if (recursion_level <= 0) {
-    *   return;
-    * }
-    * for all lights:
-        diffuse_color & specular_color calculations
-    * 
-    
-    * if reflectivity > 0:
-    *   illuminate(recursion_level-1, reflected_color)
-    *   final_color = (1 - reflectivity) * object_color + reflectivity * reflected_color
-    */
-    
     // Set the background color (black)
-    float* color;
+    float* color = NULL;
     color[0] = 0.0;
     color[1] = 0.0;
     color[2] = 0.0;
-
-    if (level > object.reflectivity) { // TODO: double check that reflectivity = max_recursion_level
+    
+    // return black if over max recursion level
+    if (level > MAX_RECURSION_LEVEL) {
         return color;
-    }
+    } 
     else {
-        float* reflectedRd;
-        // TODO: reflect Rd
+	// reflect Rd
+        float* reflectedRd = NULL;
+	v3_reflect(reflectedRd, Rd, object.position);
 
         // Shoot "bounce" ray from point in direction of reflected Rd
-        Object *hitObject;
+        Object *hitObject = NULL;
         float tValue = shoot(objects, point, reflectedRd, object, hitObject);
 
         // If no object hit, exit function and keep pixel color as the background color
@@ -154,7 +141,13 @@ float* shade(Object objects[], Object lights[], Object object, float* point, flo
         }
         // Assume ray hit an object
         else {
-            float* m_color = shade(objects, lights, hitObject, point + tValue * reflectedRd, reflectedRd, level + 1); //TODO: fix 4th parameter
+	    float *shadeParam = NULL;
+	    shadeParam[0] = point[0] + tValue;
+	    shadeParam[1] = point[1] + tValue;
+	    shadeParam[2] = point[2] + tValue;
+	    v3_add(shadeParam, shadeParam, reflectedRd);
+
+            float* m_color = shade(objects, lights, *hitObject, shadeParam, reflectedRd, level + 1); 
             illuminate(objects, lights, point, object, color);
         }
 
@@ -550,7 +543,7 @@ int main(int argc, char** argv) {
 	    currentObject.direction[1] = 0;
 	    currentObject.direction[2] = 0;
 
-        readProperties(inputfh, &currentObject);
+            readProperties(inputfh, &currentObject);
 	}
         // Assume it is an unknown object and throw error
         else {
@@ -636,7 +629,7 @@ int main(int argc, char** argv) {
                 point[0] = camera.position[0] + (pixVectorNormal[0] * tValue);
                 point[1] = camera.position[1] + (pixVectorNormal[1] * tValue);
                 point[2] = camera.position[2] + (pixVectorNormal[2] * tValue);
-                illuminate(objects, lights, pixVectorNormal, point, hitObject, hitObjectColor);
+                illuminate(objects, lights, point, hitObject, hitObjectColor);
                 adjustColor(hitObjectColor);
             }
             else {
