@@ -115,51 +115,17 @@ void readProperties(FILE *inputfh, Object *curr_object) {
     free(prop);
 }
 
-float* shade(Object objects[], Object lights[], Object object, float* point, float* Rd, int level) {
-    // Set the background color (black)
-    float* color = NULL;
-    color[0] = 0.0;
-    color[1] = 0.0;
-    color[2] = 0.0;
+void illuminate(Object objects[], Object lights[], float* point, Object object, float* Rd, float* color, int recursionLevel) {
+    float currentColor[3];
     
-    // return black if over max recursion level
-    if (level > MAX_RECURSION_LEVEL) {
-        return color;
-    } 
-    else {
-	// reflect Rd
-        float* reflectedRd = NULL;
-	v3_reflect(reflectedRd, Rd, object.position);
-
-        // Shoot "bounce" ray from point in direction of reflected Rd
-        Object *hitObject = NULL;
-        float tValue = shoot(objects, point, reflectedRd, object, hitObject);
-
-        // If no object hit, exit function and keep pixel color as the background color
-        if (tValue == -1) {
-            return color;
-        }
-        // Assume ray hit an object
-        else {
-	    float *shadeParam = NULL;
-	    shadeParam[0] = point[0] + tValue;
-	    shadeParam[1] = point[1] + tValue;
-	    shadeParam[2] = point[2] + tValue;
-	    v3_add(shadeParam, shadeParam, reflectedRd);
-
-            float* m_color = shade(objects, lights, *hitObject, shadeParam, reflectedRd, level + 1); 
-            illuminate(objects, lights, point, object, color);
-        }
-
-        return color;
+    if (recursionLevel == 1) {
+        currentColor[0] = 0.0;
+        currentColor[1] = 0.0;
+        currentColor[2] = 0.0;
     }
-}
-
-void illuminate(Object objects[], Object lights[], float* point, Object object, float* color) {
-    // Set default color to black
-    color[0] = 0.0;
-    color[1] = 0.0;
-    color[2] = 0.0;
+    else if (recursionLevel > MAX_RECURSION_LEVEL) {
+        return;
+    }
     
     // Loop through all lights found
     for (int i = 0; lights[i].objectKindFlag != DEFAULT; i++) {
@@ -261,10 +227,59 @@ void illuminate(Object objects[], Object lights[], float* point, Object object, 
         }
 
         angularAttenuation = 1;
-        color[0] += radialAttenuation * angularAttenuation * (diffuseLight[0] + specularLight[0]);
-        color[1] += radialAttenuation * angularAttenuation * (diffuseLight[1] + specularLight[1]);
-        color[2] += radialAttenuation * angularAttenuation * (diffuseLight[2] + specularLight[2]);
+        currentColor[0] += radialAttenuation * angularAttenuation * (diffuseLight[0] + specularLight[0]);
+        currentColor[1] += radialAttenuation * angularAttenuation * (diffuseLight[1] + specularLight[1]);
+        currentColor[2] += radialAttenuation * angularAttenuation * (diffuseLight[2] + specularLight[2]);
     }
+
+    if (object.reflectivity > 0) {
+        // Get reflected Rd
+        float reflectedRd[3];
+
+        // Calculate object's normal
+        float normal[3];
+        if (object.objectKindFlag == SPHERE) {
+            normal[0] = point[0] - object.position[0];
+            normal[1] = point[1] - object.position[1];
+            normal[2] = point[2] - object.position[2];
+        }
+        else if (object.objectKindFlag == PLANE) {
+            normal[0] = object.pn[0];
+            normal[1] = object.pn[1];
+            normal[2] = object.pn[2];
+        }
+
+        v3_reflect(reflectedRd, Rd, normal);
+        v3_normalize(reflectedRd, reflectedRd);
+
+        // Shoot "bounce" ray from point in direction of reflected Rd
+        Object reflectedObject;
+        float tValue = shoot(objects, point, reflectedRd, object, &reflectedObject);
+
+        // If no object hit, exit function and keep pixel color as the background color
+        if (tValue == -1) {
+            return;
+        }
+        // Assume ray hit an object
+        else {
+            float reflectedPoint[3];
+            reflectedPoint[0] = point[0] + (tValue * reflectedRd[0]);
+            reflectedPoint[1] = point[1] + (tValue * reflectedRd[1]);
+            reflectedPoint[2] = point[2] + (tValue * reflectedRd[2]);
+
+            float reflectedColor[3];
+            illuminate(objects, lights, reflectedPoint, reflectedObject, reflectedRd, reflectedColor, recursionLevel + 1);
+            
+            printf("%f %f %f\n", reflectedColor[0], reflectedColor[1], reflectedColor[2]);
+            currentColor[0] = (1 - object.reflectivity) * currentColor[0] + (object.reflectivity * reflectedColor[0]);
+            currentColor[1] = (1 - object.reflectivity) * currentColor[1] + (object.reflectivity * reflectedColor[1]);
+            currentColor[2] = (1 - object.reflectivity) * currentColor[2] + (object.reflectivity * reflectedColor[2]);
+        }
+    }
+
+    color[0] = currentColor[0];
+    color[1] = currentColor[1];
+    color[2] = currentColor[2];
 }
 
 void adjustColor(float* color) {
@@ -562,9 +577,6 @@ int main(int argc, char** argv) {
 	}
     }
     
-    for (int i = 0; i < 5; i++) {
-        printf("+++%d", objects[i].objectKindFlag);
-    }
     if (objectArrayIndex > 128) {
         fprintf(stderr, "Number of objects exceeds maximum value (128), remaining objects will be ignored.");
     }
@@ -626,10 +638,11 @@ int main(int argc, char** argv) {
             float hitObjectColor[3];
             if(tValue > -1) {
                 float point[3];
+                int recursionLevel = 1;
                 point[0] = camera.position[0] + (pixVectorNormal[0] * tValue);
                 point[1] = camera.position[1] + (pixVectorNormal[1] * tValue);
                 point[2] = camera.position[2] + (pixVectorNormal[2] * tValue);
-                illuminate(objects, lights, point, hitObject, hitObjectColor);
+                illuminate(objects, lights, point, hitObject, pixVectorNormal, hitObjectColor, recursionLevel);
                 adjustColor(hitObjectColor);
             }
             else {
