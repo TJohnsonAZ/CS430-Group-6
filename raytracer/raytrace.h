@@ -1,6 +1,6 @@
 // preprocessor directive
-#ifndef RAYCAST_H
-#define RAYCAST_H
+#ifndef RAYTRACE_H
+#define RAYTRACE_H
 
 // header files
 #include <stdio.h> //fopen, fscanf, ect
@@ -72,4 +72,4 @@ float rayplaneIntersection(Object plane, float* Ro, float* Rd);
 bool write_p3(char* fileName, int width, int height, int maxcol, uint8_t* image);
 
 
-#endif  // CONFIG_OPS_H
+#endif

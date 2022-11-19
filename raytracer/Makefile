@@ -1,7 +1,7 @@
-all: raycast
+all: raytrace
 
-raycast:
-	gcc -Wall -std=c99 raycast.c v3math.c -o raycast -lm
+raytrace:
+	gcc -Wall -std=c99 raytrace.c v3math.c -o raytrace -lm
 
 clean:
-	rm -rf raycast *~
+	rm -rf raytrace *~
