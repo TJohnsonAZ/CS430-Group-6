@@ -297,15 +297,13 @@ float ray_plane_intersection(Object plane, float* Ro, float* Rd) {
 * As well as its reflectivity if it has that property
 */
 void illuminate(Object objects[], Object lights[], float *point, Object object, float *Rd, float *color, int recursion_level) {
-    float current_color[3];
+  float current_color[3] = {0, 0, 0};
+      color[0] = 0;
+      color[1] = 0;
+      color[2] = 0;
     
     // Check if at the first level of recursion; make color the background color (black) if so
-    if (recursion_level == 1) {
-        current_color[0] = 0.0;
-        current_color[1] = 0.0;
-        current_color[2] = 0.0;
-    }
-    else if (recursion_level > MAX_RECURSION_LEVEL) {
+    if (recursion_level > MAX_RECURSION_LEVEL) {
         return;
     }
     
@@ -327,7 +325,7 @@ void illuminate(Object objects[], Object lights[], float *point, Object object, 
         // Shoot ray from point to light
         float tValue = -1;
         Object hit_object;
-        tValue = shoot(objects, light_Ro, light_Rd, object, &hit_object);
+        tValue = shoot(objects, light_Ro, light_Rd_normal, object, &hit_object);
 
         if(tValue > 0 && tValue < v3_length(light_Rd)) {
             continue;
@@ -339,9 +337,9 @@ void illuminate(Object objects[], Object lights[], float *point, Object object, 
 
         // Calculate angular attenuation
         float v0[3];
-        v0[0] = light_Rd[0] * -1;
-        v0[1] = light_Rd[1] * -1;
-        v0[2] = light_Rd[2] * -1;
+        v0[0] = light_Rd_normal[0] * -1;
+        v0[1] = light_Rd_normal[1] * -1;
+        v0[2] = light_Rd_normal[2] * -1;
 
         // Check if the current light is a spot light; set angular attenuation to 1 if not
         float angular_attenuation;
@@ -373,7 +371,12 @@ void illuminate(Object objects[], Object lights[], float *point, Object object, 
             normal[0] = object.plane_normal[0];
             normal[1] = object.plane_normal[1];
             normal[2] = object.plane_normal[2];
-        }
+        } 
+        else {
+	        printf("Bad objecy type.\n");
+	        exit(1);
+	    }
+
         v3_normalize(normal, normal);
         float diffuse_light_dot = v3_dot_product(normal, light_Rd_normal);
 
@@ -392,15 +395,21 @@ void illuminate(Object objects[], Object lights[], float *point, Object object, 
 
         // Calculate specular light
         float specular_light[3];
+        float v[3] = {Rd[0], Rd[1], Rd[2]};
         float R[3];
         float v0_normal[3];
         v3_normalize(v0_normal, v0);
+        v3_normalize(v, v);
         v3_reflect(R, light_Rd_normal, normal);
-        float specular_light_dot = v3_dot_product(v0_normal, R);
+        v3_normalize(R, R);
+        float specular_light_dot = v3_dot_product(v, R);
+	//	if (object.object_kind_flag == SPHERE) printf("dot: %f %f\n", specular_light_dot, diffuse_light_dot);
         if (diffuse_light_dot > 0 && specular_light_dot > 0) {
             specular_light[0] = pow(specular_light_dot, 20) * lights[i].color[0] * object.specular_color[0];
             specular_light[1] = pow(specular_light_dot, 20) * lights[i].color[1] * object.specular_color[1];
             specular_light[2] = pow(specular_light_dot, 20) * lights[i].color[2] * object.specular_color[2];
+	    
+            if (specular_light[0] > .1) printf("spec: %f\n", specular_light[0]);
         }
         else {
             specular_light[0] = 0.0;
@@ -429,8 +438,14 @@ void illuminate(Object objects[], Object lights[], float *point, Object object, 
             normal[0] = object.plane_normal[0];
             normal[1] = object.plane_normal[1];
             normal[2] = object.plane_normal[2];
-        }
+        } 
+        else {
+	        printf("Bad object.\n");
+	        exit(1);
+	    }
 
+        v3_normalize(normal, normal);
+	    v3_normalize(Rd, Rd); // hack
         v3_reflect(reflectedRd, Rd, normal);
         v3_normalize(reflectedRd, reflectedRd);
 
@@ -439,24 +454,20 @@ void illuminate(Object objects[], Object lights[], float *point, Object object, 
         float tValue = shoot(objects, point, reflectedRd, object, &reflected_object);
 
         // If no object hit, exit function and keep pixel color as the background color
-        if (tValue == -1) {
-            return;
-        }
         // Assume ray hit an object
-        else {
+	    float reflectedColor[3] = {0, 0, 0};
+        if (tValue > 0) {
             float reflectedPoint[3];
             reflectedPoint[0] = point[0] + (tValue * reflectedRd[0]);
             reflectedPoint[1] = point[1] + (tValue * reflectedRd[1]);
             reflectedPoint[2] = point[2] + (tValue * reflectedRd[2]);
 
-            float reflectedColor[3];
-            illuminate(objects, lights, reflectedPoint, reflected_object, reflectedRd, reflectedColor, recursion_level + 1);
-            
-            printf("%f %f %f\n", reflectedColor[0], reflectedColor[1], reflectedColor[2]);
-            current_color[0] = (1 - object.reflectivity) * current_color[0] + (object.reflectivity * reflectedColor[0]);
-            current_color[1] = (1 - object.reflectivity) * current_color[1] + (object.reflectivity * reflectedColor[1]);
-            current_color[2] = (1 - object.reflectivity) * current_color[2] + (object.reflectivity * reflectedColor[2]);
+            illuminate(objects, lights, reflectedPoint, reflected_object, reflectedRd, reflectedColor, recursion_level + 1);            
         }
+	    
+        current_color[0] = (1 - object.reflectivity) * current_color[0] + (object.reflectivity * reflectedColor[0]);
+	    current_color[1] = (1 - object.reflectivity) * current_color[1] + (object.reflectivity * reflectedColor[1]);
+	    current_color[2] = (1 - object.reflectivity) * current_color[2] + (object.reflectivity * reflectedColor[2]);
     }
 
     color[0] = current_color[0];
@@ -671,7 +682,7 @@ int main(int argc, char **argv) {
             float pixZ = -1;
 
             // Create vector out of pixel values
-            float pix_vector[] = {pixX, pixY, pixZ};
+            float pix_vector[3] = {pixX, pixY, pixZ};
 
             // Normalize pixel vector
             float pix_vector_normal[3];
