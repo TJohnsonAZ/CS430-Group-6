@@ -205,9 +205,9 @@ bool compare_objects(Object obj1, Object obj2) {
  * Coordinates have moved the desired amount according to parameters;
  * Updates incrementally to support animation
  */
-void increment_position(float *position, int x, int y, int z) {
+void increment_position(float *position, int x, int y) {
     // loop until movement complete
-    while (x != 0 && y != 0 && z != 0) {
+    while (x != 0 && y != 0) {
 	// increment and update x
 	if (x > 0) {
             position[0] += 1;
@@ -226,16 +226,6 @@ void increment_position(float *position, int x, int y, int z) {
 	else if (y < 0) {
             position[1] -= y;
             y += 1;
-	}
-	
-	// increment and update z
-	if (z > 0) {
-            position[2] += 1;
-            z -= 1;
-	}
-	else if (z < 0) {
-            position[2] -= 1;
-            z += 1;
 	}
     }
 }
