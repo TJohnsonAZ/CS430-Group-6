@@ -200,6 +200,36 @@ bool compare_objects(Object obj1, Object obj2) {
         && obj1.position[2] == obj2.position[2];
 }
 
+/* 
+ * Increments an object's position value one at a time until all
+ * Coordinates have moved the desired amount according to parameters;
+ * Updates incrementally to support animation
+ */
+void increment_position(float *position, int x, int y) {
+    // loop until movement complete
+    while (x != 0 && y != 0) {
+	// increment and update x
+	if (x > 0) {
+            position[0] += 1;
+            x -= 1;
+	}
+	else if (x < 0) {
+            position[0] -= 1;
+            x += 1;
+	}
+
+	// increment and update y
+	if (y > 0) {
+            position[1] += 1;
+            y -= 1;
+	}
+	else if (y < 0) {
+            position[1] -= y;
+            y += 1;
+	}
+    }
+}
+
 /*
 * Shoots ray from origin to current pixel
 * Returns name of object that was hit by ray
