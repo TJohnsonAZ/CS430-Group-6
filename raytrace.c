@@ -373,7 +373,6 @@ void illuminate(Object objects[], Object lights[], float *point, Object object, 
             normal[2] = object.plane_normal[2];
         } 
         else {
-            printf("Bad objecy type.\n");
             exit(1);
         }
 
@@ -437,7 +436,6 @@ void illuminate(Object objects[], Object lights[], float *point, Object object, 
             normal[2] = object.plane_normal[2];
         } 
         else {
-            printf("Bad object.\n");
             exit(1);
         }
 
