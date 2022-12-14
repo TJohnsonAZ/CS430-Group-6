@@ -373,9 +373,8 @@ void illuminate(Object objects[], Object lights[], float *point, Object object, 
             normal[2] = object.plane_normal[2];
         } 
         else {
-	        printf("Bad objecy type.\n");
-	        exit(1);
-	    }
+            exit(1);
+        }
 
         v3_normalize(normal, normal);
         float diffuse_light_dot = v3_dot_product(normal, light_Rd_normal);
@@ -403,7 +402,6 @@ void illuminate(Object objects[], Object lights[], float *point, Object object, 
         v3_reflect(R, light_Rd_normal, normal);
         v3_normalize(R, R);
         float specular_light_dot = v3_dot_product(v, R);
-	//	if (object.object_kind_flag == SPHERE) printf("dot: %f %f\n", specular_light_dot, diffuse_light_dot);
         if (diffuse_light_dot > 0 && specular_light_dot > 0) {
             specular_light[0] = pow(specular_light_dot, 20) * lights[i].color[0] * object.specular_color[0];
             specular_light[1] = pow(specular_light_dot, 20) * lights[i].color[1] * object.specular_color[1];
@@ -438,12 +436,11 @@ void illuminate(Object objects[], Object lights[], float *point, Object object, 
             normal[2] = object.plane_normal[2];
         } 
         else {
-	        printf("Bad object.\n");
-	        exit(1);
-	    }
+            exit(1);
+        }
 
         v3_normalize(normal, normal);
-	    v3_normalize(Rd, Rd); // hack
+        v3_normalize(Rd, Rd);
         v3_reflect(reflectedRd, Rd, normal);
         v3_normalize(reflectedRd, reflectedRd);
 
@@ -453,7 +450,7 @@ void illuminate(Object objects[], Object lights[], float *point, Object object, 
 
         // If no object hit, exit function and keep pixel color as the background color
         // Assume ray hit an object
-	    float reflectedColor[3] = {0, 0, 0};
+        float reflectedColor[3] = {0, 0, 0};
         if (tValue > 0) {
             float reflectedPoint[3];
             reflectedPoint[0] = point[0] + (tValue * reflectedRd[0]);
@@ -464,8 +461,8 @@ void illuminate(Object objects[], Object lights[], float *point, Object object, 
         }
 	    
         current_color[0] = (1 - object.reflectivity) * current_color[0] + (object.reflectivity * reflectedColor[0]);
-	    current_color[1] = (1 - object.reflectivity) * current_color[1] + (object.reflectivity * reflectedColor[1]);
-	    current_color[2] = (1 - object.reflectivity) * current_color[2] + (object.reflectivity * reflectedColor[2]);
+        current_color[1] = (1 - object.reflectivity) * current_color[1] + (object.reflectivity * reflectedColor[1]);
+        current_color[2] = (1 - object.reflectivity) * current_color[2] + (object.reflectivity * reflectedColor[2]);
     }
 
     color[0] = current_color[0];
@@ -567,7 +564,6 @@ void draw_frame(int viewscreen_width, int viewscreen_height, float pix_width, fl
     write_p3(fh, image_width, image_height, 255, image);
 }
 
-// float ray_sphere_intersection(Object sphere, float* Ro, float* Rd);
 int main(int argc, char **argv) {
     struct Object objects[128];
     struct Object lights[128];
@@ -656,7 +652,7 @@ int main(int argc, char **argv) {
         else if (strcmp(obj_name, "light,") == 0) {
             curr_object.object_kind_flag = LIGHT;
 
-	        // set default values for light
+            // set default values for light
             curr_object.color[0] = 0;
             curr_object.color[1] = 0;
             curr_object.color[2] = 0;
@@ -672,7 +668,7 @@ int main(int argc, char **argv) {
             curr_object.direction[1] = 0;
             curr_object.direction[2] = 0;
 
-        read_properties(inputfh, &curr_object);
+            read_properties(inputfh, &curr_object);
         }
         // Assume it is an unknown object and throw error
         else {
@@ -827,7 +823,6 @@ int main(int argc, char **argv) {
                 objects[animated_object_array_index].position[1] -= 0.25;
             }
         }
-
     }
     
     return 0;
