@@ -200,36 +200,6 @@ bool compare_objects(Object obj1, Object obj2) {
         && obj1.position[2] == obj2.position[2];
 }
 
-/* 
- * Increments an object's position value one at a time until all
- * Coordinates have moved the desired amount according to parameters;
- * Updates incrementally to support animation
- */
-void increment_position(float *position, int x, int y) {
-    // loop until movement complete
-    while (x != 0 && y != 0) {
-	// increment and update x
-	if (x > 0) {
-            position[0] += 1;
-            x -= 1;
-	}
-	else if (x < 0) {
-            position[0] -= 1;
-            x += 1;
-	}
-
-	// increment and update y
-	if (y > 0) {
-            position[1] += 1;
-            y -= 1;
-	}
-	else if (y < 0) {
-            position[1] -= y;
-            y += 1;
-	}
-    }
-}
-
 /*
 * Shoots ray from origin to current pixel
 * Returns name of object that was hit by ray
@@ -438,8 +408,6 @@ void illuminate(Object objects[], Object lights[], float *point, Object object, 
             specular_light[0] = pow(specular_light_dot, 20) * lights[i].color[0] * object.specular_color[0];
             specular_light[1] = pow(specular_light_dot, 20) * lights[i].color[1] * object.specular_color[1];
             specular_light[2] = pow(specular_light_dot, 20) * lights[i].color[2] * object.specular_color[2];
-	    
-            if (specular_light[0] > .1) printf("spec: %f\n", specular_light[0]);
         }
         else {
             specular_light[0] = 0.0;
@@ -542,13 +510,70 @@ bool write_p3(char *file_name, int width, int height, int max_color_value, uint8
     fclose(fh);
     return true;
 }
+
+void draw_frame(int viewscreen_width, int viewscreen_height, float pix_width, float pix_height, uint8_t *image, int image_width, int image_height, 
+    Object objects[], Object lights[], Object camera, char* fh) {
+    // Iterate through each row in the image
+    for (int y = 0; y < image_height; y++) {
+        // Get the current pixel's y-coord
+        float pixY = (-1 * viewscreen_height) / 2 + pix_height * (y + 0.5);
+
+        // Iterate through each column of the image
+        for (int x = 0; x < image_width; x++) {
+            // Get the current pixel's x-coord
+            float pixX = (-1 * viewscreen_width) / 2 + pix_width * (x + 0.5);
+
+            // Get the current pixels's z-coord
+            // (always 1 unit away from camera in the -z direction)
+            float pixZ = -1;
+
+            // Create vector out of pixel values
+            float pix_vector[3] = { pixX, pixY, pixZ };
+
+            // Normalize pixel vector
+            float pix_vector_normal[3];
+            v3_normalize(pix_vector_normal, pix_vector);
+
+            // Shoot ray out into scene; if object hit, return object and its color
+            Object hit_object;
+            float tValue = -1;
+            tValue = shoot(objects, camera.position, pix_vector_normal, camera, &hit_object);
+
+            // Get illuminate value from illuminate function
+            float hit_object_color[3];
+            if (tValue > -1) {
+                float point[3];
+                int recursion_level = 1;
+                point[0] = camera.position[0] + (pix_vector_normal[0] * tValue);
+                point[1] = camera.position[1] + (pix_vector_normal[1] * tValue);
+                point[2] = camera.position[2] + (pix_vector_normal[2] * tValue);
+                illuminate(objects, lights, point, hit_object, pix_vector_normal, hit_object_color, recursion_level);
+                adjust_color(hit_object_color);
+            }
+            else {
+                hit_object_color[0] = 0.0;
+                hit_object_color[1] = 0.0;
+                hit_object_color[2] = 0.0;
+            }
+
+            // Color current pixel in image  
+            image[((image_height - y - 1) * image_width + x) * 3] = hit_object_color[0] * 255;
+            image[(((image_height - y - 1) * image_width + x) * 3) + 1] = hit_object_color[1] * 255;
+            image[(((image_height - y - 1) * image_width + x) * 3) + 2] = hit_object_color[2] * 255;
+        }
+    }
+
+    // Write color values in image to ppm file with p3 format
+    write_p3(fh, image_width, image_height, 255, image);
+}
+
 // float ray_sphere_intersection(Object sphere, float* Ro, float* Rd);
 int main(int argc, char **argv) {
     struct Object objects[128];
     struct Object lights[128];
     
     // Check if command line has missing arguments
-    if (argc != 5) {
+    if (argc != 6) {
         fprintf(stderr, "Error: Missing/too many arguments on command line");
         return 1;
     }
@@ -683,6 +708,20 @@ int main(int argc, char **argv) {
         }
     }
 
+    // Find the sphere in the list of objects; use it as the animated object
+    bool animated_object_found = false;
+    int animated_object_array_index;
+    for (int i = 0; !animated_object_found; i++) {
+        // If the animatd object is found, record the current index;
+        // This will be used to keep track of where the object is in the
+        // List of objects so that its position can be edited every time
+        // A new frame is drawn
+        if (objects[i].object_kind_flag == SPHERE) {
+            animated_object_array_index = i;
+            animated_object_found = true;
+        }
+    }
+
     // Get data about image size
     int image_height = atoi(argv[1]);
     int image_width = atoi(argv[2]);
@@ -696,61 +735,100 @@ int main(int argc, char **argv) {
     float pix_height = (float)viewscreen_height / (float)image_height;
     float pix_width = (float)viewscreen_width / (float)image_width;
 
-    int imageIndex = 0;
-    // Iterate through each row in the image
-    for (int y = 0; y < image_height; y++) {
-        // Get the current pixel's y-coord
-        float pixY = (-1 * viewscreen_height) / 2 + pix_height * (y + 0.5);
+    // Store the starting and ending positions of the animated object
+    float start_x_pos = objects[animated_object_array_index].position[0];
+    float start_y_pos = objects[animated_object_array_index].position[1];
+    float end_x_pos = atof(argv[4]);
+    float end_y_pos = atof(argv[5]);
+    bool reached_end_pos = false;
+    
+    int frame;
+    
+    // Draw frames until the animated object reaches the ending position
+    for (frame = 1; !reached_end_pos; frame++) {
+        // Create the name of the ppm file for the current frame
+        char frame_fh[] = "frame";
+        char frame_fh_ending[8];
 
-        // Iterate through each column of the image
-        for (int x = 0; x < image_width; x++) {
-            // Get the current pixel's x-coord
-            float pixX = (-1 * viewscreen_width) / 2 + pix_width * (x + 0.5);
-
-            // Get the current pixels's z-coord
-            // (always 1 unit away from camera in the -z direction)
-            float pixZ = -1;
-
-            // Create vector out of pixel values
-            float pix_vector[3] = {pixX, pixY, pixZ};
-
-            // Normalize pixel vector
-            float pix_vector_normal[3];
-            v3_normalize(pix_vector_normal, pix_vector);
-
-            // Shoot ray out into scene; if object hit, return object and its color
-            Object hit_object;
-            float tValue = -1;
-            tValue = shoot(objects, camera.position, pix_vector_normal, camera, &hit_object);
-
-            // Get illuminate value from illuminate function
-            float hit_object_color[3];
-            if(tValue > -1) {
-                float point[3];
-                int recursion_level = 1;
-                point[0] = camera.position[0] + (pix_vector_normal[0] * tValue);
-                point[1] = camera.position[1] + (pix_vector_normal[1] * tValue);
-                point[2] = camera.position[2] + (pix_vector_normal[2] * tValue);
-                illuminate(objects, lights, point, hit_object, pix_vector_normal, hit_object_color, recursion_level);
-                adjust_color(hit_object_color);
-            }
-            else {
-            	hit_object_color[0] = 0.0;
-                hit_object_color[1] = 0.0;
-                hit_object_color[2] = 0.0;
-            }
-
-            // Color current pixel in image  
-            image[((image_height - y - 1) * image_width + x) * 3] = hit_object_color[0] * 255;
-            image[(((image_height - y - 1) * image_width + x) * 3) + 1] = hit_object_color[1] * 255;
-            image[(((image_height - y - 1) * image_width + x) * 3) + 2] = hit_object_color[2] * 255;
-
-            imageIndex += 3;
+        // Label each frame with a number starting at 1
+        // If the current frame is a single digit, add a '0' just before it.
+        // This ensures that gifsicle puts the final list of frames in the correct order
+        if (frame <= 9) {
+            sprintf(frame_fh_ending, "0%d.ppm", frame);
         }
+        else {
+            sprintf(frame_fh_ending, "%d.ppm", frame);
+        }
+        strcat(frame_fh, frame_fh_ending);
+
+        // Draw the current frame
+        draw_frame(viewscreen_width, viewscreen_height, pix_width, pix_height, image, image_width, image_height, 
+            objects, lights, camera, frame_fh);
+
+        // Determine if the animated object is at the ending position
+        if (objects[animated_object_array_index].position[0] >= end_x_pos 
+            && objects[animated_object_array_index].position[1] >= end_y_pos) {
+            reached_end_pos = true;
+        }
+        
+        // Otherwise, assume it has not reached the ending position
+        else {
+            // If the animated object has not reached the ending x-position, increment its x-position
+            if (objects[animated_object_array_index].position[0] < end_x_pos) {
+                objects[animated_object_array_index].position[0] += 0.25;
+            }
+            
+            // If the animated object has not reached its ending y-position, increment its y-position
+            if (objects[animated_object_array_index].position[1] < end_y_pos) {
+                objects[animated_object_array_index].position[1] += 0.25;
+            }
+        }
+
     }
 
-    // Write color values in image to ppm file with p3 format
-    write_p3(argv[4], image_width, image_height, 255, image);
+    bool reached_start_pos = false;
+    
+    // Draw frames until the animated object reaches the starting position
+    for (; !reached_start_pos; frame++) {
+        // Create the name of the ppm file for the current frame
+        char frame_fh[] = "frame";
+        char frame_fh_ending[8];
+
+        // Label each frame with a number starting at 1
+        // If the current frame is a single digit, add a '0' just before it.
+        // This ensures that gifsicle puts the final list of frames in the correct order
+        if (frame <= 9) {
+            sprintf(frame_fh_ending, "0%d.ppm", frame);
+        }
+        else {
+            sprintf(frame_fh_ending, "%d.ppm", frame);
+        }
+        strcat(frame_fh, frame_fh_ending);
+
+        // Draw the current frame
+        draw_frame(viewscreen_width, viewscreen_height, pix_width, pix_height, image, image_width, image_height,
+            objects, lights, camera, frame_fh);
+
+        // Determine if the object is at the starting position
+        if (objects[animated_object_array_index].position[0] <= start_x_pos 
+            && objects[animated_object_array_index].position[1] <= start_y_pos) {
+            reached_start_pos = true;
+        }
+        
+        // Otherwise, assume it has not reached the ending position
+        else {
+            // If the animated object has not reached the starting x-position, decrement its x-position
+            if (objects[animated_object_array_index].position[0] > start_x_pos) {
+                objects[animated_object_array_index].position[0] -= 0.25;
+            }
+            
+            // If the animated object has not reached the starting y-position, decrement its y-position
+            if (objects[animated_object_array_index].position[1] > start_y_pos) {
+                objects[animated_object_array_index].position[1] -= 0.25;
+            }
+        }
+
+    }
     
     return 0;
 }

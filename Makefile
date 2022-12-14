@@ -1,11 +1,10 @@
-all: raytrace input pnmquant ppmtogif gifsicle
+all: raytrace get_frames pnmquant ppmtogif gifsicle
 
 raytrace: raytrace.c v3math.c
 	gcc -Wall -std=c99 raytrace.c v3math.c -o raytrace -lm
 
-input:
-	read -p "Enter image dimensions & file name (width height file): " width height fh; \
-	./raytrace $$width $$height $$fh frame.ppm;
+get_frames:
+	./raytrace 150 150 demo.scene 0 3
 
 pnmquant: 
 	for frame in frame* ; do \
@@ -18,7 +17,7 @@ ppmtogif:
 	done
 
 gifsicle:
-	gifsicle --colors 256 --loopcount=forever *.gif > test.gif
+	gifsicle --colors 256 --loopcount=forever *.gif > animation.gif
 
 clean:
-	rm -rf raytrace *.gif *_256.ppm *~
+	rm -rf raytrace *.gif *.ppm *~

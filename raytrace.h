@@ -63,13 +63,13 @@ typedef struct Object {
 void read_properties(FILE *input_fh, Object *curr_object);
 void copy_object(Object* dstObject, Object* srcObject);
 bool compare_objects(Object obj1, Object obj2);
-void increment_position(float *position, int x, int y, int z);
 float shoot(Object objects[], float* Ro, float* Rd, Object curr_object, Object* hit_object);
 float ray_sphere_intersection(Object sphere, float* Ro, float* Rd);
 float ray_plane_intersection(Object plane, float* Ro, float* Rd);
 void illuminate(Object objects[], Object lights[], float *point, Object object, float *Rd, float *color, int recursion_level);
 void adjust_color(float *color);
 bool write_p3(char* file_name, int width, int height, int max_color_value, uint8_t *image);
-
+void draw_frame(int viewscreen_width, int viewscreen_height, float pix_width, float pix_height, uint8_t *image, int image_width, int image_height,
+    Object objects[], Object lights[], Object camera, char* fh);
 
 #endif
